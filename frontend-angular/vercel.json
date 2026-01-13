@@ -1,0 +1,13 @@
+{
+  "buildCommand": "yarn build",
+  "outputDirectory": "dist/frontend-angular/browser",
+  "framework": null,
+  "installCommand": "yarn install",
+  "nodeVersion": "20.x",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

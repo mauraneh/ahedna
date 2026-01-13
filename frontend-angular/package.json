@@ -21,6 +21,9 @@
     ]
   },
   "private": true,
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "dependencies": {
     "@angular/common": "^21.0.4",
     "@angular/compiler": "^20.3.0",
