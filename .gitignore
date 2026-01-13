@@ -65,3 +65,7 @@ yarn-error.log*
 # Temporary files
 *.tmp
 *.temp
+
+# Documentation (sauf README.md)
+*.md
+!README.md

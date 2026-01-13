@@ -13,11 +13,6 @@ Cette application est déployée sur le cloud avec une architecture moderne util
 - **CI/CD** : GitHub Actions
 - **Monitoring** : Vercel Analytics & Logs
 
-📖 **Documentation** :
-- [Guide de déploiement](docs/DEPLOIEMENT.md) - Instructions complètes
-- [Checklist de déploiement](docs/CHECKLIST_DEPLOIEMENT.md) - Liste à cocher
-- [Architecture](docs/ARCHITECTURE.md) - Vue technique
-- [Présentation](docs/SOUTENANCE.md) - Guide pour la soutenance
 
 ---
 
@@ -195,7 +190,6 @@ yarn ng serve --host 0.0.0.0 --port 4200
 ### **5. Accès**
 - **Frontend Angular** : http://localhost:4200
 - **Backend API** : http://localhost:3000/api
-- **Preview** : https://harkis-history.preview.emergentagent.com (backend uniquement pour l'instant)
 
 ---
 
@@ -227,16 +221,10 @@ Rôle: admin
 
 ### **Connexion PostgreSQL**
 
-**Avec Docker Compose (local)** :
-```env
-DATABASE_URL=postgresql://postgres:postgres@postgres:5432/ahedna_db
-```
+Les variables de connexion sont configurées dans le fichier `.env` à la racine du projet.
 
-**En production (Neon)** :
-```env
-DATABASE_URL=postgresql://[user]:[password]@[hostname]/[database]?sslmode=require
-```
-(Connection string fournie par Neon)
+Voir le fichier `.env` pour les valeurs de :
+- `DATABASE_URL` : Connection string PostgreSQL (local ou Neon)
 
 ### **Initialisation de la Base de Données**
 
@@ -311,29 +299,28 @@ Bleu  : #2563EB (liens, admin)
 
 ## 🔧 Configuration
 
-### **Environment Variables** (.env)
-```env
-# PostgreSQL
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/ahedna_db
+### **Environment Variables**
 
-# JWT
-JWT_SECRET=ahedna_jwt_secret_key_2024_secure_random_string
-JWT_EXPIRES_IN=7d
+Toutes les variables d'environnement sont configurées dans le fichier `.env` à la racine du projet.
 
-# CORS
-CORS_ORIGINS=*
+Le fichier `.env` contient :
+- `DATABASE_URL` : Connection string PostgreSQL
+- `JWT_SECRET` : Secret pour les tokens JWT
+- `JWT_EXPIRES_IN` : Durée de validité des tokens
+- `CORS_ORIGINS` : Origines autorisées pour CORS
+- Variables Vercel (pour référence locale)
 
-# Public URL
-NEXT_PUBLIC_BASE_URL=https://harkis-history.preview.emergentagent.com
-```
+⚠️ **Le fichier `.env` n'est pas commité sur GitHub** (dans `.gitignore`). 
 
-### **Angular Environment** (src/environments/environment.ts)
-```typescript
-export const environment = {
-  production: false,
-  apiUrl: 'https://harkis-history.preview.emergentagent.com/api'
-};
-```
+Pour configurer le projet :
+1. Copiez les variables nécessaires dans votre `.env`
+2. Adaptez les valeurs selon votre environnement (local, production)
+
+### **Angular Environment**
+
+Les fichiers `frontend-angular/src/environments/environment.ts` et `environment.prod.ts` contiennent la configuration de l'URL de l'API.
+
+Pour la production, configurez l'URL du backend Render dans `environment.prod.ts`.
 
 ---
 
