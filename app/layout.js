@@ -1,8 +1,8 @@
 import './globals.css'
 
 export const metadata = {
-  title: 'Next.js MongoDB Template',
-  description: 'A simple template with App Router, MongoDB, and shadcn/ui',
+  title: 'AHEDNA - API Backend',
+  description: 'Backend API pour l\'Association des Harkis et de leurs Enfants de Dordogne et Nouvelle-Aquitaine',
 }
 
 export default function RootLayout({ children }) {
