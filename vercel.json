@@ -4,12 +4,6 @@
   "outputDirectory": ".next",
   "framework": "nextjs",
   "installCommand": "yarn install",
-  "env": {
-    "DATABASE_URL": "@database_url",
-    "JWT_SECRET": "@jwt_secret",
-    "JWT_EXPIRES_IN": "@jwt_expires_in",
-    "CORS_ORIGINS": "@cors_origins"
-  },
   "rewrites": [
     {
       "source": "/api/(.*)",
