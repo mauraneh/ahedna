@@ -69,3 +69,4 @@ yarn-error.log*
 # Documentation (sauf README.md)
 *.md
 !README.md
+.env*.local

@@ -102,12 +102,6 @@ Frontend (Angular) → Vercel CDN → Backend (Next.js) → Neon PostgreSQL
                     Build statique    Serverless API
 ```
 
-📖 **Documentation** :
-- [Guide de déploiement](docs/DEPLOIEMENT.md) - Instructions complètes
-- [Checklist de déploiement](docs/CHECKLIST_DEPLOIEMENT.md) - Liste à cocher
-- [Architecture](docs/ARCHITECTURE.md) - Vue technique
-- [Présentation](docs/SOUTENANCE.md) - Guide pour la soutenance
-
 ### CI/CD Pipeline
 
 Le projet inclut une pipeline GitHub Actions automatique qui :
@@ -410,6 +404,102 @@ curl http://localhost:3000/api/history/chapters
 ## 🤝 Contribution
 
 Ce projet a été créé pour l'Association AHEDNA. Pour toute modification ou contribution, contactez l'administrateur.
+
+---
+
+## 🚀 Déploiement en Production
+
+### Prérequis
+
+- Compte **Neon** : https://neon.tech (gratuit)
+- Compte **Render** : https://render.com (gratuit)
+- Compte **Vercel** : https://vercel.com (gratuit)
+- Compte **GitHub** : https://github.com (gratuit)
+
+### Étape 1 : Configuration de la Base de Données (Neon)
+
+1. Créez un compte sur https://neon.tech
+2. Créez un nouveau projet PostgreSQL
+3. Récupérez la **Connection String** fournie
+4. Ajoutez-la dans votre fichier `.env` sous `DATABASE_URL`
+
+### Étape 2 : Déploiement du Backend (Render)
+
+1. Allez sur https://render.com et connectez votre compte GitHub
+2. Créez un nouveau **Web Service**
+3. Sélectionnez votre repository GitHub
+4. Configurez :
+   - **Name** : `ahedna-backend`
+   - **Runtime** : `Node`
+   - **Build Command** : `yarn install --frozen-lockfile && yarn build`
+   - **Start Command** : `yarn start`
+   - **Instance Type** : `Free`
+5. Dans **Environment Variables**, ajoutez toutes les variables de votre `.env` :
+   - `DATABASE_URL` : Connection string Neon
+   - `JWT_SECRET` : Secret JWT
+   - `JWT_EXPIRES_IN` : `7d`
+   - `CORS_ORIGINS` : URLs autorisées (à mettre à jour après déploiement frontend)
+   - `NODE_ENV` : `production`
+   - `PORT` : `10000`
+6. Cliquez **Create Web Service** et attendez le déploiement
+7. Notez l'URL générée : `https://ahedna.onrender.com`
+
+### Étape 3 : Configuration du Frontend
+
+1. Modifiez `frontend-angular/src/environments/environment.prod.ts` :
+```typescript
+export const environment = {
+  production: true,
+  apiUrl: 'https://ahedna.onrender.com/api'
+};
+```
+2. Commit et push :
+```bash
+git add frontend-angular/src/environments/environment.prod.ts
+git commit -m "Configure production API URL"
+git push origin main
+```
+
+### Étape 4 : Déploiement du Frontend (Vercel)
+
+1. Allez sur https://vercel.com et connectez votre compte GitHub
+2. Créez un nouveau projet et importez votre repository
+3. Configurez :
+   - **Root Directory** : `frontend-angular`
+   - **Build Command** : `yarn build`
+   - **Output Directory** : `dist/frontend-angular/browser`
+   - **Install Command** : `yarn install`
+4. Dans **Settings** → **Environment Variables**, ajoutez les variables de votre `.env`
+5. Cliquez **Deploy** et attendez le déploiement
+6. Notez l'URL générée : `https://votre-app.vercel.app`
+
+### Étape 5 : Configuration CORS
+
+Retournez sur Render → votre service backend → **Environment Variables**
+
+Mettez à jour `CORS_ORIGINS` avec l'URL Vercel :
+```
+CORS_ORIGINS=https://votre-app.vercel.app,http://localhost:4200
+```
+
+Render redéploiera automatiquement.
+
+### Étape 6 : Initialisation de la Base de Données
+
+La base de données s'initialise automatiquement au premier appel de l'API backend. Les tables sont créées via `lib/db.js`.
+
+Pour créer manuellement les tables, connectez-vous à Neon avec `psql` et exécutez les requêtes SQL définies dans `lib/db.js`.
+
+### Vérification
+
+Testez que tout fonctionne :
+```bash
+# Backend
+curl https://ahedna.onrender.com/api/health
+
+# Frontend
+Ouvrez https://votre-app.vercel.app dans votre navigateur
+```
 
 ---
 
