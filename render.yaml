@@ -1,0 +1,22 @@
+# Configuration Render pour déploiement automatique
+services:
+  - type: web
+    name: ahedna-backend
+    env: node
+    region: frankfurt  # ou singapore, oregon, etc.
+    plan: free
+    buildCommand: yarn install && yarn build
+    startCommand: yarn start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        sync: false  # À configurer manuellement dans le dashboard
+      - key: JWT_SECRET
+        sync: false  # À configurer manuellement dans le dashboard
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: CORS_ORIGINS
+        sync: false  # À configurer manuellement dans le dashboard

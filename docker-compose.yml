@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  # Base de données PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: ahedna-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ahedna_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ahedna-network
+
+  # Backend Next.js
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: ahedna-backend
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/ahedna_db
+      JWT_SECRET: ahedna_jwt_secret_key_2024_secure_random_string
+      JWT_EXPIRES_IN: 7d
+      CORS_ORIGINS: "*"
+      NODE_ENV: development
+      NODE_OPTIONS: "--max-old-space-size=512"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - ahedna-network
+    command: yarn dev
+    restart: unless-stopped
+
+  # Frontend Angular
+  frontend:
+    build:
+      context: ./frontend-angular
+      dockerfile: Dockerfile.frontend
+    container_name: ahedna-frontend
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend-angular:/app
+      - /app/node_modules
+      - /app/.angular
+    depends_on:
+      - backend
+    networks:
+      - ahedna-network
+    command: sh -c "yarn install && yarn start --host 0.0.0.0 --port 4200 --poll 2000"
+    restart: unless-stopped
+
+networks:
+  ahedna-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

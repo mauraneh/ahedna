@@ -1,0 +1,19 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Installer yarn via corepack
+RUN corepack enable && corepack prepare yarn@1.22.22 --activate
+
+# Copier les fichiers de dépendances
+COPY package.json ./
+
+# Installer les dépendances
+RUN yarn install --frozen-lockfile || yarn install
+
+# Copier le reste de l'application
+COPY . .
+
+EXPOSE 4200
+
+CMD ["yarn", "start", "--host", "0.0.0.0", "--port", "4200"]
