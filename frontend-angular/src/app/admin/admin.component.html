@@ -1,0 +1,204 @@
+<div class="min-h-screen paper-aged paper-texture relative overflow-hidden">
+  <app-navbar></app-navbar>
+  
+  <!-- Header Admin -->
+  <div class="bg-paper-700/90 backdrop-blur-sm shadow-paper-lg border-b-2 border-paper-500/60 relative">
+    <div class="max-w-7xl mx-auto px-4 py-6">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-3xl font-vintage font-bold text-white">Espace Administrateur</h1>
+          <p class="text-paper-200 text-sm font-serif italic">{{ authService.currentUser()?.email }}</p>
+        </div>
+        <a routerLink="/" class="bg-paper-50 text-paper-800 px-6 py-2 rounded-lg font-vintage font-bold hover:bg-paper-100 transition-all shadow-paper">
+          ← Retour au site
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="max-w-7xl mx-auto px-4 py-12">
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+      <div class="bg-paper-50/95 rounded-2xl shadow-paper-xl p-6 border-2 border-paper-300/80 paper-texture relative overflow-hidden group">
+        <div class="absolute top-0 right-0 w-24 h-24 bg-green-500/10 rounded-full blur-2xl"></div>
+        <div class="text-4xl mb-2 relative z-10">👥</div>
+        <div class="text-3xl font-vintage font-bold text-paper-900 relative z-10">{{ stats.users }}</div>
+        <div class="text-sm text-paper-600 font-serif relative z-10">Utilisateurs</div>
+      </div>
+      <div class="bg-paper-50/95 rounded-2xl shadow-paper-xl p-6 border-2 border-paper-300/80 paper-texture relative overflow-hidden group">
+        <div class="absolute top-0 right-0 w-24 h-24 bg-yellow-500/10 rounded-full blur-2xl"></div>
+        <div class="text-4xl mb-2 relative z-10">📰</div>
+        <div class="text-3xl font-vintage font-bold text-paper-900 relative z-10">{{ stats.news }}</div>
+        <div class="text-sm text-paper-600 font-serif relative z-10">Actualités</div>
+      </div>
+      <div class="bg-paper-50/95 rounded-2xl shadow-paper-xl p-6 border-2 border-paper-300/80 paper-texture relative overflow-hidden group">
+        <div class="absolute top-0 right-0 w-24 h-24 bg-green-500/10 rounded-full blur-2xl"></div>
+        <div class="text-4xl mb-2 relative z-10">📅</div>
+        <div class="text-3xl font-vintage font-bold text-paper-900 relative z-10">{{ stats.events }}</div>
+        <div class="text-sm text-paper-600 font-serif relative z-10">Événements</div>
+      </div>
+      <div class="bg-paper-50/95 rounded-2xl shadow-paper-xl p-6 border-2 border-paper-300/80 paper-texture relative overflow-hidden group">
+        <div class="absolute top-0 right-0 w-24 h-24 bg-red-500/10 rounded-full blur-2xl"></div>
+        <div class="text-4xl mb-2 relative z-10">💬</div>
+        <div class="text-3xl font-vintage font-bold text-paper-900 relative z-10">{{ stats.topics }}</div>
+        <div class="text-sm text-paper-600 font-serif relative z-10">Sujets forum</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="bg-paper-50/95 rounded-2xl shadow-paper-xl overflow-hidden border-2 border-paper-300/80 paper-texture">
+      <div class="flex border-b-2 border-paper-300/60">
+        @for (tab of tabs; track tab.id) {
+          <button 
+            (click)="activeTab = tab.id"
+            [class.bg-green-600]="activeTab === tab.id"
+            [class.text-white]="activeTab === tab.id"
+            [class.text-paper-700]="activeTab !== tab.id"
+            [class.bg-paper-100]="activeTab !== tab.id"
+            class="flex-1 px-6 py-4 font-vintage font-bold hover:bg-paper-200 transition-colors">
+            {{ tab.label }}
+          </button>
+        }
+      </div>
+
+      <div class="p-8">
+        <!-- Users Tab -->
+        @if (activeTab === 'users') {
+          <div>
+            <h2 class="text-2xl font-vintage font-bold text-paper-900 mb-6">Gestion des utilisateurs</h2>
+            @if (loadingUsers) {
+              <div class="text-center py-12">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-green-600"></div>
+              </div>
+            } @else {
+              <div class="overflow-x-auto">
+                <table class="w-full">
+                  <thead class="bg-paper-200/80">
+                    <tr>
+                      <th class="px-6 py-3 text-left text-xs font-vintage font-bold text-paper-700 uppercase">Email</th>
+                      <th class="px-6 py-3 text-left text-xs font-vintage font-bold text-paper-700 uppercase">Nom</th>
+                      <th class="px-6 py-3 text-left text-xs font-vintage font-bold text-paper-700 uppercase">Rôle</th>
+                      <th class="px-6 py-3 text-left text-xs font-vintage font-bold text-paper-700 uppercase">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-paper-50/50 divide-y divide-paper-300/50">
+                    @for (user of users; track user.id) {
+                      <tr class="hover:bg-paper-100/50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-paper-900 font-serif">{{ user.email }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-paper-900 font-serif">{{ user.first_name }} {{ user.last_name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                          <select 
+                            [value]="user.role"
+                            (change)="updateUserRole(user.id, $event)"
+                            class="text-sm border-paper-300 bg-paper-100 rounded-lg focus:ring-green-500 focus:border-green-500 font-serif">
+                            <option value="membre">Membre</option>
+                            <option value="auteur">Auteur</option>
+                            <option value="admin">Admin</option>
+                          </select>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                          <span class="text-paper-600 font-serif">{{ formatDate(user.created_at) }}</span>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Forum Moderation Tab -->
+        @if (activeTab === 'forum') {
+          <div>
+            <h2 class="text-2xl font-vintage font-bold text-paper-900 mb-6">Modération du forum</h2>
+            @if (loadingTopics) {
+              <div class="text-center py-12">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-green-600"></div>
+              </div>
+            } @else if (pendingTopics.length === 0) {
+              <div class="text-center py-12 bg-green-50/80 rounded-xl border-2 border-green-200/50">
+                <div class="text-5xl mb-3">✅</div>
+                <p class="text-paper-700 font-serif">Aucun sujet en attente de validation</p>
+              </div>
+            } @else {
+              <div class="space-y-4">
+                @for (topic of pendingTopics; track topic.id) {
+                  <div class="bg-paper-50/95 rounded-xl p-6 border-2 border-paper-300/80 shadow-paper paper-texture">
+                    <h3 class="text-xl font-vintage font-bold text-paper-900 mb-2">{{ topic.title }}</h3>
+                    <p class="text-paper-700 mb-4 font-serif leading-relaxed">{{ topic.content }}</p>
+                    <div class="flex items-center justify-between">
+                      <span class="text-sm text-paper-600 font-serif">Par {{ topic.first_name }} {{ topic.last_name }}</span>
+                      <div class="space-x-3">
+                        <button 
+                          (click)="validateTopic(topic.id, true)"
+                          class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors font-vintage font-bold shadow-paper">
+                          ✓ Valider
+                        </button>
+                        <button 
+                          (click)="deleteTopic(topic.id)"
+                          class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors font-vintage font-bold shadow-paper">
+                          ✗ Refuser
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Gallery Moderation Tab -->
+        @if (activeTab === 'gallery') {
+          <div>
+            <h2 class="text-2xl font-vintage font-bold text-paper-900 mb-6">Modération de la galerie</h2>
+            @if (loadingPhotos) {
+              <div class="text-center py-12">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-green-600"></div>
+              </div>
+            } @else if (pendingPhotos.length === 0) {
+              <div class="text-center py-12 bg-green-50 rounded-xl">
+                <div class="text-5xl mb-3">✅</div>
+                <p class="text-paper-700 font-serif">Aucune photo en attente de validation</p>
+              </div>
+            } @else {
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                @for (photo of pendingPhotos; track photo.id) {
+                  <div class="bg-paper-50/95 rounded-xl overflow-hidden border-2 border-paper-300/80 shadow-paper paper-texture">
+                    <img [src]="photo.photo_url" [alt]="photo.description" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                      <p class="text-sm text-paper-700 mb-2 font-serif">{{ photo.description }}</p>
+                      <p class="text-xs text-paper-600 mb-4 font-serif">Par {{ photo.first_name }} {{ photo.last_name }}</p>
+                      <div class="flex space-x-2">
+                        <button 
+                          (click)="validatePhoto(photo.id, true)"
+                          class="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-vintage font-bold shadow-paper">
+                          ✓ Valider
+                        </button>
+                        <button 
+                          (click)="deletePhoto(photo.id)"
+                          class="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-vintage font-bold shadow-paper">
+                          ✗ Refuser
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Events Tab -->
+        @if (activeTab === 'events') {
+          <div>
+            <h2 class="text-2xl font-vintage font-bold text-paper-900 mb-6">Gestion des événements</h2>
+            <p class="text-paper-700 mb-4 font-serif">Fonctionnalité de création d'événements à venir</p>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,210 @@
+<div class="min-h-screen paper-aged paper-texture relative overflow-hidden">
+  <!-- Particules de papier flottantes -->
+  <div class="fixed inset-0 pointer-events-none z-0">
+    @for (particle of particles; track particle) {
+      <div 
+        class="paper-particle"
+        [style.left.%]="particle.left"
+        [style.animation-delay.s]="particle.delay"
+        [style.width.px]="particle.size"
+        [style.height.px]="particle.size">
+      </div>
+    }
+  </div>
+
+  <!-- Navigation partagée -->
+  <app-navbar></app-navbar>
+
+  <!-- Hero Section -->
+  <section class="relative py-24 px-4 overflow-hidden">
+    <div class="absolute inset-0 opacity-30">
+      <div class="absolute top-20 left-10 w-32 h-32 bg-red-500/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-20 right-10 w-40 h-40 bg-green-500/10 rounded-full blur-3xl"></div>
+    </div>
+    <div class="max-w-7xl mx-auto relative text-center animate-fade-in">
+      <h1 class="text-6xl md:text-8xl font-vintage font-bold text-paper-900 mb-6 drop-shadow-lg">
+        Histoire des Harkis
+      </h1>
+      <div class="w-32 h-1 bg-gradient-to-r from-transparent via-red-600 to-transparent mx-auto mb-8"></div>
+      <p class="text-xl md:text-2xl text-paper-700 max-w-3xl mx-auto leading-relaxed font-serif italic">
+        Un voyage immersif à travers l'histoire des harkis, de leur engagement pendant la guerre d'Algérie jusqu'à aujourd'hui
+      </p>
+    </div>
+  </section>
+
+  <!-- Timeline Navigation -->
+  <div class="max-w-7xl mx-auto px-4 py-8 sticky top-16 z-40 bg-paper-100/90 backdrop-blur-sm border-b-2 border-paper-300/50">
+    <div class="flex justify-center space-x-3 overflow-x-auto pb-4 scrollbar-hide">
+      @for (chapter of chapters; track chapter.id; let i = $index) {
+        <button 
+          (click)="scrollToChapter(chapter.chapter_order)"
+          [class.active]="activeChapter === chapter.chapter_order"
+          class="px-5 py-2.5 rounded-lg bg-paper-200/80 border-2 border-paper-400/50 hover:border-red-600 hover:bg-paper-300/80 transition-all whitespace-nowrap font-vintage font-semibold text-sm text-paper-800 shadow-paper hover:shadow-paper-lg transform hover:scale-105 active:scale-95">
+          {{ chapter.year_start }}@if(chapter.year_end && chapter.year_end !== chapter.year_start){ - {{ chapter.year_end }}}
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Timeline avec chemin animé -->
+  <section class="max-w-6xl mx-auto px-4 py-12 relative">
+    @if (loading) {
+      <div class="text-center py-20">
+        <div class="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-red-600"></div>
+        <p class="mt-4 text-paper-700 font-serif">Chargement de l'histoire...</p>
+      </div>
+    } @else if (chapters.length === 0) {
+      <div class="text-center py-20 bg-paper-200/50 rounded-2xl border-2 border-paper-300 shadow-paper-lg">
+        <div class="text-6xl mb-4">📚</div>
+        <h3 class="text-3xl font-vintage font-bold text-paper-900 mb-4">Histoire à venir</h3>
+        <p class="text-paper-700 font-serif text-lg">
+          Le contenu historique sera bientôt disponible.<br>
+          En attendant, explorez nos autres sections.
+        </p>
+        <a routerLink="/" class="inline-block mt-8 bg-paper-600 text-white px-8 py-3 rounded-lg hover:bg-paper-700 transition-colors font-vintage shadow-paper">
+          Retour à l'accueil
+        </a>
+      </div>
+    } @else {
+      <!-- Ligne de timeline verticale -->
+      <div class="absolute left-8 md:left-1/2 top-0 bottom-0 w-1.5 bg-paper-300/30 hidden md:block" #timelineLine>
+        <div 
+          class="absolute top-0 left-0 w-full bg-gradient-to-b from-red-600 via-red-500 to-red-400 transition-all duration-1000 ease-out"
+          [style.height.%]="timelineProgress"
+          style="box-shadow: 0 0 15px rgba(220,38,38,0.4);">
+        </div>
+      </div>
+
+      <!-- Chapters Content -->
+      <div class="space-y-32 md:space-y-40">
+        @for (chapter of chapters; track chapter.id; let i = $index) {
+          <article 
+            [id]="'chapter-' + chapter.chapter_order"
+            class="relative scroll-mt-32 chapter-item"
+            [class.visible]="isChapterVisible(chapter.chapter_order)"
+            [class.animate-in]="isChapterAnimated(chapter.chapter_order)">
+            
+            <!-- Point de timeline animé -->
+            <div class="absolute left-0 md:left-1/2 top-8 transform -translate-x-1/2 z-20 hidden md:block">
+              <div 
+                class="timeline-point relative"
+                [class.active]="isChapterVisible(chapter.chapter_order)"
+                [class.pulse-active]="activeChapter === chapter.chapter_order">
+                <!-- Cercle extérieur animé -->
+                <div class="absolute inset-0 rounded-full bg-red-600/20 animate-ping" 
+                     [class.animate-ping]="activeChapter === chapter.chapter_order"
+                     style="animation-duration: 2s;"></div>
+                <!-- Cercle principal -->
+                <div class="relative w-8 h-8 rounded-full border-4 border-paper-100 bg-red-600 shadow-paper-xl transition-all duration-500 transform scale-0"
+                     [class.scale-100]="isChapterVisible(chapter.chapter_order)"
+                     [class.scale-125]="activeChapter === chapter.chapter_order">
+                  <div class="w-full h-full rounded-full bg-red-600 flex items-center justify-center">
+                    <div class="w-3 h-3 rounded-full bg-white"></div>
+                  </div>
+                </div>
+                <!-- Numéro du chapitre -->
+                <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-red-600 font-vintage font-bold text-sm opacity-0 transition-opacity duration-500"
+                     [class.opacity-100]="isChapterVisible(chapter.chapter_order)">
+                  {{ i + 1 }}
+                </div>
+              </div>
+              
+              @if (i < chapters.length - 1) {
+                <!-- Chemin vers le prochain point -->
+                <div class="absolute top-10 left-1/2 transform -translate-x-1/2 w-0.5 h-40 bg-paper-300/30 overflow-hidden">
+                  <div 
+                    class="w-full h-full bg-gradient-to-b from-red-600 to-red-400 transition-all duration-1000 ease-out"
+                    [style.height.%]="getPathProgress(i)"
+                    style="box-shadow: 0 0 8px rgba(220,38,38,0.3);">
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!-- Carte de chapitre style vieux journal -->
+            <div 
+              class="relative md:ml-24 md:mr-0 md:w-[calc(50%-3rem)]"
+              [class.md:ml-auto]="i % 2 === 0"
+              [class.md:mr-auto]="i % 2 === 1"
+              [class.md:ml-24]="i % 2 === 1"
+              [class.md:mr-24]="i % 2 === 0">
+              
+              <!-- Effet de tache d'encre -->
+              <div class="absolute -top-4 -right-4 w-32 h-32 bg-red-500/10 rounded-full blur-2xl"></div>
+              
+              <!-- Carte principale -->
+              <div class="bg-paper-50/95 rounded-2xl shadow-paper-xl p-8 md:p-12 border-2 border-paper-300/80 relative overflow-hidden paper-texture transform transition-all duration-700 hover:shadow-paper-xl hover:scale-[1.02] chapter-card"
+                   [class.slide-in-left]="i % 2 === 0"
+                   [class.slide-in-right]="i % 2 === 1">
+                <!-- Bordure décorative -->
+                <div class="absolute inset-0 border-4 border-red-400/20 rounded-2xl pointer-events-none"></div>
+                
+                <!-- Header du chapitre -->
+                <div class="mb-8 pb-6 border-b-2 border-paper-300/50">
+                  <div class="flex items-start justify-between mb-4">
+                    <div class="flex-1">
+                      <div class="text-sm font-vintage font-semibold text-red-600 mb-2 tracking-wider uppercase">
+                        Chapitre {{ i + 1 }}
+                      </div>
+                      <div class="text-xs font-serif text-paper-500 italic mb-3">
+                        {{ chapter.year_start }}@if(chapter.year_end && chapter.year_end !== chapter.year_start){ - {{ chapter.year_end }}}
+                      </div>
+                      <h2 class="text-4xl md:text-5xl font-vintage font-bold text-paper-900 leading-tight">
+                        {{ chapter.title }}
+                      </h2>
+                    </div>
+                    <!-- Numéro de chapitre décoratif -->
+                    <div class="hidden md:block text-8xl font-vintage font-bold text-paper-200/50 absolute top-4 right-4 -z-10">
+                      {{ String(i + 1).padStart(2, '0') }}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Contenu -->
+                <div class="prose prose-lg max-w-none">
+                  <div class="text-paper-800 leading-relaxed whitespace-pre-line font-serif text-lg">
+                    {{ chapter.content }}
+                  </div>
+                </div>
+
+                <!-- Galerie média -->
+                @if (chapter.media_urls && chapter.media_urls.length > 0) {
+                  <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @for (media of chapter.media_urls; track media; let j = $index) {
+                      <div class="relative rounded-xl overflow-hidden shadow-paper-lg border-2 border-paper-300/50 hover:shadow-paper-xl transition-all transform hover:scale-105 group">
+                        <div class="absolute inset-0 bg-paper-900/0 group-hover:bg-paper-900/10 transition-colors z-10"></div>
+                        <img 
+                          [src]="media" 
+                          [alt]="chapter.title" 
+                          class="w-full h-64 object-cover"
+                          loading="lazy">
+                        <!-- Effet de vieillissement sur l'image -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-paper-400/0 via-paper-500/0 to-paper-600/20 pointer-events-none"></div>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-24 px-4 bg-gradient-to-br from-paper-600 via-paper-700 to-paper-800 text-white mt-32 relative overflow-hidden">
+    <div class="absolute inset-0 opacity-10 paper-texture"></div>
+    <div class="max-w-4xl mx-auto text-center space-y-8 relative z-10">
+      <h3 class="text-4xl md:text-5xl font-vintage font-bold">Préservons cette mémoire ensemble</h3>
+      <div class="w-24 h-1 bg-white/50 mx-auto"></div>
+      <p class="text-xl text-paper-100 font-serif italic max-w-2xl mx-auto">
+        Rejoignez notre communauté pour partager vos témoignages et contribuer à la mémoire collective
+      </p>
+      <a routerLink="/register" 
+        class="inline-block bg-white text-paper-800 px-10 py-4 rounded-xl text-lg font-vintage font-bold hover:bg-paper-50 transform hover:scale-105 transition-all shadow-paper-xl">
+        Rejoindre AHEDNA
+      </a>
+    </div>
+  </section>
+</div>

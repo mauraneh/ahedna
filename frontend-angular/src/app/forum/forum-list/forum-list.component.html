@@ -1,0 +1,105 @@
+<div class="min-h-screen paper-aged paper-texture relative overflow-hidden">
+  <!-- Particules de papier -->
+  <div class="fixed inset-0 pointer-events-none z-0">
+    @for (particle of particles; track particle) {
+      <div 
+        class="paper-particle"
+        [style.left.%]="particle.left"
+        [style.animation-delay.s]="particle.delay"
+        [style.width.px]="particle.size"
+        [style.height.px]="particle.size">
+      </div>
+    }
+  </div>
+
+  <app-navbar></app-navbar>
+
+  <div class="max-w-7xl mx-auto px-4 py-12 relative z-10">
+    <div class="flex justify-between items-center mb-12">
+      <div>
+        <h1 class="text-5xl md:text-6xl font-vintage font-bold text-paper-900 mb-2 drop-shadow-lg">Forum</h1>
+        <div class="w-32 h-1 bg-gradient-to-r from-transparent via-red-600 to-transparent mb-2"></div>
+        <p class="text-xl text-paper-700 font-serif italic">Échangez avec la communauté</p>
+      </div>
+      @if (authService.isAuthenticated()) {
+        <button 
+          (click)="showCreateForm = !showCreateForm"
+          class="bg-red-600 text-white px-8 py-3 rounded-xl font-vintage font-bold hover:bg-red-700 transition-all shadow-paper-lg">
+          {{ showCreateForm ? 'Annuler' : '+ Nouveau sujet' }}
+        </button>
+      }
+    </div>
+
+    <!-- Create Topic Form -->
+    @if (showCreateForm && authService.isAuthenticated()) {
+      <div class="bg-paper-50/95 rounded-2xl shadow-paper-xl p-8 mb-8 border-2 border-paper-300/80 paper-texture">
+        <h3 class="text-2xl font-vintage font-bold text-paper-900 mb-6">Créer un nouveau sujet</h3>
+        <form [formGroup]="createForm" (ngSubmit)="onCreateTopic()" class="space-y-6">
+          <div>
+            <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">Titre</label>
+            <input formControlName="title" type="text" 
+              class="w-full px-4 py-3 border border-paper-300 bg-paper-100/50 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 font-serif text-paper-900">
+          </div>
+          <div>
+            <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">Message</label>
+            <textarea formControlName="content" rows="6"
+              class="w-full px-4 py-3 border border-paper-300 bg-paper-100/50 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 font-serif text-paper-900"></textarea>
+          </div>
+          @if (createError) {
+            <div class="bg-red-50 text-red-800 p-4 rounded-lg border border-red-200 font-serif">{{ createError }}</div>
+          }
+          @if (createSuccess) {
+            <div class="bg-green-50 text-green-800 p-4 rounded-lg border border-green-200 font-serif">{{ createSuccess }}</div>
+          }
+          <button type="submit" [disabled]="!createForm.valid || creating"
+            class="bg-red-600 text-white px-8 py-3 rounded-lg font-vintage font-bold hover:bg-red-700 disabled:opacity-50 transition-all shadow-paper">
+            {{ creating ? 'Création...' : 'Publier' }}
+          </button>
+        </form>
+      </div>
+    }
+
+    <!-- Topics List -->
+    @if (loading) {
+      <div class="text-center py-20">
+        <div class="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-red-600"></div>
+        <p class="mt-4 text-paper-700 font-serif">Chargement du forum...</p>
+      </div>
+    } @else if (topics.length === 0) {
+      <div class="text-center py-20 bg-paper-50/95 rounded-2xl border-2 border-paper-300/80 shadow-paper-lg paper-texture">
+        <div class="text-6xl mb-4">💬</div>
+        <h3 class="text-2xl font-vintage font-bold text-paper-900 mb-4">Aucun sujet pour le moment</h3>
+        <p class="text-paper-700 font-serif">Soyez le premier à lancer une discussion !</p>
+      </div>
+    } @else {
+      <div class="space-y-6">
+        @for (topic of topics; track topic.id) {
+          <article class="bg-paper-50/95 rounded-2xl shadow-paper-xl p-6 hover:shadow-paper-xl transition-all border-2 border-paper-300/80 paper-texture relative group">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-3xl"></div>
+            <div class="flex items-start space-x-4 relative z-10">
+              <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-red-500 to-red-700 rounded-full flex items-center justify-center text-white font-vintage font-bold shadow-paper-lg">
+                {{ topic.first_name?.charAt(0) || 'U' }}
+              </div>
+              <div class="flex-1">
+                <h2 class="text-2xl font-vintage font-bold text-paper-900 mb-2">{{ topic.title }}</h2>
+                <p class="text-paper-700 mb-3 line-clamp-3 font-serif leading-relaxed">{{ topic.content }}</p>
+                <div class="flex items-center space-x-4 text-sm text-paper-600 font-serif">
+                  <span>Par {{ topic.first_name }} {{ topic.last_name }}</span>
+                  <span>•</span>
+                  <span>{{ topic.message_count }} réponse(s)</span>
+                  <span>•</span>
+                  <span>{{ formatDate(topic.created_at) }}</span>
+                  @if (!topic.validated) {
+                    <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-vintage font-medium">
+                      En attente de validation
+                    </span>
+                  }
+                </div>
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</div>

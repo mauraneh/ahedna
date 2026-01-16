@@ -1,0 +1,131 @@
+<div class="min-h-screen paper-aged paper-texture relative overflow-hidden">
+  <!-- Particules de papier flottantes -->
+  <div class="fixed inset-0 pointer-events-none z-0">
+    @for (particle of particles; track particle) {
+      <div 
+        class="paper-particle"
+        [style.left.%]="particle.left"
+        [style.animation-delay.s]="particle.delay"
+        [style.width.px]="particle.size"
+        [style.height.px]="particle.size">
+      </div>
+    }
+  </div>
+
+  <!-- Navigation partagée -->
+  <app-navbar></app-navbar>
+
+  <!-- Hero Section -->
+  <section class="relative py-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
+    <div class="absolute inset-0 opacity-20">
+      <div class="absolute top-20 left-10 w-64 h-64 bg-paper-400/30 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-20 right-10 w-80 h-80 bg-paper-500/30 rounded-full blur-3xl"></div>
+    </div>
+    <div class="max-w-7xl mx-auto relative animate-fade-in">
+      <div class="text-center space-y-8">
+        <h2 class="text-5xl md:text-7xl font-vintage font-bold text-paper-900 leading-tight drop-shadow-lg">
+          Association des Harkis
+        </h2>
+        <div class="w-40 h-1 bg-gradient-to-r from-transparent via-paper-600 to-transparent mx-auto"></div>
+        <p class="text-2xl md:text-3xl text-paper-700 font-serif italic">
+          Dordogne et Nouvelle-Aquitaine
+        </p>
+        <p class="text-xl text-paper-700 max-w-3xl mx-auto leading-relaxed font-serif">
+          Préserver la mémoire, transmettre l'histoire et soutenir les descendants des harkis
+        </p>
+        <div class="flex justify-center space-x-4 pt-8">
+          <a routerLink="/histoire" 
+            class="bg-paper-600 text-white px-8 py-4 rounded-xl text-lg font-vintage font-bold hover:bg-paper-700 transform hover:scale-105 transition-all shadow-paper-xl animate-paper-unfold">
+            Découvrir l'Histoire
+          </a>
+          <a routerLink="/adhesion" 
+            class="bg-paper-50 text-paper-800 px-8 py-4 rounded-xl text-lg font-vintage font-bold hover:bg-paper-100 border-2 border-paper-600 transform hover:scale-105 transition-all shadow-paper-lg">
+            Devenir Adhérent
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="py-20 px-4 sm:px-6 lg:px-8 relative">
+    <div class="max-w-7xl mx-auto">
+      <h3 class="text-4xl md:text-5xl font-vintage font-bold text-center text-paper-900 mb-16">Nos Actions</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Histoire -->
+        <div class="bg-paper-50/95 p-8 rounded-2xl shadow-paper-xl border-2 border-paper-300/80 hover:shadow-paper-xl hover:-translate-y-2 transition-all paper-texture relative overflow-hidden group">
+          <div class="absolute top-0 right-0 w-24 h-24 bg-red-500/10 rounded-full blur-2xl"></div>
+          <div class="text-5xl mb-4 relative z-10">📜</div>
+          <h4 class="text-2xl font-vintage font-bold text-paper-900 mb-4 relative z-10">Histoire Interactive</h4>
+          <p class="text-paper-700 mb-6 font-serif leading-relaxed relative z-10">
+            Découvrez l'histoire des harkis à travers une expérience immersive avec frises chronologiques et cartes interactives.
+          </p>
+          <a routerLink="/histoire" class="text-red-600 font-vintage font-semibold hover:text-red-800 transition-colors relative z-10 inline-flex items-center">
+            Explorer →
+          </a>
+        </div>
+
+        <!-- Événements -->
+        <div class="bg-paper-50/95 p-8 rounded-2xl shadow-paper-xl border-2 border-paper-300/80 hover:shadow-paper-xl hover:-translate-y-2 transition-all paper-texture relative overflow-hidden group">
+          <div class="absolute top-0 right-0 w-24 h-24 bg-yellow-500/10 rounded-full blur-2xl"></div>
+          <div class="text-5xl mb-4 relative z-10">📅</div>
+          <h4 class="text-2xl font-vintage font-bold text-paper-900 mb-4 relative z-10">Événements</h4>
+          <p class="text-paper-700 mb-6 font-serif leading-relaxed relative z-10">
+            Participez à nos cérémonies commémoratives, conférences et rencontres associatives.
+          </p>
+          <a routerLink="/evenements" class="text-yellow-700 font-vintage font-semibold hover:text-yellow-900 transition-colors relative z-10 inline-flex items-center">
+            Voir les événements →
+          </a>
+        </div>
+
+        <!-- Communauté -->
+        <div class="bg-paper-50/95 p-8 rounded-2xl shadow-paper-xl border-2 border-paper-300/80 hover:shadow-paper-xl hover:-translate-y-2 transition-all paper-texture relative overflow-hidden group">
+          <div class="absolute top-0 right-0 w-24 h-24 bg-green-500/10 rounded-full blur-2xl"></div>
+          <div class="text-5xl mb-4 relative z-10">🤝</div>
+          <h4 class="text-2xl font-vintage font-bold text-paper-900 mb-4 relative z-10">Communauté</h4>
+          <p class="text-paper-700 mb-6 font-serif leading-relaxed relative z-10">
+            Échangez avec d'autres membres, partagez vos histoires et créez des liens.
+          </p>
+          <a routerLink="/forum" class="text-green-700 font-vintage font-semibold hover:text-green-900 transition-colors relative z-10 inline-flex items-center">
+            Rejoindre le forum →
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-paper-600 via-paper-700 to-paper-800 text-white relative overflow-hidden">
+    <div class="absolute inset-0 opacity-10 paper-texture"></div>
+    <div class="max-w-4xl mx-auto text-center space-y-8 relative z-10">
+      <h3 class="text-4xl md:text-5xl font-vintage font-bold">Rejoignez-nous</h3>
+      <div class="w-24 h-1 bg-white/50 mx-auto"></div>
+      <p class="text-xl text-paper-100 font-serif italic">
+        Ensemble, préservons la mémoire et soutenons notre communauté
+      </p>
+      @if (!authService.isAuthenticated()) {
+        <a routerLink="/register" 
+          class="inline-block bg-white text-paper-800 px-10 py-4 rounded-xl text-lg font-vintage font-bold hover:bg-paper-50 transform hover:scale-105 transition-all shadow-paper-xl">
+          Créer un compte
+        </a>
+      }
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-paper-900 text-paper-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto text-center">
+      <h4 class="text-2xl font-vintage font-bold mb-4">AHEDNA</h4>
+      <p class="text-paper-300 mb-6 font-serif italic">
+        Association des Harkis et de leurs Enfants<br>
+        Dordogne et Nouvelle-Aquitaine
+      </p>
+      <div class="flex justify-center space-x-6 text-sm text-paper-400 font-serif">
+        <a href="#" class="hover:text-paper-100 transition-colors">Contact</a>
+        <a href="#" class="hover:text-paper-100 transition-colors">Mentions légales</a>
+        <a href="#" class="hover:text-paper-100 transition-colors">Politique de confidentialité</a>
+      </div>
+      <p class="text-paper-500 text-xs mt-8 font-serif">© 2025 AHEDNA. Tous droits réservés.</p>
+    </div>
+  </footer>
+</div>

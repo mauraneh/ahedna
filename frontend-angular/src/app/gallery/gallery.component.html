@@ -1,0 +1,55 @@
+<div class="min-h-screen paper-aged paper-texture relative overflow-hidden">
+  <!-- Particules de papier -->
+  <div class="fixed inset-0 pointer-events-none z-0">
+    @for (particle of particles; track particle) {
+      <div 
+        class="paper-particle"
+        [style.left.%]="particle.left"
+        [style.animation-delay.s]="particle.delay"
+        [style.width.px]="particle.size"
+        [style.height.px]="particle.size">
+      </div>
+    }
+  </div>
+
+  <app-navbar></app-navbar>
+
+  <div class="max-w-7xl mx-auto px-4 py-12 relative z-10">
+    <div class="text-center mb-12">
+      <h1 class="text-5xl md:text-6xl font-vintage font-bold text-paper-900 mb-4 drop-shadow-lg">Galerie Photos</h1>
+      <div class="w-32 h-1 bg-gradient-to-r from-transparent via-yellow-600 to-transparent mx-auto mb-4"></div>
+      <p class="text-xl text-paper-700 font-serif italic">Souvenirs et moments partagés</p>
+    </div>
+
+    @if (loading) {
+      <div class="text-center py-20">
+        <div class="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-yellow-600"></div>
+        <p class="mt-4 text-paper-700 font-serif">Chargement de la galerie...</p>
+      </div>
+    } @else if (photos.length === 0) {
+      <div class="text-center py-20 bg-paper-50/95 rounded-2xl border-2 border-paper-300/80 shadow-paper-lg paper-texture">
+        <div class="text-6xl mb-4">🖼️</div>
+        <h3 class="text-2xl font-vintage font-bold text-paper-900 mb-4">Aucune photo pour le moment</h3>
+        <p class="text-paper-700 font-serif">La galerie sera bientôt remplie de souvenirs.</p>
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        @for (photo of photos; track photo.id) {
+          <div class="group relative bg-paper-50/95 rounded-2xl shadow-paper-xl overflow-hidden hover:shadow-paper-xl transition-all transform hover:-translate-y-2 border-2 border-paper-300/80 paper-texture">
+            <div class="aspect-square overflow-hidden">
+              <img [src]="photo.photo_url" [alt]="photo.description" 
+                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+              <div class="absolute inset-0 bg-gradient-to-br from-yellow-500/0 via-yellow-500/0 to-yellow-600/20 group-hover:to-yellow-600/30 transition-all"></div>
+            </div>
+            @if (photo.description) {
+              <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-paper-900/90 via-paper-800/80 to-transparent p-4">
+                <p class="text-white text-sm font-vintage font-medium">{{ photo.description }}</p>
+                <p class="text-white/80 text-xs mt-1 font-serif">Par {{ photo.first_name }} {{ photo.last_name }}</p>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,51 @@
+<div class="min-h-screen paper-aged paper-texture relative overflow-hidden">
+  <app-navbar></app-navbar>
+  <div class="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="max-w-md w-full space-y-8 bg-paper-50/95 p-10 rounded-2xl shadow-paper-xl border-2 border-paper-300/80 paper-texture">
+      <div>
+        <h2 class="mt-6 text-center text-4xl font-vintage font-bold text-paper-900">
+          Connexion
+        </h2>
+        <div class="w-24 h-1 bg-gradient-to-r from-transparent via-red-600 to-transparent mx-auto mb-2"></div>
+        <p class="mt-2 text-center text-sm text-paper-700 font-serif italic">
+          Association des Harkis - AHEDNA
+        </p>
+      </div>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="mt-8 space-y-6">
+        <div class="rounded-md shadow-sm space-y-4">
+          <div>
+            <label for="email" class="block text-sm font-vintage font-medium text-paper-700 mb-1">Email</label>
+            <input id="email" formControlName="email" type="email" required
+              class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-paper-300 bg-paper-100/50 placeholder-paper-500 text-paper-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm font-serif"
+              placeholder="votre@email.fr">
+          </div>
+          <div>
+            <label for="password" class="block text-sm font-vintage font-medium text-paper-700 mb-1">Mot de passe</label>
+            <input id="password" formControlName="password" type="password" required
+              class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-paper-300 bg-paper-100/50 placeholder-paper-500 text-paper-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm font-serif"
+              placeholder="Mot de passe">
+          </div>
+        </div>
+
+        @if (error) {
+          <div class="rounded-lg bg-red-50 p-4 border border-red-200">
+            <p class="text-sm text-red-800 font-serif">{{ error }}</p>
+          </div>
+        }
+
+        <div>
+          <button type="submit" [disabled]="!loginForm.valid || loading"
+            class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-vintage font-bold rounded-lg text-white bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-paper">
+            {{ loading ? 'Connexion...' : 'Se connecter' }}
+          </button>
+        </div>
+
+        <div class="text-center">
+          <a routerLink="/register" class="font-vintage font-medium text-red-600 hover:text-red-700 transition-colors">
+            Pas encore de compte ? S'inscrire
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
