@@ -1,0 +1,80 @@
+<div class="min-h-screen paper-aged paper-texture relative overflow-hidden">
+  <app-navbar></app-navbar>
+  <div class="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="max-w-md w-full space-y-8 bg-paper-50/95 p-10 rounded-2xl shadow-paper-xl border-2 border-paper-300/80 paper-texture">
+      <div>
+        <h2 class="mt-6 text-center text-4xl font-vintage font-bold text-paper-900">
+          Inscription
+        </h2>
+        <div class="w-24 h-1 bg-gradient-to-r from-transparent via-green-600 to-transparent mx-auto mb-2"></div>
+        <p class="mt-2 text-center text-sm text-paper-700 font-serif italic">
+          Rejoignez l'Association AHEDNA
+        </p>
+      </div>
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="mt-8 space-y-6">
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label for="first_name" class="block text-sm font-vintage font-medium text-paper-700 mb-1">Prénom</label>
+              <input id="first_name" formControlName="first_name" type="text"
+                class="appearance-none rounded-lg block w-full px-3 py-3 border border-paper-300 bg-paper-100/50 placeholder-paper-500 text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 sm:text-sm font-serif"
+                placeholder="Prénom">
+            </div>
+            <div>
+              <label for="last_name" class="block text-sm font-vintage font-medium text-paper-700 mb-1">Nom</label>
+              <input id="last_name" formControlName="last_name" type="text"
+                class="appearance-none rounded-lg block w-full px-3 py-3 border border-paper-300 bg-paper-100/50 placeholder-paper-500 text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 sm:text-sm font-serif"
+                placeholder="Nom">
+            </div>
+          </div>
+
+          <div>
+            <label for="email" class="block text-sm font-vintage font-medium text-paper-700 mb-1">Email</label>
+            <input id="email" formControlName="email" type="email" required
+              class="appearance-none rounded-lg block w-full px-3 py-3 border border-paper-300 bg-paper-100/50 placeholder-paper-500 text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 sm:text-sm font-serif"
+              placeholder="votre@email.fr">
+          </div>
+
+          <div>
+            <label for="password" class="block text-sm font-vintage font-medium text-paper-700 mb-1">Mot de passe</label>
+            <input id="password" formControlName="password" type="password" required
+              class="appearance-none rounded-lg block w-full px-3 py-3 border border-paper-300 bg-paper-100/50 placeholder-paper-500 text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 sm:text-sm font-serif"
+              placeholder="Mot de passe (min 6 caractères)">
+          </div>
+
+          <div class="flex items-center">
+            <input id="want_membership" formControlName="want_membership" type="checkbox"
+              class="h-4 w-4 text-green-600 focus:ring-green-500 border-paper-300 rounded">
+            <label for="want_membership" class="ml-2 block text-sm text-paper-900 font-serif">
+              Je souhaite devenir adhérent
+            </label>
+          </div>
+        </div>
+
+        @if (error) {
+          <div class="rounded-lg bg-red-50 p-4 border border-red-200">
+            <p class="text-sm text-red-800 font-serif">{{ error }}</p>
+          </div>
+        }
+
+        <div class="space-y-3">
+          <button type="submit" [disabled]="!registerForm.valid || loading"
+            class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-vintage font-bold rounded-lg text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-paper">
+            {{ loading ? 'Inscription...' : 'S\'inscrire' }}
+          </button>
+          
+          <a routerLink="/" 
+            class="block w-full text-center py-2 px-4 text-sm font-vintage font-medium text-paper-700 hover:text-paper-900 transition-colors">
+            ← Retour à l'accueil
+          </a>
+        </div>
+
+        <div class="text-center">
+          <a routerLink="/login" class="font-vintage font-medium text-green-600 hover:text-green-700 transition-colors">
+            Déjà un compte ? Se connecter
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

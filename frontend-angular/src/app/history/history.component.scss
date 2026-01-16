@@ -1,0 +1,111 @@
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.chapter-item {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.chapter-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.chapter-card {
+  opacity: 0;
+}
+
+.chapter-item.animate-in .chapter-card {
+  animation: slideInCard 0.8s ease-out forwards;
+}
+
+.chapter-item.animate-in.slide-in-left .chapter-card {
+  animation: slideInLeft 0.8s ease-out forwards;
+}
+
+.chapter-item.animate-in.slide-in-right .chapter-card {
+  animation: slideInRight 0.8s ease-out forwards;
+}
+
+@keyframes slideInCard {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.timeline-point {
+  transition: all 0.5s ease-out;
+}
+
+.timeline-point.active .timeline-point > div {
+  animation: pointPulse 1.5s ease-out;
+}
+
+@keyframes pointPulse {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.timeline-point.pulse-active > div > div {
+  animation: activePulse 2s ease-in-out infinite;
+}
+
+@keyframes activePulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(220, 38, 38, 0);
+  }
+}
+
+button.active {
+  background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+  color: white;
+  border-color: #991B1B;
+  box-shadow: 0 4px 16px rgba(220,38,38,0.4);
+}

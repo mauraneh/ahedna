@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://harkis-history.preview.emergentagent.com/api'
+  apiUrl: 'http://localhost:3000/api'
 };
