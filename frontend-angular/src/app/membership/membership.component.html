@@ -1,0 +1,208 @@
+<div class="min-h-screen paper-aged paper-texture relative overflow-hidden">
+  <!-- Particules de papier flottantes -->
+  <div class="fixed inset-0 pointer-events-none z-0">
+    @for (particle of particles; track particle) {
+      <div 
+        class="paper-particle"
+        [style.left.%]="particle.left"
+        [style.animation-delay.s]="particle.delay"
+        [style.width.px]="particle.size"
+        [style.height.px]="particle.size">
+      </div>
+    }
+  </div>
+
+  <!-- Navigation partagée -->
+  <app-navbar></app-navbar>
+
+  <!-- Hero Section -->
+  <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+    <div class="absolute inset-0 opacity-20">
+      <div class="absolute top-20 left-10 w-64 h-64 bg-green-500/20 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-20 right-10 w-80 h-80 bg-red-500/20 rounded-full blur-3xl"></div>
+    </div>
+    <div class="max-w-4xl mx-auto relative text-center animate-fade-in">
+      <h1 class="text-5xl md:text-7xl font-vintage font-bold text-paper-900 mb-6 drop-shadow-lg">
+        Adhésion & Dons
+      </h1>
+      <div class="w-40 h-1 bg-gradient-to-r from-transparent via-green-600 to-transparent mx-auto mb-8"></div>
+      <p class="text-xl md:text-2xl text-paper-700 max-w-3xl mx-auto leading-relaxed font-serif italic">
+        Rejoignez notre association et contribuez à préserver la mémoire des Harkis
+      </p>
+    </div>
+  </section>
+
+  <!-- Contenu principal -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+    <div class="grid md:grid-cols-2 gap-8 mb-12">
+      <!-- Carte Adhésion -->
+      <div class="bg-paper-50/95 backdrop-blur-sm rounded-2xl border-2 border-paper-300/80 shadow-paper-xl p-8 hover:shadow-paper-2xl transition-all duration-300">
+        <div class="text-center mb-6">
+          <div class="inline-block p-4 bg-gradient-to-br from-green-400 to-green-600 rounded-full mb-4">
+            <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+          </div>
+          <h2 class="text-3xl font-vintage font-bold text-paper-900 mb-3">Adhésion Annuelle</h2>
+          <p class="text-paper-600 font-serif mb-6">
+            Rejoignez l'AHEDNA et participez activement à nos actions pour préserver la mémoire des Harkis.
+          </p>
+        </div>
+
+        <div class="space-y-4 mb-6">
+          <div class="flex items-start space-x-3">
+            <div class="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
+              <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <p class="text-paper-700 font-serif">Accès à tous les événements et activités</p>
+          </div>
+          <div class="flex items-start space-x-3">
+            <div class="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
+              <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <p class="text-paper-700 font-serif">Participation au forum et à la galerie</p>
+          </div>
+          <div class="flex items-start space-x-3">
+            <div class="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
+              <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <p class="text-paper-700 font-serif">Recevez notre newsletter et actualités</p>
+          </div>
+          <div class="flex items-start space-x-3">
+            <div class="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
+              <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <p class="text-paper-700 font-serif">Soutenez nos actions de mémoire et de transmission</p>
+          </div>
+        </div>
+
+        <button 
+          (click)="handleAdhesion()"
+          class="w-full bg-gradient-to-r from-green-600 to-green-700 text-white px-8 py-4 rounded-lg hover:from-green-700 hover:to-green-800 transition-all font-vintage font-semibold text-lg shadow-paper-lg hover:shadow-paper-xl transform hover:scale-105 active:scale-95">
+          Adhérer via HelloAsso
+        </button>
+      </div>
+
+      <!-- Carte Don -->
+      <div class="bg-paper-50/95 backdrop-blur-sm rounded-2xl border-2 border-paper-300/80 shadow-paper-xl p-8 hover:shadow-paper-2xl transition-all duration-300">
+        <div class="text-center mb-6">
+          <div class="inline-block p-4 bg-gradient-to-br from-red-400 to-red-600 rounded-full mb-4">
+            <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+            </svg>
+          </div>
+          <h2 class="text-3xl font-vintage font-bold text-paper-900 mb-3">Faire un Don</h2>
+          <p class="text-paper-600 font-serif mb-6">
+            Votre don nous permet de financer nos actions et de préserver la mémoire des Harkis pour les générations futures.
+          </p>
+        </div>
+
+        <!-- Montants suggérés -->
+        <div class="grid grid-cols-3 gap-3 mb-6">
+          @for (amount of donationAmounts; track amount) {
+            <button
+              (click)="selectDonationAmount(amount)"
+              [class.bg-red-600]="customAmount === amount.toString()"
+              [class.text-white]="customAmount === amount.toString()"
+              [class.bg-paper-200]="customAmount !== amount.toString()"
+              [class.text-paper-800]="customAmount !== amount.toString()"
+              class="px-4 py-3 rounded-lg font-vintage font-semibold transition-all hover:scale-105 active:scale-95 border-2 border-paper-300/50">
+              {{ amount }}€
+            </button>
+          }
+        </div>
+
+        <!-- Montant personnalisé -->
+        <div class="mb-6">
+          <label class="block text-sm font-vintage font-semibold text-paper-700 mb-2">
+            Montant personnalisé (€)
+          </label>
+          <input
+            type="number"
+            [value]="customAmount"
+            (input)="customAmount = $any($event.target).value"
+            placeholder="Montant libre"
+            class="w-full px-4 py-3 rounded-lg border-2 border-paper-300/80 bg-paper-100/50 text-paper-900 font-serif focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent">
+        </div>
+
+        <button 
+          (click)="handleDonation()"
+          [disabled]="!isValidAmount()"
+          class="w-full bg-gradient-to-r from-red-600 to-red-700 text-white px-8 py-4 rounded-lg hover:from-red-700 hover:to-red-800 transition-all font-vintage font-semibold text-lg shadow-paper-lg hover:shadow-paper-xl transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+          Faire un don via HelloAsso
+        </button>
+
+        @if (stripeEnabled) {
+          <div class="mt-4 pt-4 border-t-2 border-paper-300/50">
+            <p class="text-sm text-paper-600 font-serif text-center mb-3">Ou payer directement avec</p>
+            <button class="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-6 py-3 rounded-lg hover:from-indigo-700 hover:to-indigo-800 transition-all font-vintage font-semibold shadow-paper">
+              Payer avec Stripe
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Informations supplémentaires -->
+    <div class="bg-paper-100/80 rounded-2xl border-2 border-paper-300/60 shadow-paper-lg p-8 mt-12">
+      <h3 class="text-2xl font-vintage font-bold text-paper-900 mb-6 text-center">Pourquoi nous soutenir ?</h3>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>
+          </div>
+          <div>
+            <h4 class="font-vintage font-semibold text-paper-900 mb-2">Préservation de la mémoire</h4>
+            <p class="text-paper-700 font-serif text-sm">Contribuez à maintenir vivante l'histoire des Harkis et à la transmettre aux générations futures.</p>
+          </div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+          </div>
+          <div>
+            <h4 class="font-vintage font-semibold text-paper-900 mb-2">Soutien à la communauté</h4>
+            <p class="text-paper-700 font-serif text-sm">Aidez-nous à organiser des événements, des conférences et des activités pour rassembler la communauté.</p>
+          </div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>
+          </div>
+          <div>
+            <h4 class="font-vintage font-semibold text-paper-900 mb-2">Recherche et documentation</h4>
+            <p class="text-paper-700 font-serif text-sm">Financez nos projets de recherche historique et de documentation pour enrichir notre patrimoine.</p>
+          </div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <div>
+            <h4 class="font-vintage font-semibold text-paper-900 mb-2">Déduction fiscale</h4>
+            <p class="text-paper-700 font-serif text-sm">Vos dons sont déductibles des impôts à hauteur de 66% pour les particuliers et 60% pour les entreprises.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bouton retour en haut -->
+  <app-scroll-to-top></app-scroll-to-top>
+</div>

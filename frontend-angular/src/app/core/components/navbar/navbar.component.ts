@@ -60,6 +60,13 @@ import { AuthService } from '../../services/auth.service';
               Galerie
               <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
             </a>
+            <a 
+              routerLink="/adhesion" 
+              routerLinkActive="active-link"
+              class="text-paper-700 hover:text-paper-900 font-vintage font-medium transition-colors relative group">
+              Adhésion
+              <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-300"></span>
+            </a>
             
             @if (authService.isAuthenticated()) {
               <div class="flex items-center space-x-4 ml-4 pl-4 border-l-2 border-paper-300/50">

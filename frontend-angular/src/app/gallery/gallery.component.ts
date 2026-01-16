@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { AuthService } from '../core/services/auth.service';
 import { NavbarComponent } from '../core/components/navbar/navbar.component';
+import { ScrollToTopComponent } from '../core/components/scroll-to-top/scroll-to-top.component';
 
 interface Photo {
   id: string;
@@ -18,7 +19,7 @@ interface Photo {
 @Component({
   selector: 'app-gallery',
   standalone: true,
-  imports: [CommonModule, NavbarComponent],
+  imports: [CommonModule, NavbarComponent, ScrollToTopComponent],
   templateUrl: './gallery.component.html',
   styleUrl: './gallery.component.scss'
 })

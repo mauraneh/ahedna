@@ -29,11 +29,13 @@ services:
     container_name: ahedna-backend
     ports:
       - "3000:3000"
+    env_file:
+      - .env
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/ahedna_db
-      JWT_SECRET: ahedna_jwt_secret_key_2024_secure_random_string
-      JWT_EXPIRES_IN: 7d
-      CORS_ORIGINS: "*"
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      CORS_ORIGINS: ${CORS_ORIGINS:-*}
       NODE_ENV: development
       NODE_OPTIONS: "--max-old-space-size=512"
     depends_on:

@@ -29,6 +29,10 @@ export const routes: Routes = [
     loadComponent: () => import('./gallery/gallery.component').then(m => m.GalleryComponent)
   },
   {
+    path: 'adhesion',
+    loadComponent: () => import('./membership/membership.component').then(m => m.MembershipComponent)
+  },
+  {
     path: 'admin',
     loadComponent: () => import('./admin/admin.component').then(m => m.AdminComponent),
     canActivate: [authGuard, roleGuard],

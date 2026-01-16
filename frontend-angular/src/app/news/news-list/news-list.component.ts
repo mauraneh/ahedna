@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { NavbarComponent } from '../../core/components/navbar/navbar.component';
+import { ScrollToTopComponent } from '../../core/components/scroll-to-top/scroll-to-top.component';
 
 interface News {
   id: string;
@@ -19,7 +20,7 @@ interface News {
 @Component({
   selector: 'app-news-list',
   standalone: true,
-  imports: [CommonModule, NavbarComponent],
+  imports: [CommonModule, NavbarComponent, ScrollToTopComponent],
   templateUrl: './news-list.component.html',
   styleUrl: './news-list.component.scss'
 })

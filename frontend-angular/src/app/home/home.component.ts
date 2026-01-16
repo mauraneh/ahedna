@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
 import { NavbarComponent } from '../core/components/navbar/navbar.component';
+import { ScrollToTopComponent } from '../core/components/scroll-to-top/scroll-to-top.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, NavbarComponent],
+  imports: [CommonModule, RouterLink, NavbarComponent, ScrollToTopComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })

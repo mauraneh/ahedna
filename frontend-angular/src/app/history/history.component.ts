@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { NavbarComponent } from '../core/components/navbar/navbar.component';
+import { ScrollToTopComponent } from '../core/components/scroll-to-top/scroll-to-top.component';
 
 interface HistoryChapter {
   id: string;
@@ -19,7 +20,7 @@ interface HistoryChapter {
 @Component({
   selector: 'app-history',
   standalone: true,
-  imports: [CommonModule, RouterLink, NavbarComponent],
+  imports: [CommonModule, RouterLink, NavbarComponent, ScrollToTopComponent],
   templateUrl: './history.component.html',
   styleUrl: './history.component.scss'
 })
@@ -63,8 +64,10 @@ export class HistoryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.http.get<{ chapters: HistoryChapter[] }>(`${environment.apiUrl}/history/chapters`)
       .subscribe({
         next: (response) => {
-          this.chapters = response.chapters.sort((a, b) => a.chapter_order - b.chapter_order);
+          console.log('Chapters loaded:', response.chapters?.length || 0);
+          this.chapters = response.chapters?.sort((a, b) => a.chapter_order - b.chapter_order) || [];
           this.loading = false;
+          console.log('Loading set to false, chapters count:', this.chapters.length);
           // Initialiser les observateurs après que les chapitres soient chargés et rendus
           setTimeout(() => {
             this.setupIntersectionObserver();
@@ -75,6 +78,7 @@ export class HistoryComponent implements OnInit, AfterViewInit, OnDestroy {
         error: (err) => {
           console.error('Error loading chapters:', err);
           this.loading = false;
+          this.chapters = [];
         }
       });
   }
@@ -198,5 +202,9 @@ export class HistoryComponent implements OnInit, AfterViewInit, OnDestroy {
       
       this.activeChapter = order;
     }
+  }
+
+  formatChapterNumber(num: number): string {
+    return String(num).padStart(2, '0');
   }
 }

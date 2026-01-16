@@ -4,11 +4,12 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { NavbarComponent } from '../../core/components/navbar/navbar.component';
+import { ScrollToTopComponent } from '../../core/components/scroll-to-top/scroll-to-top.component';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, NavbarComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, NavbarComponent, ScrollToTopComponent],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
 })

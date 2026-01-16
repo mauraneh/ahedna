@@ -33,7 +33,7 @@
   </section>
 
   <!-- Timeline Navigation -->
-  <div class="max-w-7xl mx-auto px-4 py-8 sticky top-16 z-40 bg-paper-100/90 backdrop-blur-sm border-b-2 border-paper-300/50">
+  <div class="max-w-7xl mx-auto px-4 py-8 sticky top-20 z-40 bg-paper-100/90 backdrop-blur-sm border-b-2 border-paper-300/50">
     <div class="flex justify-center space-x-3 overflow-x-auto pb-4 scrollbar-hide">
       @for (chapter of chapters; track chapter.id; let i = $index) {
         <button 
@@ -121,67 +121,85 @@
               }
             </div>
 
-            <!-- Carte de chapitre style vieux journal -->
+            <!-- Conteneur flex pour texte et images côte à côte -->
             <div 
-              class="relative md:ml-24 md:mr-0 md:w-[calc(50%-3rem)]"
-              [class.md:ml-auto]="i % 2 === 0"
-              [class.md:mr-auto]="i % 2 === 1"
-              [class.md:ml-24]="i % 2 === 1"
-              [class.md:mr-24]="i % 2 === 0">
+              class="relative flex flex-col md:flex-row gap-8 md:gap-12 items-start"
+              [class.md:flex-row-reverse]="i % 2 === 1">
               
-              <!-- Effet de tache d'encre -->
-              <div class="absolute -top-4 -right-4 w-32 h-32 bg-red-500/10 rounded-full blur-2xl"></div>
-              
-              <!-- Carte principale -->
-              <div class="bg-paper-50/95 rounded-2xl shadow-paper-xl p-8 md:p-12 border-2 border-paper-300/80 relative overflow-hidden paper-texture transform transition-all duration-700 hover:shadow-paper-xl hover:scale-[1.02] chapter-card"
-                   [class.slide-in-left]="i % 2 === 0"
-                   [class.slide-in-right]="i % 2 === 1">
-                <!-- Bordure décorative -->
-                <div class="absolute inset-0 border-4 border-red-400/20 rounded-2xl pointer-events-none"></div>
+              <!-- Carte de chapitre style vieux journal (texte) -->
+              <div 
+                class="relative flex-1 md:ml-24 md:mr-0 md:w-[calc(50%-3rem)]"
+                [class.md:ml-auto]="i % 2 === 0"
+                [class.md:mr-auto]="i % 2 === 1"
+                [class.md:ml-24]="i % 2 === 1"
+                [class.md:mr-24]="i % 2 === 0">
                 
-                <!-- Header du chapitre -->
-                <div class="mb-8 pb-6 border-b-2 border-paper-300/50">
-                  <div class="flex items-start justify-between mb-4">
-                    <div class="flex-1">
+                <!-- Effet de tache d'encre -->
+                <div class="absolute -top-4 -right-4 w-32 h-32 bg-red-500/10 rounded-full blur-2xl"></div>
+                
+                <!-- Carte principale avec texte -->
+                <div class="bg-paper-50/95 rounded-2xl shadow-paper-xl border-2 border-paper-300/80 relative overflow-hidden paper-texture transform transition-all duration-700 hover:shadow-paper-xl hover:scale-[1.01] chapter-card"
+                     [class.slide-in-left]="i % 2 === 0"
+                     [class.slide-in-right]="i % 2 === 1">
+                  <!-- Bordure décorative -->
+                  <div class="absolute inset-0 border-4 border-red-400/20 rounded-2xl pointer-events-none"></div>
+                  
+                  <!-- Contenu texte -->
+                  <div class="p-8 md:p-12">
+                    <!-- Header du chapitre -->
+                    <div class="mb-6 pb-6 border-b-2 border-paper-300/50">
                       <div class="text-sm font-vintage font-semibold text-red-600 mb-2 tracking-wider uppercase">
                         Chapitre {{ i + 1 }}
                       </div>
                       <div class="text-xs font-serif text-paper-500 italic mb-3">
                         {{ chapter.year_start }}@if(chapter.year_end && chapter.year_end !== chapter.year_start){ - {{ chapter.year_end }}}
                       </div>
-                      <h2 class="text-4xl md:text-5xl font-vintage font-bold text-paper-900 leading-tight">
+                      <h2 class="text-3xl md:text-4xl font-vintage font-bold text-paper-900 leading-tight">
                         {{ chapter.title }}
                       </h2>
                     </div>
-                    <!-- Numéro de chapitre décoratif -->
-                    <div class="hidden md:block text-8xl font-vintage font-bold text-paper-200/50 absolute top-4 right-4 -z-10">
-                      {{ String(i + 1).padStart(2, '0') }}
+
+                    <!-- Contenu -->
+                    <div class="prose prose-lg max-w-none">
+                      <div class="text-paper-800 leading-relaxed whitespace-pre-line font-serif text-base md:text-lg">
+                        {{ chapter.content }}
+                      </div>
                     </div>
                   </div>
                 </div>
+              </div>
 
-                <!-- Contenu -->
-                <div class="prose prose-lg max-w-none">
-                  <div class="text-paper-800 leading-relaxed whitespace-pre-line font-serif text-lg">
-                    {{ chapter.content }}
-                  </div>
-                </div>
-
-                <!-- Galerie média -->
+              <!-- Colonne images (à côté du cadre) -->
+              <div class="relative flex-1 md:w-[calc(50%-3rem)] md:sticky md:top-32"
+                   [class.md:order-first]="i % 2 === 1">
                 @if (chapter.media_urls && chapter.media_urls.length > 0) {
-                  <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="space-y-6">
                     @for (media of chapter.media_urls; track media; let j = $index) {
-                      <div class="relative rounded-xl overflow-hidden shadow-paper-lg border-2 border-paper-300/50 hover:shadow-paper-xl transition-all transform hover:scale-105 group">
-                        <div class="absolute inset-0 bg-paper-900/0 group-hover:bg-paper-900/10 transition-colors z-10"></div>
+                      <div class="relative rounded-xl overflow-hidden shadow-paper-lg border-2 border-paper-300/50 hover:shadow-paper-xl transition-all transform hover:scale-[1.02] group">
+                        <!-- Overlay effet vieux papier -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-paper-900/0 via-paper-500/0 to-paper-600/10 group-hover:to-paper-600/20 transition-all z-10 pointer-events-none"></div>
+                        <!-- Effet de tache d'encre subtile -->
+                        <div class="absolute top-2 right-2 w-20 h-20 bg-red-500/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         <img 
                           [src]="media" 
-                          [alt]="chapter.title" 
-                          class="w-full h-64 object-cover"
+                          [alt]="chapter.title + ' - Image ' + (j + 1)" 
+                          class="w-full h-auto object-cover"
                           loading="lazy">
-                        <!-- Effet de vieillissement sur l'image -->
-                        <div class="absolute inset-0 bg-gradient-to-br from-paper-400/0 via-paper-500/0 to-paper-600/20 pointer-events-none"></div>
+                        <!-- Légende décorative au survol -->
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-paper-900/70 to-transparent p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <p class="text-white text-xs font-serif italic">{{ chapter.year_start }}@if(chapter.year_end && chapter.year_end !== chapter.year_start){ - {{ chapter.year_end }}}</p>
+                        </div>
                       </div>
                     }
+                  </div>
+                } @else {
+                  <div class="flex items-center justify-center min-h-[300px] bg-paper-200/50 rounded-xl p-8 border-2 border-paper-300/50 shadow-paper-lg">
+                    <div class="text-center text-paper-400/40">
+                      <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                      </svg>
+                      <p class="font-serif italic text-xs">Photo à venir</p>
+                    </div>
                   </div>
                 }
               </div>
@@ -207,4 +225,7 @@
       </a>
     </div>
   </section>
+
+  <!-- Bouton retour en haut -->
+  <app-scroll-to-top></app-scroll-to-top>
 </div>
