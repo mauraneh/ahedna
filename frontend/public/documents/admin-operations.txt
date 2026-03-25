@@ -1,0 +1,13 @@
+AHEDNA - Operations administrateur
+
+Ce document est reserve aux administrateurs.
+
+Checklist quotidienne :
+
+- Valider les sujets du forum en attente
+- Moderer les photos de galerie
+- Controler les actualites publiees
+- Verifier les prochains evenements
+- Suivre les demandes d'adhesion en attente
+
+Les actions sensibles doivent etre reservees aux comptes administrateurs autorises.

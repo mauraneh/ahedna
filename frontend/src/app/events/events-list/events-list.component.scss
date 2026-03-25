@@ -1,0 +1,37 @@
+:host {
+  display: block;
+}
+
+.events-page-hero .site-hero-image-layer {
+  background-image: url('https://commons.wikimedia.org/wiki/Special:FilePath/C%C3%A9r%C3%A9monie%20d%27hommage%20aux%20Harkis%20Toulon%20IX-2006.jpg');
+  background-position: center 34%;
+}
+
+.events-page .site-filter-group {
+  margin-top: 2rem;
+}
+
+.events-page-card {
+  overflow: hidden;
+}
+
+.events-page-inline-image {
+  display: block;
+  width: 100%;
+  height: 14rem;
+  margin-bottom: 1.2rem;
+  border-radius: 1.25rem;
+  object-fit: cover;
+}
+
+.events-page-date {
+  background: linear-gradient(135deg, var(--brand-turquoise), var(--brand-green));
+  color: var(--site-ink);
+}
+
+@media (max-width: 760px) {
+  .events-page-card .flex.items-start {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}

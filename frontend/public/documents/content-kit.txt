@@ -1,0 +1,12 @@
+AHEDNA - Kit de contribution auteur
+
+Ce document est reserve aux auteurs et administrateurs.
+
+Bonnes pratiques :
+
+- Structurer les actualites avec un titre clair et un extrait court
+- Verifier les informations avant publication
+- Utiliser des images libres de droits ou autorisees
+- Conserver un ton respectueux et pedagogique
+
+Avant publication, relire le contenu et verifier les dates, lieux et sources.

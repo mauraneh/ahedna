@@ -1,0 +1,35 @@
+:host {
+  display: block;
+}
+
+.auth-page-masthead-register {
+  --tool-accent: var(--brand-green);
+  --tool-accent-soft: rgba(var(--brand-green-rgb), 0.2);
+  --tool-accent-alt: rgba(var(--brand-yellow-rgb), 0.16);
+  --tool-kicker: var(--brand-red);
+}
+
+.auth-page-card {
+  --panel-accent: var(--brand-green);
+  background: #fffefb;
+}
+
+.register-page .site-input {
+  background: #ffffff;
+  border-color: rgba(17, 48, 77, 0.14);
+}
+
+.auth-page-link {
+  color: var(--brand-red);
+  transition: color 0.2s ease;
+}
+
+.auth-page-link:hover {
+  color: var(--brand-turquoise);
+}
+
+@media (max-width: 760px) {
+  .register-page .grid.grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+}

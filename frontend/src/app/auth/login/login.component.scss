@@ -1,0 +1,40 @@
+:host {
+  display: block;
+}
+
+.auth-page-masthead {
+  --tool-accent: var(--brand-turquoise);
+  --tool-accent-soft: rgba(var(--brand-turquoise-rgb), 0.2);
+  --tool-accent-alt: rgba(var(--brand-yellow-rgb), 0.18);
+  --tool-kicker: var(--brand-red);
+}
+
+.auth-page-card {
+  --panel-accent: var(--brand-turquoise);
+  background: #fffefb;
+}
+
+.login-page .site-auth-layout {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  padding-top: 0.25rem;
+}
+
+.login-page .auth-page-card {
+  max-width: 36rem;
+  margin-inline: auto;
+}
+
+.login-page .site-input {
+  background: #ffffff;
+  border-color: rgba(17, 48, 77, 0.14);
+}
+
+.auth-page-link {
+  color: var(--brand-red);
+  transition: color 0.2s ease;
+}
+
+.auth-page-link:hover {
+  color: var(--brand-turquoise);
+}

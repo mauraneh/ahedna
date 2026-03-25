@@ -1,0 +1,98 @@
+<ng-container *transloco="let t">
+  <div class="site-page paper-texture relative overflow-hidden events-page">
+    <div class="site-particles">
+      @for (particle of particles; track particle) {
+        <div
+          class="paper-particle"
+          [style.left.%]="particle.left"
+          [style.animation-delay.s]="particle.delay"
+          [style.width.px]="particle.size"
+          [style.height.px]="particle.size">
+        </div>
+      }
+    </div>
+
+    <section class="site-hero site-public-hero events-page-hero">
+      <div class="site-hero-nav">
+        <app-navbar variant="hero"></app-navbar>
+      </div>
+      <div class="site-hero-image-layer"></div>
+      <div class="site-hero-overlay"></div>
+      <div class="site-hero-content">
+        <div class="site-hero-inner">
+          <div class="site-public-hero-copy site-public-hero-copy-center">
+            <p class="site-hero-kicker">{{ t('navbar.links.events') }}</p>
+            <h1 class="site-public-hero-title">{{ t('events.list.title') }}</h1>
+            <p class="site-public-hero-subtitle">{{ t('events.list.subtitle') }}</p>
+          </div>
+        </div>
+      </div>
+      <img src="/hero-wave-green.svg" alt="" class="site-hero-wave" aria-hidden="true">
+    </section>
+
+    <div class="site-page-shell site-page-shell-after-hero">
+      @if (authService.hasRole(['admin'])) {
+        <div class="flex justify-end mb-2">
+          <a routerLink="/contenu" [queryParams]="{ tab: 'events' }" class="site-button-primary">
+            {{ t('content.quickAdd.events') }}
+          </a>
+        </div>
+      }
+
+      <div class="site-filter-group">
+        <button
+          (click)="filterType = 'upcoming'; loadEvents()"
+          [class.site-filter-button-active]="filterType === 'upcoming'"
+          class="site-filter-button">
+          {{ t('events.list.filters.upcoming') }}
+        </button>
+        <button
+          (click)="filterType = 'past'; loadEvents()"
+          [class.site-filter-button-active]="filterType === 'past'"
+          class="site-filter-button">
+          {{ t('events.list.filters.past') }}
+        </button>
+      </div>
+
+      @if (loading) {
+        <div class="site-loading-state">
+          <div class="site-loading-ring"></div>
+          <p class="site-loading-copy">{{ t('events.list.loading') }}</p>
+        </div>
+      } @else if (events.length === 0) {
+        <div class="site-surface site-empty-state paper-texture">
+          <div class="site-empty-icon">📅</div>
+          <h3 class="site-empty-title">
+            {{ filterType === 'upcoming' ? t('events.list.empty.upcoming') : t('events.list.empty.past') }}
+          </h3>
+        </div>
+      } @else {
+        <div class="space-y-6">
+          @for (event of events; track event.id) {
+            <article class="site-surface site-card-hover p-8 paper-texture relative group events-page-card">
+              <div class="site-glow-green absolute top-0 right-0 w-32 h-32"></div>
+              <div class="flex items-start space-x-6 relative z-10">
+                <div class="events-page-date flex-shrink-0 w-24 h-24 rounded-2xl flex flex-col items-center justify-center text-white shadow-paper-lg">
+                  <div class="text-3xl font-vintage font-bold">{{ getDay(event.event_date) }}</div>
+                  <div class="text-sm uppercase font-serif">{{ getMonth(event.event_date) }}</div>
+                </div>
+                <div class="flex-1">
+                  @if (event.image_url) {
+                    <img [src]="getEventImageUrl(event.image_url)" [alt]="event.title" class="events-page-inline-image">
+                  }
+                  <h2 class="text-3xl font-vintage font-bold text-paper-900 mb-2">{{ event.title }}</h2>
+                  @if (event.location) {
+                    <p class="text-green-700 font-vintage font-medium mb-3">📍 {{ event.location }}</p>
+                  }
+                  <p class="text-paper-700 leading-relaxed font-serif">{{ event.description }}</p>
+                </div>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </div>
+
+    <app-scroll-to-top></app-scroll-to-top>
+  </div>
+</ng-container>

@@ -21,13 +21,15 @@ node_modules/
 
 # Next.js
 /.next/
+/backend/.next/
 /out/
 next-env.d.ts
 *.tsbuildinfo
 
 # Angular
-frontend-angular/.angular/
-frontend-angular/dist/
+frontend/.angular/
+frontend/dist/
+frontend/out-tsc/
 
 # Production builds
 /build
@@ -65,3 +67,6 @@ yarn-error.log*
 # Temporary files
 *.tmp
 *.temp
+
+# Uploaded media
+backend/uploads/

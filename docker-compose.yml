@@ -1,10 +1,10 @@
-version: '3.8'
-
 services:
   # Base de données PostgreSQL
   postgres:
     image: postgres:15-alpine
     container_name: ahedna-postgres
+    profiles:
+      - local-db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -21,10 +21,10 @@ services:
     networks:
       - ahedna-network
 
-  # Backend Next.js
+  # Backend Fastify
   backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile.backend
     container_name: ahedna-backend
     ports:
@@ -35,38 +35,35 @@ services:
       DATABASE_URL: ${DATABASE_URL}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
-      CORS_ORIGINS: ${CORS_ORIGINS:-*}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:4200,http://127.0.0.1:4200}
       NODE_ENV: development
-      NODE_OPTIONS: "--max-old-space-size=512"
-    depends_on:
-      postgres:
-        condition: service_healthy
     volumes:
-      - .:/app
+      - ./backend:/app
       - /app/node_modules
-      - /app/.next
     networks:
       - ahedna-network
-    command: yarn dev
+    command: sh -c "yarn install && yarn dev"
     restart: unless-stopped
 
   # Frontend Angular
   frontend:
     build:
-      context: ./frontend-angular
+      context: ./frontend
       dockerfile: Dockerfile.frontend
     container_name: ahedna-frontend
     ports:
       - "4200:4200"
     volumes:
-      - ./frontend-angular:/app
+      - ./frontend:/app
       - /app/node_modules
       - /app/.angular
     depends_on:
       - backend
+    environment:
+      AHEDNA_API_URL: ${AHEDNA_API_URL:-/api}
     networks:
       - ahedna-network
-    command: sh -c "yarn install && yarn start --host 0.0.0.0 --port 4200 --poll 2000"
+    command: sh -c "yarn install && yarn start:docker"
     restart: unless-stopped
 
 networks:

@@ -1,0 +1,207 @@
+<ng-container *transloco="let t">
+  <div class="site-page paper-texture relative overflow-hidden profile-page">
+    <app-navbar></app-navbar>
+
+    <section class="site-tool-shell site-tool-stack">
+      <div class="site-surface p-8 md:p-10 paper-texture profile-page-hero">
+          @if (loading) {
+            <div class="site-loading-state !py-10">
+              <div class="site-loading-ring"></div>
+              <p class="site-loading-copy">{{ t('profile.loading') }}</p>
+            </div>
+          } @else {
+            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
+              <div class="space-y-4">
+                <p class="site-page-kicker">{{ t('profile.eyebrow') }}</p>
+                <h1 class="site-tool-title">{{ getDisplayName() }}</h1>
+                <div class="flex flex-wrap items-center gap-3">
+                  <span class="site-status-pill site-status-pill-green">
+                    {{ t(getRoleLabel(profile?.role)) }}
+                  </span>
+                  @if (membership) {
+                    <span class="site-status-pill site-status-pill-yellow">
+                      {{ t(getMembershipStatusLabel()) }}
+                    </span>
+                  }
+                </div>
+                <p class="site-tool-subtitle profile-page-subtitle">{{ t('profile.subtitle') }}</p>
+              </div>
+
+              <div class="grid sm:grid-cols-2 gap-4 min-w-[280px]">
+                <div class="site-surface-soft p-4">
+                  <p class="text-xs uppercase tracking-[0.2em] text-paper-500 font-vintage">{{ t('profile.summary.memberSince') }}</p>
+                  <p class="mt-2 text-lg font-vintage font-bold text-paper-900">{{ formatDate(profile?.created_at) }}</p>
+                </div>
+                <div class="site-surface-soft p-4">
+                  <p class="text-xs uppercase tracking-[0.2em] text-paper-500 font-vintage">{{ t('profile.summary.membershipNumber') }}</p>
+                  <p class="mt-2 text-lg font-vintage font-bold text-paper-900">{{ profile?.membership_number || t('profile.summary.notAssigned') }}</p>
+                </div>
+                <div class="site-surface-soft p-4 sm:col-span-2">
+                  <p class="text-xs uppercase tracking-[0.2em] text-paper-500 font-vintage">{{ t('profile.summary.membershipWindow') }}</p>
+                  <p class="mt-2 text-lg font-vintage font-bold text-paper-900">
+                    {{ membership?.start_date ? formatDate(membership?.start_date) : t('profile.summary.notAvailable') }}
+                    -
+                    {{ membership?.end_date ? formatDate(membership?.end_date) : t('profile.summary.notAvailable') }}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="grid xl:grid-cols-[1.2fr_0.8fr] gap-8 mt-10">
+              <section class="site-surface-soft p-6">
+                <div class="flex items-center justify-between gap-4 mb-6">
+                  <div>
+                    <h2 class="text-2xl font-vintage font-bold text-paper-900">{{ t('profile.personal.title') }}</h2>
+                    <p class="text-paper-700 font-serif mt-2">{{ t('profile.personal.subtitle') }}</p>
+                  </div>
+                </div>
+
+                @if (profileError) {
+                  <div class="mb-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-red-800 font-serif">{{ profileError }}</div>
+                }
+
+                @if (profileMessage) {
+                  <div class="mb-4 rounded-xl bg-green-50 border border-green-200 px-4 py-3 text-green-800 font-serif">{{ profileMessage }}</div>
+                }
+
+                <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('profile.fields.firstName') }}</label>
+                    <input formControlName="first_name" type="text" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('profile.fields.lastName') }}</label>
+                    <input formControlName="last_name" type="text" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('profile.fields.email') }}</label>
+                    <input formControlName="email" type="email" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('profile.fields.phone') }}</label>
+                    <input formControlName="phone" type="text" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500">
+                  </div>
+                  <div class="md:col-span-2">
+                    <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('profile.fields.addressLine1') }}</label>
+                    <input formControlName="address_line1" type="text" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500">
+                  </div>
+                  <div class="md:col-span-2">
+                    <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('profile.fields.addressLine2') }}</label>
+                    <input formControlName="address_line2" type="text" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('profile.fields.postalCode') }}</label>
+                    <input formControlName="postal_code" type="text" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('profile.fields.city') }}</label>
+                    <input formControlName="city" type="text" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('profile.fields.country') }}</label>
+                    <input formControlName="country" type="text" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('profile.fields.avatarUrl') }}</label>
+                    <input formControlName="avatar_url" type="url" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500">
+                  </div>
+                  <div class="md:col-span-2">
+                    <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('profile.fields.bio') }}</label>
+                    <textarea formControlName="bio" rows="5" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+                  </div>
+                  <div class="md:col-span-2 flex justify-end">
+                    <button type="submit" [disabled]="savingProfile" class="site-button-primary">
+                      {{ savingProfile ? t('profile.actions.saving') : t('profile.actions.saveProfile') }}
+                    </button>
+                  </div>
+                </form>
+              </section>
+
+              <div class="space-y-8">
+                <section class="site-surface-soft p-6">
+                  <h2 class="text-2xl font-vintage font-bold text-paper-900">{{ t('profile.documents.title') }}</h2>
+                  <p class="text-paper-700 font-serif mt-2 mb-6">{{ t('profile.documents.subtitle') }}</p>
+
+                  <div class="space-y-4">
+                    @for (document of documents; track document.id) {
+                      <a [href]="document.file_url" target="_blank" rel="noopener noreferrer" class="site-surface-soft site-card-hover block px-5 py-4">
+                        <div class="flex items-start justify-between gap-4">
+                          <div>
+                            <h3 class="text-lg font-vintage font-bold text-paper-900">{{ t(getDocumentTitle(document.slug)) }}</h3>
+                            <p class="mt-2 text-paper-700 font-serif text-sm">{{ t(getDocumentDescription(document.slug)) }}</p>
+                          </div>
+                          <span class="text-xs uppercase tracking-[0.16em] text-paper-500 font-vintage">{{ document.minimum_role }}</span>
+                        </div>
+                      </a>
+                    }
+                  </div>
+                </section>
+
+                <section class="site-surface-soft p-6">
+                  <h2 class="text-2xl font-vintage font-bold text-paper-900">{{ t('profile.security.title') }}</h2>
+                  <p class="text-paper-700 font-serif mt-2 mb-6">{{ t('profile.security.subtitle') }}</p>
+
+                  @if (passwordError) {
+                    <div class="mb-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-red-800 font-serif">{{ passwordError }}</div>
+                  }
+
+                  @if (passwordMessage) {
+                    <div class="mb-4 rounded-xl bg-green-50 border border-green-200 px-4 py-3 text-green-800 font-serif">{{ passwordMessage }}</div>
+                  }
+
+                  <form [formGroup]="passwordForm" (ngSubmit)="updatePassword()" class="space-y-4">
+                    <div>
+                      <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('profile.password.current') }}</label>
+                      <input formControlName="current_password" type="password" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <div>
+                      <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('profile.password.next') }}</label>
+                      <input formControlName="new_password" type="password" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <button type="submit" [disabled]="savingPassword" class="site-button-danger w-full">
+                      {{ savingPassword ? t('profile.actions.savingPassword') : t('profile.actions.updatePassword') }}
+                    </button>
+                  </form>
+                </section>
+
+                <section class="site-surface-soft p-6">
+                  <h2 class="text-2xl font-vintage font-bold text-paper-900">{{ t('profile.account.title') }}</h2>
+                  <p class="text-paper-700 font-serif mt-2 mb-6">{{ t('profile.account.subtitle') }}</p>
+
+                  @if (accountError) {
+                    <div class="mb-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-red-800 font-serif">{{ accountError }}</div>
+                  }
+
+                  <button (click)="authService.logout()" class="site-button-primary w-full">
+                    {{ t('profile.actions.logout') }}
+                  </button>
+
+                  <div class="mt-6 pt-6 border-t border-paper-300/70">
+                    <h3 class="text-lg font-vintage font-bold text-paper-900">{{ t('profile.account.deleteTitle') }}</h3>
+                    <p class="mt-2 text-paper-700 font-serif text-sm leading-relaxed">{{ t('profile.account.deleteDescription') }}</p>
+                    <p class="mt-3 text-xs uppercase tracking-[0.14em] text-red-700 font-vintage">{{ t('profile.account.deleteWarning') }}</p>
+
+                    <form [formGroup]="deleteAccountForm" (ngSubmit)="deleteAccount()" class="mt-4 space-y-4">
+                      <div>
+                        <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('profile.account.confirmEmail') }}</label>
+                        <input formControlName="confirm_email" type="email" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-red-500">
+                        <p class="mt-2 text-xs text-paper-500 font-serif">{{ t('profile.account.confirmHint', { email: profile?.email }) }}</p>
+                      </div>
+
+                      <button
+                        type="submit"
+                        [disabled]="deletingAccount || !canDeleteAccount()"
+                        class="site-button-danger w-full disabled:opacity-50 disabled:cursor-not-allowed">
+                        {{ deletingAccount ? t('profile.actions.deletingAccount') : t('profile.actions.deleteAccount') }}
+                      </button>
+                    </form>
+                  </div>
+                </section>
+              </div>
+            </div>
+          }
+      </div>
+    </section>
+
+    <app-scroll-to-top></app-scroll-to-top>
+  </div>
+</ng-container>

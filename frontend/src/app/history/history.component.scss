@@ -1,0 +1,381 @@
+.history-page-hero {
+  min-height: 27rem;
+}
+
+.history-page-hero-image {
+  position: absolute;
+  inset: 0;
+  background-image: url('https://commons.wikimedia.org/wiki/Special:FilePath/Harki-ag.jpg');
+  background-position: center 22%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  transform: scale(1.02);
+}
+
+.history-page-hero-content {
+  align-items: flex-end;
+}
+
+.history-page-title {
+  max-width: 34rem;
+  margin-inline: auto;
+}
+
+.history-page-subtitle {
+  max-width: 44rem;
+}
+
+.history-page .chapter-kicker-index {
+  background: linear-gradient(135deg, rgba(var(--brand-yellow-rgb), 0.22), rgba(255, 255, 255, 0.9));
+  border-color: rgba(var(--brand-red-rgb), 0.18);
+  color: var(--brand-red);
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.chapter-item {
+  opacity: 0;
+  transform: translate3d(0, 48px, 0) scale(0.985);
+  filter: blur(4px);
+  transition:
+    opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.72s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.55s ease-out;
+  will-change: transform, opacity, filter;
+  backface-visibility: hidden;
+}
+
+.chapter-item.visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+  filter: blur(0);
+}
+
+.chapter-card {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0) scale(0.99);
+  transition:
+    box-shadow 0.4s ease,
+    transform 0.45s ease;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+.chapter-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(130deg, rgba(255, 255, 255, 0.22), transparent 40%, transparent 72%, rgba(184, 160, 130, 0.12));
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.chapter-card:hover::before {
+  opacity: 1;
+}
+
+.chapter-item.animate-in .chapter-card.slide-in-left {
+  animation: chapterRevealLeft 0.72s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.chapter-item.animate-in .chapter-card.slide-in-right {
+  animation: chapterRevealRight 0.72s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.chapter-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 0.8rem;
+}
+
+.chapter-kicker-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  padding-inline: 0.75rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.12), rgba(245, 230, 211, 0.9));
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  color: #b91c1c;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.media-stack {
+  perspective: 1400px;
+}
+
+.media-card {
+  opacity: 0;
+  transform: translate3d(0, 28px, 0) scale(0.988);
+  transform-origin: center top;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+.chapter-item.animate-in .media-card {
+  animation: mediaReveal 0.78s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.chapter-item.animate-in .media-card:nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+.media-card-offset {
+  margin-inline-start: 0.65rem;
+}
+
+.media-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(212, 192, 168, 0.58);
+  background: linear-gradient(180deg, rgba(253, 248, 243, 0.65), rgba(232, 213, 192, 0.08));
+  box-shadow:
+    0 24px 40px rgba(62, 53, 41, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  transition:
+    transform 0.45s ease,
+    box-shadow 0.45s ease,
+    border-color 0.35s ease;
+}
+
+.media-card:hover .media-frame {
+  transform: translateY(-6px) rotate(-0.6deg);
+  border-color: rgba(220, 38, 38, 0.35);
+  box-shadow:
+    0 32px 52px rgba(62, 53, 41, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.media-glow {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(220, 38, 38, 0.18), transparent 32%),
+    radial-gradient(circle at 80% 25%, rgba(255, 255, 255, 0.24), transparent 28%);
+  opacity: 0.7;
+  transform: scale(1);
+  transition: transform 0.5s ease, opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.media-card:hover .media-glow {
+  opacity: 0.95;
+  transform: scale(1.04);
+}
+
+.media-image {
+  display: block;
+  width: 100%;
+  height: 24rem;
+  object-fit: cover;
+  filter: sepia(0.28) saturate(0.88) contrast(1.04);
+  transform: scale(1.02);
+  transition:
+    transform 0.7s ease,
+    filter 0.45s ease;
+}
+
+.media-card:hover .media-image {
+  filter: sepia(0.1) saturate(1) contrast(1.06);
+  transform: scale(1.06);
+}
+
+.media-card.is-portrait .media-image {
+  height: 31rem;
+}
+
+.media-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(62, 53, 41, 0.02) 0%, rgba(62, 53, 41, 0.08) 40%, rgba(17, 24, 39, 0.78) 100%),
+    linear-gradient(135deg, rgba(245, 230, 211, 0.08), transparent 36%, transparent 70%, rgba(220, 38, 38, 0.08));
+  pointer-events: none;
+}
+
+.media-caption {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 1;
+  padding: 1.25rem;
+}
+
+.media-pill,
+.media-focus {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.8rem;
+  border-radius: 999px;
+  padding-inline: 0.8rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.media-pill {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+}
+
+.media-focus {
+  background: rgba(15, 23, 42, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.media-source-link {
+  color: rgba(255, 255, 255, 0.95);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+  transition:
+    color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.media-source-link:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.9);
+}
+
+.media-subline {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.9rem;
+  padding-inline: 0.35rem;
+  color: #7a6a52;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.timeline-point {
+  transition: transform 0.45s ease-out;
+  will-change: transform;
+}
+
+.timeline-point.active > div:last-of-type {
+  animation: pointPulse 1.4s ease-out;
+}
+
+.timeline-point.pulse-active > div:last-of-type > div {
+  animation: activePulse 1.9s ease-in-out infinite;
+}
+
+button.active {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: white;
+  border-color: #991b1b;
+  box-shadow: 0 4px 16px rgba(220, 38, 38, 0.4);
+}
+
+@keyframes chapterRevealLeft {
+  0% {
+    opacity: 0;
+    transform: translate3d(-34px, 18px, 0) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes chapterRevealRight {
+  0% {
+    opacity: 0;
+    transform: translate3d(34px, 18px, 0) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes mediaReveal {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0) scale(0.988);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes pointPulse {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes activePulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.72);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(220, 38, 38, 0);
+  }
+}
+
+@media (max-width: 767px) {
+  .history-page-hero {
+    min-height: 23.5rem;
+  }
+
+  .media-image,
+  .media-card.is-portrait .media-image {
+    height: 22rem;
+  }
+
+  .media-subline {
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .history-page-title {
+    max-width: 18rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chapter-item,
+  .chapter-card,
+  .media-card,
+  .timeline-point {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+  }
+}

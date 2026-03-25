@@ -1,0 +1,462 @@
+<ng-container *transloco="let t">
+  <div class="site-page paper-texture relative overflow-hidden content-page">
+    <app-navbar></app-navbar>
+
+    <section class="site-tool-shell site-tool-stack">
+      <div class="site-masthead-card site-tool-masthead-solid content-page-header">
+        <div class="site-tool-masthead site-tool-masthead-split">
+          <div>
+            <p class="site-page-kicker">{{ t('navbar.auth.content') }}</p>
+            <h1 class="site-tool-title">{{ t('content.title') }}</h1>
+            <p class="site-tool-subtitle">{{ t('content.subtitle') }}</p>
+          </div>
+          <div class="site-tool-actions">
+            @if (activeTab === 'news') {
+              <button (click)="resetNewsForm()" class="site-button-primary">
+                {{ t('content.actions.newArticle') }}
+              </button>
+            } @else if (activeTab === 'events') {
+              <button (click)="resetEventForm()" class="site-button-primary">
+                {{ t('content.actions.newEvent') }}
+              </button>
+            } @else {
+              <button (click)="resetGalleryAlbumForm()" class="site-button-primary">
+                {{ t('content.actions.newGalleryAlbum') }}
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="site-surface site-tool-panel-solid paper-texture content-tabs-panel">
+        <div class="content-tabs">
+          <button
+            type="button"
+            (click)="selectTab('news')"
+            class="content-tab"
+            [class.content-tab-active]="activeTab === 'news'">
+            {{ t('content.tabs.news') }}
+          </button>
+          @if (canManageAdvancedContent) {
+            <button
+              type="button"
+              (click)="selectTab('events')"
+              class="content-tab"
+              [class.content-tab-active]="activeTab === 'events'">
+              {{ t('content.tabs.events') }}
+            </button>
+            <button
+              type="button"
+              (click)="selectTab('gallery')"
+              class="content-tab"
+              [class.content-tab-active]="activeTab === 'gallery'">
+              {{ t('content.tabs.gallery') }}
+            </button>
+          }
+        </div>
+      </div>
+
+      @if (activeTab === 'news') {
+        <div class="grid xl:grid-cols-[0.95fr_1.05fr] gap-8">
+          <section class="site-surface site-tool-panel-solid p-6 paper-texture">
+            <div class="flex items-center justify-between gap-4 mb-6">
+              <div>
+                <h2 class="text-2xl font-vintage font-bold text-paper-900">
+                  {{ editingNewsId ? t('content.form.editTitle') : t('content.form.createTitle') }}
+                </h2>
+                <p class="text-paper-700 font-serif mt-2">{{ t('content.form.subtitle') }}</p>
+              </div>
+            </div>
+
+            @if (newsFeedbackError) {
+              <div class="mb-4 site-state-box site-state-box-error">{{ newsFeedbackError }}</div>
+            }
+            @if (newsFeedbackMessage) {
+              <div class="mb-4 site-state-box site-state-box-success">{{ newsFeedbackMessage }}</div>
+            }
+
+            <form [formGroup]="newsForm" (ngSubmit)="saveNews()" class="space-y-4">
+              <div>
+                <label class="site-form-label">{{ t('content.fields.title') }}</label>
+                <input formControlName="title" type="text" class="site-input">
+              </div>
+              <div>
+                <label class="site-form-label">{{ t('content.fields.excerpt') }}</label>
+                <textarea formControlName="excerpt" rows="3" class="site-textarea"></textarea>
+              </div>
+              <div>
+                <label class="site-form-label">{{ t('content.fields.content') }}</label>
+                <textarea formControlName="content" rows="8" class="site-textarea"></textarea>
+              </div>
+              <div>
+                <label class="site-form-label">{{ t('content.fields.imageUrl') }}</label>
+                <input formControlName="image_url" type="url" class="site-input">
+              </div>
+              <label class="flex items-center gap-3 text-paper-800 font-serif">
+                <input formControlName="published" type="checkbox" class="site-checkbox">
+                <span>{{ t('content.fields.published') }}</span>
+              </label>
+              <div class="flex flex-wrap gap-3 pt-2">
+                <button type="submit" [disabled]="savingNews" class="site-button-danger">
+                  {{ savingNews ? t('content.actions.saving') : (editingNewsId ? t('content.actions.update') : t('content.actions.create')) }}
+                </button>
+                <button type="button" (click)="resetNewsForm()" class="site-button-secondary">
+                  {{ t('content.actions.cancel') }}
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <section class="site-surface site-tool-panel-solid p-6 paper-texture">
+            <div class="flex items-center justify-between gap-4 mb-6">
+              <div>
+                <h2 class="text-2xl font-vintage font-bold text-paper-900">{{ t('content.list.title') }}</h2>
+                <p class="text-paper-700 font-serif mt-2">{{ t('content.list.subtitle') }}</p>
+              </div>
+            </div>
+
+            @if (loadingNews) {
+              <div class="site-loading-state !py-8">
+                <div class="site-loading-ring"></div>
+                <p class="site-loading-copy">{{ t('content.list.loading') }}</p>
+              </div>
+            } @else if (newsItems.length === 0) {
+              <div class="text-center py-16">
+                <p class="text-paper-700 font-serif">{{ t('content.list.empty') }}</p>
+              </div>
+            } @else {
+              <div class="space-y-4">
+                @for (item of newsItems; track item.id) {
+                  <article class="site-surface-soft site-tool-panel-solid p-5">
+                    <div class="flex items-start justify-between gap-4">
+                      <div>
+                        <div class="flex flex-wrap items-center gap-3">
+                          <h3 class="text-xl font-vintage font-bold text-paper-900">{{ item.title }}</h3>
+                          <span class="px-3 py-1 rounded-full text-xs font-vintage font-bold"
+                            [class.bg-green-100]="item.published"
+                            [class.text-green-800]="item.published"
+                            [class.bg-yellow-100]="!item.published"
+                            [class.text-yellow-800]="!item.published">
+                            {{ item.published ? t('content.status.published') : t('content.status.draft') }}
+                          </span>
+                        </div>
+                        <p class="mt-3 text-paper-700 font-serif">{{ item.excerpt || item.content }}</p>
+                        <p class="mt-3 text-sm text-paper-500 font-serif">{{ formatDate(item.created_at) }}</p>
+                      </div>
+                      <div class="flex flex-col gap-2">
+                        <button (click)="editNews(item)" class="site-button-primary px-4 py-2 text-sm">
+                          {{ t('content.actions.edit') }}
+                        </button>
+                        <button (click)="deleteNews(item)" [disabled]="deletingNewsId === item.id" class="site-button-danger px-4 py-2 text-sm disabled:opacity-50">
+                          {{ deletingNewsId === item.id ? t('content.actions.deleting') : t('content.actions.delete') }}
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                }
+              </div>
+            }
+          </section>
+        </div>
+      }
+
+      @if (activeTab === 'events' && canManageAdvancedContent) {
+        <div class="grid xl:grid-cols-[0.95fr_1.05fr] gap-8">
+          <section class="site-surface site-tool-panel-solid p-6 paper-texture">
+            <h2 class="text-2xl font-vintage font-bold text-paper-900">
+              {{ editingEventId ? t('content.events.form.editTitle') : t('content.events.form.createTitle') }}
+            </h2>
+            <p class="text-paper-700 font-serif mt-2 mb-6">{{ t('content.events.form.subtitle') }}</p>
+
+            @if (eventFeedbackError) {
+              <div class="mb-4 site-state-box site-state-box-error">{{ eventFeedbackError }}</div>
+            }
+            @if (eventFeedbackMessage) {
+              <div class="mb-4 site-state-box site-state-box-success">{{ eventFeedbackMessage }}</div>
+            }
+
+            <form [formGroup]="eventForm" (ngSubmit)="saveEvent()" class="space-y-4">
+              <div>
+                <label class="site-form-label">{{ t('admin.events.fields.title') }}</label>
+                <input formControlName="title" type="text" class="site-input">
+              </div>
+              <div>
+                <label class="site-form-label">{{ t('admin.events.fields.description') }}</label>
+                <textarea formControlName="description" rows="5" class="site-textarea"></textarea>
+              </div>
+              <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label class="site-form-label">{{ t('admin.events.fields.date') }}</label>
+                  <input formControlName="event_date" type="datetime-local" class="site-input">
+                </div>
+                <div>
+                  <label class="site-form-label">{{ t('admin.events.fields.location') }}</label>
+                  <input formControlName="location" type="text" class="site-input">
+                </div>
+              </div>
+              <div>
+                <label class="site-form-label">{{ t('content.fields.imageFile') }}</label>
+                <input type="file" accept="image/*" class="site-input" (change)="onEventImageSelected($event)">
+                @if (uploadingEventImage) {
+                  <p class="mt-2 text-sm text-paper-600 font-serif">{{ t('content.messages.uploadingImage') }}</p>
+                }
+                @if (eventImagePreview) {
+                  <img [src]="eventImagePreview" [alt]="eventForm.value.title || t('admin.events.fields.title')" class="content-upload-preview">
+                }
+              </div>
+              <div>
+                <label class="site-form-label">{{ t('admin.events.fields.type') }}</label>
+                <select formControlName="type" class="site-select">
+                  <option value="upcoming">{{ t('admin.events.types.upcoming') }}</option>
+                  <option value="past">{{ t('admin.events.types.past') }}</option>
+                </select>
+              </div>
+              <label class="flex items-center gap-3 text-paper-800 font-serif">
+                <input formControlName="gallery_enabled" type="checkbox" class="site-checkbox">
+                <span>{{ t('admin.events.fields.galleryEnabled') }}</span>
+              </label>
+              <div class="flex flex-wrap gap-3 pt-2">
+                <button type="submit" [disabled]="savingEvent" class="site-button-primary">
+                  {{ savingEvent ? t('content.actions.saving') : (editingEventId ? t('content.actions.update') : t('content.actions.create')) }}
+                </button>
+                <button type="button" (click)="resetEventForm()" class="site-button-secondary">
+                  {{ t('content.actions.cancel') }}
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <section class="site-surface site-tool-panel-solid p-6 paper-texture">
+            <h2 class="text-2xl font-vintage font-bold text-paper-900">{{ t('content.events.list.title') }}</h2>
+            <p class="text-paper-700 font-serif mt-2 mb-6">{{ t('content.events.list.subtitle') }}</p>
+
+            @if (loadingEvents) {
+              <div class="site-loading-state !py-8">
+                <div class="site-loading-ring"></div>
+                <p class="site-loading-copy">{{ t('content.events.list.loading') }}</p>
+              </div>
+            } @else if (events.length === 0) {
+              <div class="text-center py-16">
+                <p class="text-paper-700 font-serif">{{ t('content.events.list.empty') }}</p>
+              </div>
+            } @else {
+              <div class="space-y-4">
+                @for (event of events; track event.id) {
+                  <article class="site-surface-soft site-tool-panel-solid p-5">
+                    <div class="flex items-start justify-between gap-4">
+                      <div>
+                        <div class="flex flex-wrap items-center gap-3">
+                          <h3 class="text-xl font-vintage font-bold text-paper-900">{{ event.title }}</h3>
+                          <span class="px-3 py-1 rounded-full text-xs font-vintage font-bold"
+                            [class.bg-green-100]="event.type === 'upcoming'"
+                            [class.text-green-800]="event.type === 'upcoming'"
+                            [class.bg-yellow-100]="event.type === 'past'"
+                            [class.text-yellow-800]="event.type === 'past'">
+                            {{ event.type === 'upcoming' ? t('admin.events.types.upcoming') : t('admin.events.types.past') }}
+                          </span>
+                          @if (event.gallery_enabled) {
+                            <span class="px-3 py-1 rounded-full text-xs font-vintage font-bold content-gallery-pill">
+                              {{ t('admin.events.galleryBadge') }}
+                            </span>
+                          }
+                        </div>
+                        @if (event.image_url) {
+                          <img [src]="resolveMediaUrl(event.image_url)" [alt]="event.title" class="content-item-inline-image">
+                        }
+                        <p class="mt-3 text-paper-700 font-serif">{{ event.description }}</p>
+                        <p class="mt-3 text-sm text-paper-500 font-serif">{{ formatDateTime(event.event_date) }} · {{ event.location || t('admin.events.noLocation') }}</p>
+                      </div>
+                      <div class="flex flex-col gap-2">
+                        <button (click)="editEvent(event)" class="site-button-primary px-4 py-2 text-sm">
+                          {{ t('content.actions.edit') }}
+                        </button>
+                        <button (click)="deleteEvent(event)" [disabled]="deletingEventId === event.id" class="site-button-danger px-4 py-2 text-sm disabled:opacity-50">
+                          {{ deletingEventId === event.id ? t('content.actions.deleting') : t('content.actions.delete') }}
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                }
+              </div>
+            }
+          </section>
+        </div>
+      }
+
+      @if (activeTab === 'gallery' && canManageAdvancedContent) {
+        <div class="space-y-8">
+          <div class="grid xl:grid-cols-[0.95fr_1.05fr] gap-8">
+            <section class="site-surface site-tool-panel-solid p-6 paper-texture">
+              <h2 class="text-2xl font-vintage font-bold text-paper-900">
+                {{ editingGalleryAlbumId ? t('content.gallery.albumForm.editTitle') : t('content.gallery.albumForm.createTitle') }}
+              </h2>
+              <p class="text-paper-700 font-serif mt-2 mb-6">{{ t('content.gallery.albumForm.subtitle') }}</p>
+
+              @if (galleryFeedbackError) {
+                <div class="mb-4 site-state-box site-state-box-error">{{ galleryFeedbackError }}</div>
+              }
+              @if (galleryFeedbackMessage) {
+                <div class="mb-4 site-state-box site-state-box-success">{{ galleryFeedbackMessage }}</div>
+              }
+
+              <form [formGroup]="galleryAlbumForm" (ngSubmit)="saveGalleryAlbum()" class="space-y-4">
+                <div>
+                  <label class="site-form-label">{{ t('admin.events.fields.title') }}</label>
+                  <input formControlName="title" type="text" class="site-input">
+                </div>
+                <div>
+                  <label class="site-form-label">{{ t('admin.events.fields.description') }}</label>
+                  <textarea formControlName="description" rows="4" class="site-textarea"></textarea>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="site-form-label">{{ t('admin.events.fields.date') }}</label>
+                    <input formControlName="event_date" type="datetime-local" class="site-input">
+                  </div>
+                  <div>
+                    <label class="site-form-label">{{ t('admin.events.fields.location') }}</label>
+                    <input formControlName="location" type="text" class="site-input">
+                  </div>
+                </div>
+                <div>
+                  <label class="site-form-label">{{ t('content.fields.imageFile') }}</label>
+                  <input type="file" accept="image/*" class="site-input" (change)="onGalleryAlbumImageSelected($event)">
+                  @if (uploadingGalleryAlbumImage) {
+                    <p class="mt-2 text-sm text-paper-600 font-serif">{{ t('content.messages.uploadingImage') }}</p>
+                  }
+                  @if (galleryAlbumImagePreview) {
+                    <img [src]="galleryAlbumImagePreview" [alt]="galleryAlbumForm.value.title || t('admin.events.fields.title')" class="content-upload-preview">
+                  }
+                </div>
+                <div>
+                  <label class="site-form-label">{{ t('admin.events.fields.type') }}</label>
+                  <select formControlName="type" class="site-select">
+                    <option value="upcoming">{{ t('admin.events.types.upcoming') }}</option>
+                    <option value="past">{{ t('admin.events.types.past') }}</option>
+                  </select>
+                </div>
+                <div class="flex flex-wrap gap-3 pt-2">
+                  <button type="submit" [disabled]="savingGalleryAlbum" class="site-button-primary">
+                    {{ savingGalleryAlbum ? t('content.actions.saving') : (editingGalleryAlbumId ? t('content.actions.update') : t('content.actions.create')) }}
+                  </button>
+                  <button type="button" (click)="resetGalleryAlbumForm()" class="site-button-secondary">
+                    {{ t('content.actions.cancel') }}
+                  </button>
+                </div>
+              </form>
+            </section>
+
+            <section class="site-surface site-tool-panel-solid p-6 paper-texture">
+              <h2 class="text-2xl font-vintage font-bold text-paper-900">{{ t('content.gallery.photoForm.title') }}</h2>
+              <p class="text-paper-700 font-serif mt-2 mb-6">{{ t('content.gallery.photoForm.subtitle') }}</p>
+
+              @if (loadingGallery) {
+                <div class="site-loading-state !py-8">
+                  <div class="site-loading-ring"></div>
+                  <p class="site-loading-copy">{{ t('content.gallery.list.loading') }}</p>
+                </div>
+              } @else if (galleryAlbums.length === 0) {
+                <div class="text-center py-16">
+                  <p class="text-paper-700 font-serif">{{ t('content.gallery.list.empty') }}</p>
+                </div>
+              } @else {
+                <form [formGroup]="galleryPhotoForm" (ngSubmit)="uploadGalleryPhoto()" class="space-y-4">
+                  <div>
+                    <label class="site-form-label">{{ t('gallery.upload.fields.event') }}</label>
+                    <select formControlName="event_id" class="site-select">
+                      @for (album of galleryAlbums; track album.id) {
+                        <option [value]="album.id">{{ album.title }} · {{ formatDateTime(album.event_date) }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div>
+                    <label class="site-form-label">{{ t('gallery.upload.fields.photoUrl') }}</label>
+                    <input formControlName="photo_url" type="url" class="site-input" [placeholder]="t('gallery.upload.fields.photoUrlPlaceholder')">
+                  </div>
+                  <div>
+                    <label class="site-form-label">{{ t('gallery.upload.fields.description') }}</label>
+                    <textarea formControlName="description" rows="4" class="site-textarea" [placeholder]="t('gallery.upload.fields.descriptionPlaceholder')"></textarea>
+                  </div>
+                  <div class="flex flex-wrap gap-3 pt-2">
+                    <button type="submit" [disabled]="savingGalleryPhoto" class="site-button-primary">
+                      {{ savingGalleryPhoto ? t('content.actions.saving') : t('content.actions.addPhoto') }}
+                    </button>
+                  </div>
+                </form>
+              }
+            </section>
+          </div>
+
+          <section class="site-surface site-tool-panel-solid p-6 paper-texture">
+            <h2 class="text-2xl font-vintage font-bold text-paper-900">{{ t('content.gallery.list.title') }}</h2>
+            <p class="text-paper-700 font-serif mt-2 mb-6">{{ t('content.gallery.list.subtitle') }}</p>
+
+            @if (loadingGallery) {
+              <div class="site-loading-state !py-8">
+                <div class="site-loading-ring"></div>
+                <p class="site-loading-copy">{{ t('content.gallery.list.loading') }}</p>
+              </div>
+            } @else if (galleryAlbums.length === 0) {
+              <div class="text-center py-16">
+                <p class="text-paper-700 font-serif">{{ t('content.gallery.list.empty') }}</p>
+              </div>
+            } @else {
+              <div class="space-y-6">
+                @for (album of galleryAlbums; track album.id) {
+                  <article class="site-surface-soft site-tool-panel-solid p-5">
+                    <div class="flex items-start justify-between gap-4">
+                      <div>
+                        <div class="flex flex-wrap items-center gap-3">
+                          <h3 class="text-xl font-vintage font-bold text-paper-900">{{ album.title }}</h3>
+                          <span class="px-3 py-1 rounded-full text-xs font-vintage font-bold content-gallery-pill">
+                            {{ album.photo_count }} {{ t('content.gallery.album.photoCount') }}
+                          </span>
+                        </div>
+                        @if (album.image_url) {
+                          <img [src]="resolveMediaUrl(album.image_url)" [alt]="album.title" class="content-item-inline-image">
+                        }
+                        <p class="mt-3 text-paper-700 font-serif">{{ album.description || t('gallery.event.noDescription') }}</p>
+                        <p class="mt-3 text-sm text-paper-500 font-serif">{{ formatDateTime(album.event_date) }} · {{ album.location || t('admin.events.noLocation') }}</p>
+                      </div>
+                      <div class="flex flex-col gap-2">
+                        <button (click)="editGalleryAlbum(album)" class="site-button-primary px-4 py-2 text-sm">
+                          {{ t('content.actions.edit') }}
+                        </button>
+                        <button (click)="deleteEvent(album)" [disabled]="deletingEventId === album.id" class="site-button-danger px-4 py-2 text-sm disabled:opacity-50">
+                          {{ deletingEventId === album.id ? t('content.actions.deleting') : t('content.actions.delete') }}
+                        </button>
+                      </div>
+                    </div>
+
+                    @if (album.photos.length === 0) {
+                      <p class="mt-5 text-paper-600 font-serif">{{ t('content.gallery.album.empty') }}</p>
+                    } @else {
+                      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
+                        @for (photo of album.photos; track photo.id) {
+                          <article class="content-gallery-photo-card">
+                            <img [src]="photo.photo_url" [alt]="photo.description || album.title" class="content-gallery-photo-image">
+                            <div class="content-gallery-photo-body">
+                              <p class="content-gallery-photo-copy">{{ photo.description || t('gallery.event.defaultCaption') }}</p>
+                              <div class="content-gallery-photo-footer">
+                                <span class="text-xs text-paper-500 font-serif">{{ formatDate(photo.created_at) }}</span>
+                                <button type="button" (click)="deleteGalleryPhoto(photo)" [disabled]="deletingPhotoId === photo.id" class="site-button-danger px-3 py-2 text-xs disabled:opacity-50">
+                                  {{ deletingPhotoId === photo.id ? t('content.actions.deleting') : t('content.actions.deletePhoto') }}
+                                </button>
+                              </div>
+                            </div>
+                          </article>
+                        }
+                      </div>
+                    }
+                  </article>
+                }
+              </div>
+            }
+          </section>
+        </div>
+      }
+    </section>
+
+    <app-scroll-to-top></app-scroll-to-top>
+  </div>
+</ng-container>

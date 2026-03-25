@@ -1,0 +1,137 @@
+<ng-container *transloco="let t">
+  <div class="site-page paper-texture relative overflow-hidden register-page auth-page">
+    <app-navbar></app-navbar>
+
+    <section class="site-tool-shell site-tool-shell-narrow site-tool-stack">
+      <div class="site-masthead-card site-tool-masthead-solid auth-page-masthead auth-page-masthead-register">
+        <div class="site-tool-masthead site-tool-masthead-center">
+          <div>
+            <p class="site-page-kicker">{{ t('navbar.auth.register') }}</p>
+            <h1 class="site-tool-title">{{ t('auth.register.title') }}</h1>
+            <p class="site-tool-subtitle">{{ t('auth.register.subtitle') }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="site-auth-layout">
+        <aside class="site-tool-support-grid">
+          <article class="site-tool-support-card" style="--panel-accent: var(--brand-green)">
+            <p class="site-page-kicker">{{ t('auth.register.actions.hasAccount') }}</p>
+            <h2 class="site-tool-support-title">{{ t('auth.register.actions.login') }}</h2>
+            <p class="site-tool-support-copy">{{ t('auth.register.subtitle') }}</p>
+            <a routerLink="/login" class="site-button-secondary w-full mt-5">
+              {{ t('auth.register.actions.login') }}
+            </a>
+          </article>
+
+          <article class="site-tool-support-card site-tool-support-card-soft" style="--panel-accent: var(--brand-yellow)">
+            <p class="site-page-kicker">{{ t('navbar.links.membership') }}</p>
+            <h2 class="site-tool-support-title">{{ t('navbar.links.membership') }}</h2>
+            <p class="site-tool-support-copy">{{ t('auth.register.fields.wantMembership') }}</p>
+            <a routerLink="/adhesion" class="site-button-primary w-full mt-5">
+              {{ t('navbar.links.membership') }}
+            </a>
+          </article>
+        </aside>
+
+        <div class="site-surface site-tool-panel-solid site-auth-card site-auth-card-wide w-full space-y-8 paper-texture auth-page-card">
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="mt-8 space-y-6">
+          <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label for="first_name" class="site-form-label">
+                  {{ t('auth.register.fields.firstName.label') }}
+                </label>
+                <input
+                  id="first_name"
+                  formControlName="first_name"
+                  type="text"
+                  class="site-input"
+                  [placeholder]="t('auth.register.fields.firstName.placeholder')">
+              </div>
+              <div>
+                <label for="last_name" class="site-form-label">
+                  {{ t('auth.register.fields.lastName.label') }}
+                </label>
+                <input
+                  id="last_name"
+                  formControlName="last_name"
+                  type="text"
+                  class="site-input"
+                  [placeholder]="t('auth.register.fields.lastName.placeholder')">
+              </div>
+            </div>
+
+            <div>
+              <label for="email" class="site-form-label">
+                {{ t('auth.register.fields.email.label') }}
+              </label>
+              <input
+                id="email"
+                formControlName="email"
+                type="email"
+                required
+                class="site-input"
+                [placeholder]="t('auth.register.fields.email.placeholder')">
+            </div>
+
+            <div>
+              <label for="password" class="site-form-label">
+                {{ t('auth.register.fields.password.label') }}
+              </label>
+              <input
+                id="password"
+                formControlName="password"
+                type="password"
+                required
+                class="site-input"
+                [placeholder]="t('auth.register.fields.password.placeholder')">
+            </div>
+
+            <div class="flex items-center">
+              <input
+                id="want_membership"
+                formControlName="want_membership"
+                type="checkbox"
+                class="site-checkbox">
+              <label for="want_membership" class="ml-2 block text-sm text-paper-900 font-serif">
+                {{ t('auth.register.fields.wantMembership') }}
+              </label>
+            </div>
+          </div>
+
+          @if (error) {
+            <div class="site-state-box site-state-box-error">
+              <p class="text-sm">{{ error }}</p>
+            </div>
+          }
+
+          <div class="space-y-3">
+            <button
+              type="submit"
+              [disabled]="!registerForm.valid || loading"
+              class="site-button-primary w-full disabled:opacity-50 disabled:cursor-not-allowed">
+              {{ loading ? t('auth.register.actions.submitting') : t('auth.register.actions.submit') }}
+            </button>
+
+            <a
+              routerLink="/"
+              class="auth-page-link block w-full text-center py-2 px-4 text-sm font-vintage font-medium">
+              ← {{ t('auth.register.actions.backHome') }}
+            </a>
+          </div>
+
+          <div class="text-center text-paper-700 font-serif">
+            <span>{{ t('auth.register.actions.hasAccount') }}</span>
+            <a routerLink="/login" class="auth-page-link ml-1 font-vintage font-medium">
+              {{ t('auth.register.actions.login') }}
+            </a>
+          </div>
+        </form>
+        </div>
+      </div>
+    </section>
+
+    <app-scroll-to-top></app-scroll-to-top>
+  </div>
+</ng-container>

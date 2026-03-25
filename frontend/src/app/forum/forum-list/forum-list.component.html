@@ -1,0 +1,173 @@
+<ng-container *transloco="let t">
+  <div class="site-page paper-texture relative overflow-hidden forum-page">
+    <section class="site-hero site-public-hero forum-page-hero">
+      <div class="site-hero-nav">
+        <app-navbar variant="hero"></app-navbar>
+      </div>
+      <div class="site-hero-image-layer"></div>
+      <div class="site-hero-overlay"></div>
+      <div class="site-hero-content">
+        <div class="site-hero-inner">
+          <div class="site-public-hero-copy site-public-hero-copy-center">
+            <p class="site-hero-kicker">{{ t('navbar.links.forum') }}</p>
+            <h1 class="site-public-hero-title">{{ t('forum.list.title') }}</h1>
+            <p class="site-public-hero-subtitle">{{ t('forum.list.subtitle') }}</p>
+          </div>
+        </div>
+      </div>
+      <img src="/hero-wave-red.svg" alt="" class="site-hero-wave" aria-hidden="true">
+    </section>
+
+    <div class="site-page-shell site-page-shell-after-hero forum-page-shell">
+      @if (!authService.isAuthenticated()) {
+        <section class="forum-access-gate">
+          <div class="forum-access-content">
+            <h2 class="forum-access-title">{{ t('forum.list.access.title') }}</h2>
+            <p class="forum-access-copy">{{ t('forum.list.access.body') }}</p>
+            <a routerLink="/login" class="site-button-primary forum-access-button">
+              {{ t('forum.list.access.button') }}
+            </a>
+          </div>
+        </section>
+      } @else {
+        <div class="forum-page-layout">
+          <aside class="forum-page-aside">
+            <div class="site-masthead-card forum-page-intro">
+              <p class="site-page-kicker">{{ t('forum.list.sidebar.kicker') }}</p>
+              <h2 class="forum-page-aside-title">{{ t('forum.list.sidebar.title') }}</h2>
+              <p class="forum-page-aside-copy">{{ t('forum.list.sidebar.body') }}</p>
+
+              <div class="forum-page-stat-grid">
+                <article class="forum-page-stat-card">
+                  <div class="forum-page-stat-value">{{ topics.length }}</div>
+                  <div class="forum-page-stat-label">{{ t('forum.list.stats.topics') }}</div>
+                </article>
+                <article class="forum-page-stat-card">
+                  <div class="forum-page-stat-value">{{ totalResponses }}</div>
+                  <div class="forum-page-stat-label">{{ t('forum.list.stats.responses') }}</div>
+                </article>
+              </div>
+
+              <div class="forum-page-intro-actions">
+                <button
+                  type="button"
+                  (click)="showCreateForm = !showCreateForm"
+                  class="site-button-primary forum-page-intro-button">
+                  {{ showCreateForm ? t('forum.list.actions.cancel') : t('forum.list.actions.newTopic') }}
+                </button>
+              </div>
+            </div>
+          </aside>
+
+          <div class="forum-page-main">
+            @if (showCreateForm) {
+              <section class="site-surface paper-texture forum-compose">
+                <div class="forum-compose-header">
+                  <div>
+                    <p class="site-page-kicker">{{ t('forum.list.sidebar.kicker') }}</p>
+                    <h3 class="forum-compose-title">{{ t('forum.list.createTitle') }}</h3>
+                  </div>
+                </div>
+
+                <form [formGroup]="createForm" (ngSubmit)="onCreateTopic()" class="space-y-6">
+                  <div>
+                    <label class="site-form-label">
+                      {{ t('forum.list.fields.title.label') }}
+                    </label>
+                    <input
+                      formControlName="title"
+                      type="text"
+                      class="site-input"
+                      [placeholder]="t('forum.list.fields.title.placeholder')">
+                  </div>
+                  <div>
+                    <label class="site-form-label">
+                      {{ t('forum.list.fields.content.label') }}
+                    </label>
+                    <textarea
+                      formControlName="content"
+                      rows="7"
+                      class="site-textarea"
+                      [placeholder]="t('forum.list.fields.content.placeholder')"></textarea>
+                  </div>
+                  @if (createError) {
+                    <div class="site-state-box site-state-box-error">{{ createError }}</div>
+                  }
+                  @if (createSuccess) {
+                    <div class="site-state-box site-state-box-success">{{ createSuccess }}</div>
+                  }
+                  <div class="forum-compose-actions">
+                    <button
+                      type="submit"
+                      [disabled]="!createForm.valid || creating"
+                      class="site-button-primary disabled:opacity-50">
+                      {{ creating ? t('forum.list.actions.creating') : t('forum.list.actions.publish') }}
+                    </button>
+                    <button type="button" (click)="showCreateForm = false" class="site-button-secondary">
+                      {{ t('forum.list.actions.cancel') }}
+                    </button>
+                  </div>
+                </form>
+              </section>
+            }
+
+            @if (loading) {
+              <div class="site-loading-state">
+                <div class="site-loading-ring"></div>
+                <p class="site-loading-copy">{{ t('forum.list.loading') }}</p>
+              </div>
+            } @else if (topics.length === 0) {
+              <div class="site-surface site-empty-state paper-texture">
+                <div class="site-empty-icon">💬</div>
+                <h3 class="site-empty-title">{{ t('forum.list.empty.title') }}</h3>
+                <p class="site-empty-copy">{{ t('forum.list.empty.body') }}</p>
+              </div>
+            } @else {
+              <div class="forum-thread-list">
+                @for (topic of topics; track topic.id) {
+                  <article class="forum-thread">
+                    <div class="forum-thread-rail">
+                      <div class="forum-page-avatar forum-thread-avatar">
+                        {{ getAuthorInitials(topic) }}
+                      </div>
+                      <div class="forum-thread-metric">
+                        <span class="forum-thread-metric-value">{{ topic.message_count }}</span>
+                        <span class="forum-thread-metric-label">
+                          {{ topic.message_count > 1 ? t('forum.list.topic.responsePlural') : t('forum.list.topic.responseSingle') }}
+                        </span>
+                      </div>
+                      <div class="forum-thread-date">{{ formatDate(topic.created_at) }}</div>
+                    </div>
+
+                    <div class="forum-thread-body">
+                      <div class="forum-thread-topline">
+                        <span class="site-chip">{{ t('common.byAuthor', { firstName: topic.first_name, lastName: topic.last_name }) }}</span>
+                        @if (!topic.validated) {
+                          <span class="site-status-pill site-status-pill-yellow">
+                            {{ t('forum.list.topic.pendingValidation') }}
+                          </span>
+                        }
+                      </div>
+
+                      <h2 class="forum-thread-title">{{ topic.title }}</h2>
+                      <p class="forum-thread-excerpt line-clamp-3">{{ topic.content }}</p>
+
+                      <div class="forum-thread-footer">
+                        <span class="forum-thread-footer-link">
+                          {{ topic.message_count }}
+                          {{ topic.message_count > 1 ? t('forum.list.topic.responsePlural') : t('forum.list.topic.responseSingle') }}
+                        </span>
+                      </div>
+                    </div>
+                  </article>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <app-scroll-to-top></app-scroll-to-top>
+  </div>
+</ng-container>

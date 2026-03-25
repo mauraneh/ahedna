@@ -1,0 +1,183 @@
+<ng-container *transloco="let t">
+  <div class="site-page paper-texture relative overflow-hidden membership-page">
+    <app-navbar></app-navbar>
+
+    <section class="site-tool-shell site-tool-stack">
+      <div class="site-masthead-card site-tool-masthead-solid membership-page-header">
+        <div class="site-tool-masthead site-tool-masthead-split">
+          <div>
+            <p class="site-page-kicker">{{ t('navbar.links.membership') }}</p>
+            <h1 class="site-tool-title">{{ t('membership.hero.title') }}</h1>
+            <p class="site-tool-subtitle">{{ t('membership.hero.subtitle') }}</p>
+          </div>
+
+          <div class="membership-page-summary">
+            <article class="site-stat-card site-tool-panel-solid membership-page-summary-card">
+              <p class="site-stat-label">{{ t('membership.adhesion.title') }}</p>
+              <p class="membership-page-summary-copy">{{ t('membership.adhesion.features.community') }}</p>
+            </article>
+            <article class="site-stat-card site-tool-panel-solid membership-page-summary-card">
+              <p class="site-stat-label">{{ t('membership.donation.title') }}</p>
+              <p class="membership-page-summary-copy">{{ t('membership.support.reasons.tax.title') }}</p>
+            </article>
+          </div>
+        </div>
+      </div>
+
+      <div class="max-w-6xl mx-auto w-full pb-20 membership-page-stack">
+        <div class="grid lg:grid-cols-2 gap-8 membership-page-grid">
+          <article class="site-surface site-tool-panel-solid site-card-hover p-8 membership-page-card">
+            <div class="membership-page-card-head">
+              <span class="site-status-pill site-status-pill-green">{{ t('membership.adhesion.title') }}</span>
+              <h2 class="text-3xl font-vintage font-bold text-paper-900">{{ t('membership.adhesion.title') }}</h2>
+              <p class="text-paper-600 font-serif">{{ t('membership.adhesion.body') }}</p>
+            </div>
+
+            <div class="space-y-4 membership-page-feature-list">
+              <div class="membership-page-feature">
+                <div class="membership-page-feature-icon">
+                  <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+                <p class="text-paper-700 font-serif">{{ t('membership.adhesion.features.events') }}</p>
+              </div>
+              <div class="membership-page-feature">
+                <div class="membership-page-feature-icon">
+                  <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+                <p class="text-paper-700 font-serif">{{ t('membership.adhesion.features.community') }}</p>
+              </div>
+              <div class="membership-page-feature">
+                <div class="membership-page-feature-icon">
+                  <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+                <p class="text-paper-700 font-serif">{{ t('membership.adhesion.features.newsletter') }}</p>
+              </div>
+              <div class="membership-page-feature">
+                <div class="membership-page-feature-icon">
+                  <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+                <p class="text-paper-700 font-serif">{{ t('membership.adhesion.features.memory') }}</p>
+              </div>
+            </div>
+
+            <button
+              (click)="handleAdhesion()"
+              class="site-button-primary w-full text-lg">
+              {{ t('membership.adhesion.button') }}
+            </button>
+          </article>
+
+          <article class="site-surface site-tool-panel-solid site-card-hover p-8 membership-page-card">
+            <div class="membership-page-card-head">
+              <span class="site-status-pill site-status-pill-red">{{ t('membership.donation.title') }}</span>
+              <h2 class="text-3xl font-vintage font-bold text-paper-900">{{ t('membership.donation.title') }}</h2>
+              <p class="text-paper-600 font-serif">{{ t('membership.donation.body') }}</p>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3 mb-6">
+              @for (amount of donationAmounts; track amount) {
+                <button
+                  (click)="selectDonationAmount(amount)"
+                  [class.bg-red-600]="customAmount === amount.toString()"
+                  [class.text-white]="customAmount === amount.toString()"
+                  [class.bg-paper-200]="customAmount !== amount.toString()"
+                  [class.text-paper-800]="customAmount !== amount.toString()"
+                  class="px-4 py-3 rounded-lg font-vintage font-semibold transition-all hover:scale-105 active:scale-95 border-2 border-paper-300/50">
+                  {{ amount }}€
+                </button>
+              }
+            </div>
+
+            <div class="mb-6">
+              <label class="block text-sm font-vintage font-semibold text-paper-700 mb-2">
+                {{ t('membership.donation.customAmountLabel') }}
+              </label>
+              <input
+                type="number"
+                [value]="customAmount"
+                (input)="customAmount = $any($event.target).value"
+                [placeholder]="t('membership.donation.customAmountPlaceholder')"
+                class="w-full px-4 py-3 rounded-lg border-2 border-paper-300/80 bg-paper-100/50 text-paper-900 font-serif focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent">
+            </div>
+
+            <button
+              (click)="handleDonation()"
+              [disabled]="!isValidAmount()"
+              class="site-button-danger w-full text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+              {{ t('membership.donation.button') }}
+            </button>
+
+            @if (stripeEnabled) {
+              <div class="mt-4 pt-4 border-t-2 border-paper-300/50">
+                <p class="text-sm text-paper-600 font-serif text-center mb-3">{{ t('membership.donation.alternativeLabel') }}</p>
+                <button class="site-button-primary w-full">
+                  {{ t('membership.donation.stripeButton') }}
+                </button>
+              </div>
+            }
+          </article>
+        </div>
+
+        <section class="site-band site-band-cool membership-page-support">
+          <h3 class="text-2xl font-vintage font-bold text-paper-900 mb-6 text-center">{{ t('membership.support.title') }}</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+              </div>
+              <div>
+                <h4 class="font-vintage font-semibold text-paper-900 mb-2">{{ t('membership.support.reasons.memory.title') }}</h4>
+                <p class="text-paper-700 font-serif text-sm">{{ t('membership.support.reasons.memory.body') }}</p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+              </div>
+              <div>
+                <h4 class="font-vintage font-semibold text-paper-900 mb-2">{{ t('membership.support.reasons.community.title') }}</h4>
+                <p class="text-paper-700 font-serif text-sm">{{ t('membership.support.reasons.community.body') }}</p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+              </div>
+              <div>
+                <h4 class="font-vintage font-semibold text-paper-900 mb-2">{{ t('membership.support.reasons.research.title') }}</h4>
+                <p class="text-paper-700 font-serif text-sm">{{ t('membership.support.reasons.research.body') }}</p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <div>
+                <h4 class="font-vintage font-semibold text-paper-900 mb-2">{{ t('membership.support.reasons.tax.title') }}</h4>
+                <p class="text-paper-700 font-serif text-sm">{{ t('membership.support.reasons.tax.body') }}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <app-scroll-to-top></app-scroll-to-top>
+  </div>
+</ng-container>

@@ -1,0 +1,81 @@
+<ng-container *transloco="let t">
+  <div class="site-page paper-texture relative overflow-hidden login-page auth-page">
+    <app-navbar></app-navbar>
+
+    <section class="site-tool-shell site-tool-shell-narrow site-tool-stack">
+      <div class="site-masthead-card site-tool-masthead-solid auth-page-masthead">
+        <div class="site-tool-masthead site-tool-masthead-center">
+          <div>
+            <p class="site-page-kicker">{{ t('navbar.auth.login') }}</p>
+            <h1 class="site-tool-title">{{ t('auth.login.title') }}</h1>
+            <p class="site-tool-subtitle">{{ t('auth.login.subtitle') }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="site-auth-layout">
+        <div class="site-surface site-tool-panel-solid site-auth-card w-full space-y-8 paper-texture auth-page-card">
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="mt-8 space-y-6">
+          <div class="space-y-4">
+            <div>
+              <label for="email" class="site-form-label">
+                {{ t('auth.login.fields.email.label') }}
+              </label>
+              <input
+                id="email"
+                formControlName="email"
+                type="email"
+                required
+                class="site-input"
+                [placeholder]="t('auth.login.fields.email.placeholder')">
+            </div>
+
+            <div>
+              <label for="password" class="site-form-label">
+                {{ t('auth.login.fields.password.label') }}
+              </label>
+              <input
+                id="password"
+                formControlName="password"
+                type="password"
+                required
+                class="site-input"
+                [placeholder]="t('auth.login.fields.password.placeholder')">
+            </div>
+          </div>
+
+          @if (error) {
+            <div class="site-state-box site-state-box-error">
+              <p class="text-sm">{{ error }}</p>
+            </div>
+          }
+
+          <div class="space-y-3">
+            <button
+              type="submit"
+              [disabled]="!loginForm.valid || loading"
+              class="site-button-primary w-full disabled:opacity-50 disabled:cursor-not-allowed">
+              {{ loading ? t('auth.login.actions.submitting') : t('auth.login.actions.submit') }}
+            </button>
+
+            <a
+              routerLink="/"
+              class="auth-page-link block w-full text-center py-2 px-4 text-sm font-vintage font-medium">
+              ← {{ t('auth.login.actions.backHome') }}
+            </a>
+          </div>
+
+          <div class="text-center text-paper-700 font-serif">
+            <span>{{ t('auth.login.actions.noAccount') }}</span>
+            <a routerLink="/register" class="auth-page-link ml-1 font-vintage font-medium">
+              {{ t('auth.login.actions.register') }}
+            </a>
+          </div>
+        </form>
+        </div>
+      </div>
+    </section>
+
+    <app-scroll-to-top></app-scroll-to-top>
+  </div>
+</ng-container>

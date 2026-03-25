@@ -3,6 +3,7 @@ services:
   - type: web
     name: ahedna-backend
     env: node
+    rootDir: backend
     region: frankfurt  # ou singapore, oregon, etc.
     plan: free
     buildCommand: yarn install && yarn build

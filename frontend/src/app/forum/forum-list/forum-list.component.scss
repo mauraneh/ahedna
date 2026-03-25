@@ -1,0 +1,317 @@
+:host {
+  display: block;
+}
+
+.forum-page-hero .site-hero-image-layer {
+  background-image: url('https://commons.wikimedia.org/wiki/Special:FilePath/Carte-combattant%20pour%20les%20Harkis.jpg');
+  background-position: center 42%;
+}
+
+.forum-page-shell {
+  padding-bottom: 5rem;
+}
+
+.forum-access-gate {
+  display: flex;
+  justify-content: center;
+  padding: 3rem 0 0;
+}
+
+.forum-access-content {
+  width: min(100%, 44rem);
+  text-align: center;
+}
+
+.forum-access-title {
+  color: var(--site-ink);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2rem, 3.6vw, 2.9rem);
+  font-weight: 900;
+  line-height: 1.04;
+}
+
+.forum-access-copy {
+  margin: 1rem auto 0;
+  max-width: 36rem;
+  color: var(--site-muted);
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 1.08rem;
+  line-height: 1.72;
+}
+
+.forum-access-button {
+  margin-top: 1.6rem;
+}
+
+.forum-page-layout {
+  display: grid;
+  grid-template-columns: minmax(18rem, 22rem) minmax(0, 1fr);
+  gap: 2rem;
+  align-items: start;
+}
+
+.forum-page-aside {
+  position: sticky;
+  top: 6.4rem;
+}
+
+.forum-page-intro {
+  background: linear-gradient(180deg, var(--site-surface-bg) 0%, var(--site-surface-bg-alt) 100%);
+  border-top: 0.3rem solid var(--brand-red);
+}
+
+.forum-page-aside-title {
+  margin-top: 0.75rem;
+  color: var(--site-ink);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2rem, 3vw, 2.75rem);
+  font-weight: 900;
+  line-height: 1.04;
+}
+
+.forum-page-aside-copy {
+  margin-top: 0.95rem;
+  color: var(--site-muted);
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 1.04rem;
+  line-height: 1.7;
+}
+
+.forum-page-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin-top: 1.5rem;
+}
+
+.forum-page-stat-card {
+  padding: 1rem;
+  border-radius: 1.2rem;
+  border: 1px solid rgba(95, 72, 49, 0.1);
+  background: var(--site-surface-bg-soft);
+}
+
+.forum-page-stat-value {
+  color: var(--site-ink);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.85rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.forum-page-stat-label {
+  margin-top: 0.45rem;
+  color: var(--site-muted);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.forum-page-intro-actions {
+  margin-top: 1.4rem;
+}
+
+.forum-page-intro-button {
+  width: 100%;
+}
+
+.forum-page-main {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.forum-compose {
+  padding: 1.9rem;
+  background: var(--site-surface-bg);
+  border-top: 0.3rem solid var(--brand-turquoise);
+}
+
+.forum-compose-header {
+  margin-bottom: 1.3rem;
+}
+
+.forum-compose-title {
+  margin-top: 0.7rem;
+  color: var(--site-ink);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.75rem, 2vw, 2.25rem);
+  font-weight: 900;
+  line-height: 1.05;
+}
+
+.forum-compose-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.forum-thread-list {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.forum-thread {
+  position: relative;
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  gap: 1.35rem;
+  padding: 1.35rem 1.4rem;
+  border-radius: 1.85rem;
+  border: 1px solid rgba(95, 72, 49, 0.12);
+  background: var(--site-surface-bg);
+  box-shadow: 0 14px 28px rgba(67, 46, 31, 0.08);
+  transition:
+    transform 0.24s ease,
+    box-shadow 0.24s ease,
+    border-color 0.24s ease;
+}
+
+.forum-thread:nth-child(2n) {
+  background: var(--site-surface-bg-soft);
+}
+
+.forum-thread::before {
+  content: '';
+  position: absolute;
+  inset: 1rem auto 1rem 0.95rem;
+  width: 0.28rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--brand-red), var(--brand-yellow), var(--brand-turquoise));
+}
+
+.forum-thread:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 32px rgba(67, 46, 31, 0.1);
+  border-color: rgba(95, 72, 49, 0.18);
+}
+
+.forum-thread-rail {
+  display: grid;
+  justify-items: start;
+  align-content: start;
+  gap: 0.75rem;
+  padding-left: 1rem;
+  padding-right: 0.9rem;
+  border-right: 1px dashed rgba(95, 72, 49, 0.16);
+}
+
+.forum-page-avatar {
+  background: linear-gradient(135deg, var(--brand-red), var(--brand-turquoise));
+}
+
+.forum-thread-avatar {
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1rem;
+  font-weight: 900;
+  box-shadow: none;
+}
+
+.forum-thread-metric {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.forum-thread-metric-value {
+  color: var(--site-ink);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.55rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.forum-thread-metric-label,
+.forum-thread-date {
+  color: var(--site-muted);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.forum-thread-body {
+  display: grid;
+  gap: 0.9rem;
+  align-content: start;
+}
+
+.forum-thread-topline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.forum-thread-title {
+  color: var(--site-ink);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.55rem, 2vw, 2.1rem);
+  font-weight: 900;
+  line-height: 1.08;
+}
+
+.forum-thread-excerpt {
+  color: var(--site-muted);
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 1.06rem;
+  line-height: 1.7;
+}
+
+.forum-thread-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.forum-thread-footer-link {
+  color: var(--brand-red);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 1024px) {
+  .forum-page-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .forum-page-aside {
+    position: static;
+  }
+}
+
+@media (max-width: 760px) {
+  .forum-thread {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .forum-thread-rail {
+    grid-template-columns: auto auto 1fr;
+    align-items: center;
+    border-right: 0;
+    border-bottom: 1px dashed rgba(95, 72, 49, 0.16);
+    padding-right: 0;
+    padding-bottom: 0.9rem;
+  }
+
+  .forum-thread-date {
+    justify-self: end;
+    text-align: right;
+  }
+
+  .forum-page-stat-grid {
+    grid-template-columns: 1fr;
+  }
+}

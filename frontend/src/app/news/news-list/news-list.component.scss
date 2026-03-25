@@ -1,0 +1,29 @@
+:host {
+  display: block;
+}
+
+.news-page-hero .site-hero-image-layer {
+  background-image: url('https://commons.wikimedia.org/wiki/Special:FilePath/%C3%89vian%20Accords.jpg');
+  background-position: center 24%;
+}
+
+.news-page-grid {
+  align-items: stretch;
+}
+
+.news-page-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.news-page-card > .p-6 {
+  display: grid;
+  align-content: start;
+  gap: 0.2rem;
+  flex: 1 1 auto;
+}
+
+.news-page-placeholder {
+  background: linear-gradient(135deg, rgba(var(--brand-yellow-rgb), 0.28), rgba(var(--brand-turquoise-rgb), 0.18));
+}

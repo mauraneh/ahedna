@@ -1,0 +1,1149 @@
+{
+  "navbar": {
+    "brand": {
+      "name": "AHEDNA",
+      "region": "Dordogne & Nouvelle-Aquitaine",
+      "logoAlt": "Logo de l'association AHEDNA"
+    },
+    "links": {
+      "home": "Accueil",
+      "history": "Histoire",
+      "news": "Actualités",
+      "events": "Événements",
+      "forum": "Forum",
+      "gallery": "Galerie",
+      "membership": "Adhésion"
+    },
+    "language": {
+      "label": "Langue",
+      "options": {
+        "fr": "FR",
+        "en": "EN"
+      }
+    },
+    "auth": {
+      "admin": "Admin",
+      "accountMenu": "Ouvrir le menu du compte",
+      "logout": "Déconnexion",
+      "login": "Connexion",
+      "register": "S'inscrire",
+      "profile": "Mon profil",
+      "content": "Contenus"
+    },
+    "mobile": {
+      "open": "Ouvrir le menu",
+      "close": "Fermer le menu"
+    }
+  },
+  "history": {
+    "hero": {
+      "badge": "Frise documentaire",
+      "title": "Histoire des Harkis",
+      "subtitle": "Un parcours visuel et documentaire à travers l'engagement, l'abandon, l'exil et la transmission de la mémoire harki.",
+      "highlights": [
+        {
+          "value": "1954-2025",
+          "label": "Repères historiques"
+        },
+        {
+          "value": "7",
+          "label": "Chapitres clés"
+        },
+        {
+          "value": "Mémoire",
+          "label": "Transmise et documentée"
+        }
+      ]
+    },
+    "loadingLabel": "Chargement de l'histoire...",
+    "emptyState": {
+      "title": "Histoire à venir",
+      "body": "Le contenu historique sera bientôt disponible. En attendant, explorez nos autres sections.",
+      "ctaLabel": "Retour à l'accueil"
+    },
+    "labels": {
+      "chapter": "Chapitre",
+      "visual": "Repère visuel",
+      "source": "Source",
+      "photoPlaceholder": "Photo à venir",
+      "tones": {
+        "archive": "Archive",
+        "document": "Document",
+        "ceremony": "Commémoration",
+        "memory": "Mémoire"
+      }
+    },
+    "cta": {
+      "title": "Préservons cette mémoire ensemble",
+      "body": "Rejoignez notre communauté pour partager des témoignages et contribuer à la mémoire collective.",
+      "actionLabel": "Rejoindre AHEDNA"
+    },
+    "chapters": [
+      {
+        "id": "origines",
+        "title": "Les Origines : l'engagement des Harkis",
+        "content": "En 1954, alors que la guerre d'Algérie éclate, de nombreux Algériens musulmans choisissent de s'engager aux côtés de la France. Ces hommes, appelés « harkis » (du mot arabe harka signifiant mouvement), sont recrutés comme auxiliaires de l'armée française. Ils servent dans des unités spéciales, les harkas, et participent aux opérations de maintien de l'ordre et de pacification.\n\nLeur engagement est motivé par diverses raisons : fidélité à la France, opposition au FLN, espoir d'une Algérie française, ou simplement nécessité économique. Souvent issus de milieux ruraux, ils voient dans cet engagement une possibilité de servir et de protéger leurs familles.\n\nEntre 1954 et 1962, environ 200 000 à 250 000 harkis servent dans les rangs de l'armée française, formant une force essentielle dans la lutte contre l'insurrection nationaliste.",
+        "chapterOrder": 1,
+        "yearStart": 1954,
+        "yearEnd": 1956,
+        "media": [
+          {
+            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Harki-j.jpg",
+            "alt": "Jeune harki photographié en Algérie pendant la guerre d'Algérie",
+            "caption": "Un jeune harki photographié en Algérie pendant la guerre d'Algérie.",
+            "credit": "Poussin jean / Wikimedia Commons",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Harki-j.jpg",
+            "sourceLabel": "Jeune harki en Algérie, été 1961",
+            "focus": "Engagement et recrutement",
+            "tone": "archive",
+            "orientation": "portrait"
+          }
+        ]
+      },
+      {
+        "id": "intensification",
+        "title": "L'Intensification : au cœur du conflit",
+        "content": "À partir de 1957, le conflit s'intensifie. Les harkis sont de plus en plus impliqués dans les opérations militaires. Ils connaissent le terrain, la langue et les coutumes locales, ce qui en fait des auxiliaires précieux pour l'armée française.\n\nIls participent aux grandes opérations, aux ratissages dans les djebels, à la surveillance des barrages frontaliers et à la collecte de renseignements. Leur rôle devient crucial dans la lutte contre les maquis du FLN.\n\nCette période est aussi marquée par une escalade de la violence. Les harkis et leurs familles deviennent des cibles privilégiées du FLN, qui les considère comme des traîtres. Malgré ces risques, beaucoup continuent de servir avec courage, souvent au péril de leur vie et de celle de leurs proches.",
+        "chapterOrder": 2,
+        "yearStart": 1957,
+        "yearEnd": 1960,
+        "media": [
+          {
+            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Harki-ag.jpg",
+            "alt": "Portrait d'un harki vétéran de 39-45 pendant la guerre d'Algérie",
+            "caption": "Portrait d'un harki vétéran de 39-45 pendant la guerre d'Algérie.",
+            "credit": "Poussin jean / Wikimedia Commons",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Harki-ag.jpg",
+            "sourceLabel": "Harki vétéran de 39-45, été 1961",
+            "focus": "Durcissement du conflit",
+            "tone": "archive",
+            "orientation": "portrait"
+          }
+        ]
+      },
+      {
+        "id": "abandon",
+        "title": "L'Abandon : les Accords d'Évian et leurs conséquences",
+        "content": "Le 18 mars 1962, les Accords d'Évian mettent fin à la guerre d'Algérie. L'indépendance de l'Algérie est proclamée, mais ces accords ne prévoient aucune protection pour les harkis et leurs familles.\n\nFace à cette situation, l'armée française reçoit l'ordre de ne pas rapatrier les harkis. Seuls quelques milliers parviennent à quitter l'Algérie clandestinement ou grâce à l'aide d'officiers qui désobéissent aux ordres.\n\nPour la grande majorité des harkis, c'est l'abandon. Désarmés et livrés à eux-mêmes dans une Algérie indépendante, ils sont exposés à des représailles immédiates. Entre avril et septembre 1962, des dizaines de milliers sont massacrés. Les estimations varient entre 30 000 et 150 000 morts.",
+        "chapterOrder": 3,
+        "yearStart": 1961,
+        "yearEnd": 1962,
+        "media": [
+          {
+            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/%C3%89vian%20Accords.jpg",
+            "alt": "Délégation du FLN lors des accords d'Évian en 1962",
+            "caption": "La délégation du FLN lors des négociations des accords d'Évian en 1962.",
+            "credit": "UtCon Collection / Wikimedia Commons",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:%C3%89vian_Accords.jpg",
+            "sourceLabel": "Accords d'Évian, 18 mars 1962",
+            "focus": "Fin de guerre et bascule politique",
+            "tone": "document",
+            "orientation": "landscape"
+          }
+        ]
+      },
+      {
+        "id": "exil",
+        "title": "L'Exil : les camps de transit et d'hébergement",
+        "content": "Les harkis qui parviennent à quitter l'Algérie arrivent en France dans des conditions dramatiques. Ils sont d'abord parqués dans des camps de transit improvisés, puis dans des camps d'hébergement comme Rivesaltes, Bias ou Saint-Maurice-l'Ardoise.\n\nCes camps, souvent installés dans d'anciens sites militaires ou des baraquements précaires, accueillent des familles entières dans des conditions très difficiles. Isolement, promiscuité, manque d'hygiène et absence d'intimité marquent durablement cette génération.\n\nBeaucoup de familles y restent des années. Les enfants grandissent dans ces lieux, confrontés à l'exclusion et à la discrimination. Malgré cela, les harkis tentent de reconstruire leur vie en acceptant les travaux les plus pénibles pour subvenir aux besoins de leurs proches.",
+        "chapterOrder": 4,
+        "yearStart": 1962,
+        "yearEnd": 1975,
+        "media": [
+          {
+            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Camps%20de%20Rivesaltes%2016-05%20MH-PO%206797.jpg",
+            "alt": "Entrée du camp de Rivesaltes et du mémorial",
+            "caption": "Entrée du camp de Rivesaltes et du mémorial, lieu central de la mémoire de l'exil.",
+            "credit": "Jebulon / Wikimedia Commons",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Camps_de_Rivesaltes_16-05_MH-PO_6797.jpg",
+            "sourceLabel": "Camp de Rivesaltes et mémorial",
+            "focus": "Camps d'hébergement et exil",
+            "tone": "memory",
+            "orientation": "landscape"
+          },
+          {
+            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Hameau%20de%20forestage%20montmeyan.jpg",
+            "alt": "Ancien logement du hameau de forestage de Montmeyan",
+            "caption": "Un ancien logement du hameau de forestage de Montmeyan, autre forme d'installation durable en France.",
+            "credit": "Faqscl / Wikimedia Commons",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hameau_de_forestage_montmeyan.jpg",
+            "sourceLabel": "Ancien hameau de forestage de Montmeyan",
+            "focus": "Vie quotidienne après le rapatriement",
+            "tone": "memory",
+            "orientation": "landscape"
+          }
+        ]
+      },
+      {
+        "id": "reconnaissance",
+        "title": "La Reconnaissance : vers une mémoire officielle",
+        "content": "À partir des années 1970, la situation commence lentement à évoluer. Les enfants de harkis, nés en France, s'organisent et réclament la reconnaissance de l'histoire de leurs parents.\n\nEn 1975, une première loi est votée pour améliorer le sort des harkis, mais elle reste insuffisante. Les associations se multiplient pour défendre leurs droits et faire connaître leur histoire.\n\nLes années 1980 et 1990 voient une prise de conscience progressive. Des historiens commencent à écrire sur cette page oubliée de l'histoire. Les médias s'intéressent davantage à cette communauté longtemps reléguée au silence.\n\nEn 1994, une loi reconnaît officiellement les harkis comme rapatriés d'origine nord-africaine. Des mesures sont prises, mais beaucoup reste encore à accomplir.",
+        "chapterOrder": 5,
+        "yearStart": 1975,
+        "yearEnd": 2000,
+        "media": [
+          {
+            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Carte-combattant%20pour%20les%20Harkis.jpg",
+            "alt": "Carte du combattant pour les harkis",
+            "caption": "Carte du combattant liée aux harkis, symbole concret d'une reconnaissance encore tardive et partielle.",
+            "credit": "Poussin jean / Wikimedia Commons",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Carte-combattant_pour_les_Harkis.jpg",
+            "sourceLabel": "Carte du combattant pour les harkis",
+            "focus": "Droits, statut et reconnaissance progressive",
+            "tone": "document",
+            "orientation": "landscape"
+          }
+        ]
+      },
+      {
+        "id": "reconnaissance-officielle",
+        "title": "La Reconnaissance Officielle : de la mémoire à l'histoire",
+        "content": "Le 25 septembre 2001, le président Jacques Chirac reconnaît officiellement la dette d'honneur de la France envers les harkis. Cette déclaration marque un tournant historique.\n\nEn 2005, une loi crée un fonds d'indemnisation pour les harkis et leurs descendants. Des mesures d'accompagnement social et professionnel sont renforcées.\n\nLe 14 avril 2012, le président Nicolas Sarkozy reconnaît la responsabilité de la France dans l'abandon des harkis. Cette parole, attendue depuis cinquante ans, a une forte portée symbolique pour toute la communauté.\n\nDans le même temps, des monuments commémoratifs sont érigés et la journée nationale d'hommage du 25 septembre s'installe durablement dans l'espace public.",
+        "chapterOrder": 6,
+        "yearStart": 2001,
+        "yearEnd": 2012,
+        "media": [
+          {
+            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/C%C3%A9r%C3%A9monie%20d%27hommage%20aux%20Harkis%20Toulon%20IX-2006.jpg",
+            "alt": "Cérémonie d'hommage aux harkis à Toulon en 2006",
+            "caption": "Cérémonie d'hommage aux harkis à Toulon, illustration de l'inscription progressive dans les commémorations officielles.",
+            "credit": "Aussie Oc / Wikimedia Commons",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:C%C3%A9r%C3%A9monie_d%27hommage_aux_Harkis_Toulon_IX-2006.jpg",
+            "sourceLabel": "Cérémonie d'hommage aux harkis, Toulon, 2006",
+            "focus": "Reconnaissance officielle",
+            "tone": "ceremony",
+            "orientation": "landscape"
+          },
+          {
+            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Saint-Pons-de-Thomieres%20Stele%20des%20Harkis.JPG",
+            "alt": "Stèle des harkis à Saint-Pons-de-Thomières",
+            "caption": "La stèle des harkis à Saint-Pons-de-Thomières rappelle l'ancrage de cette mémoire dans l'espace public.",
+            "credit": "Fagairolles 34 / Wikimedia Commons",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Saint-Pons-de-Thomieres_Stele_des_Harkis.JPG",
+            "sourceLabel": "Stèle des harkis à Saint-Pons-de-Thomières",
+            "focus": "Mémoire publique et monuments",
+            "tone": "memory",
+            "orientation": "landscape"
+          }
+        ]
+      },
+      {
+        "id": "transmission",
+        "title": "La Transmission : préserver la mémoire pour l'avenir",
+        "content": "Aujourd'hui, la communauté des harkis et de leurs descendants compte plusieurs centaines de milliers de personnes en France. Les troisième et quatrième générations portent cette mémoire et poursuivent le combat pour la reconnaissance et la transmission.\n\nLes associations, comme l'AHEDNA, jouent un rôle essentiel dans la préservation de cette mémoire. Elles organisent des commémorations, des conférences, des expositions et des temps d'échange pour faire connaître cette histoire aux jeunes générations.\n\nL'enjeu contemporain est double : transmettre l'histoire au sein des familles et l'inscrire pleinement dans le récit national. Il s'agit de faire connaître cette page de l'histoire, d'en comprendre les souffrances et de valoriser le courage et la fidélité des harkis.\n\nL'avenir passe par l'éducation, la mémoire et la reconnaissance. Les descendants des harkis sont pleinement français, tout en portant une histoire qui fait partie intégrante de l'histoire de France.",
+        "chapterOrder": 7,
+        "yearStart": 2013,
+        "yearEnd": 2025,
+        "media": [
+          {
+            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Journ%C3%A9e%20hommage%20harkis%20Reims%201200567.jpg",
+            "alt": "Journée nationale d'hommage aux harkis à Reims",
+            "caption": "Journée nationale d'hommage aux harkis à Reims, reflet des transmissions publiques actuelles.",
+            "credit": "Gérald Garitan / Wikimedia Commons",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Journ%C3%A9e_hommage_harkis_Reims_1200567.jpg",
+            "sourceLabel": "Journée nationale d'hommage aux harkis, Reims, 2021",
+            "focus": "Transmission contemporaine",
+            "tone": "ceremony",
+            "orientation": "landscape"
+          },
+          {
+            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Rivesaltes%20Camp%20Memorial%20-%20Temporary%20exhibition%20-%20Treize%20Chibanis%20harkis%20-%20Serge%20Vollin%20-%20Fatima%20Besnaci-Lancou%20-%20Poster.jpg",
+            "alt": "Affiche de l'exposition Treize chibanis harkis au mémorial de Rivesaltes",
+            "caption": "Affiche de l'exposition « Treize chibanis harkis » au mémorial de Rivesaltes, témoin du travail actuel de transmission.",
+            "credit": "Ji-Elle / Wikimedia Commons",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rivesaltes_Camp_Memorial_-_Temporary_exhibition_-_Treize_Chibanis_harkis_-_Serge_Vollin_-_Fatima_Besnaci-Lancou_-_Poster.jpg",
+            "sourceLabel": "Exposition « Treize chibanis harkis » au mémorial de Rivesaltes",
+            "focus": "Expositions et pédagogie",
+            "tone": "memory",
+            "orientation": "portrait"
+          }
+        ]
+      }
+    ]
+  },
+  "common": {
+    "scrollToTop": "Retour en haut",
+    "byAuthor": "Par {{firstName}} {{lastName}}"
+  },
+  "home": {
+    "hero": {
+      "titlePrimary": "Association de Harkis",
+      "titleSecondary": "et de leurs Enfants de Dordogne et Nouvelle-Aquitaine",
+      "region": "AHEDNA",
+      "subtitle": "Une mémoire vivante, transmise par l'histoire, les rencontres et l'engagement collectif.",
+      "primaryCta": "Découvrir l'Histoire",
+      "secondaryCta": "Adhérer et soutenir",
+      "visual": {
+        "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Camps%20de%20Rivesaltes%2016-05%20MH-PO%206797.jpg",
+        "alt": "Camp de Rivesaltes et mémorial, lieu majeur de la mémoire harki",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Camps_de_Rivesaltes_16-05_MH-PO_6797.jpg",
+        "sourceLabel": "Camp de Rivesaltes et mémorial"
+      }
+    },
+    "shortcuts": [
+      {
+        "label": "Histoire",
+        "route": "/histoire",
+        "icon": "history"
+      },
+      {
+        "label": "Actualités",
+        "route": "/actualites",
+        "icon": "news"
+      },
+      {
+        "label": "Agenda",
+        "route": "/evenements",
+        "icon": "events"
+      },
+      {
+        "label": "Forum",
+        "route": "/forum",
+        "icon": "forum"
+      },
+      {
+        "label": "Adhésion",
+        "route": "/adhesion",
+        "icon": "membership"
+      }
+    ],
+    "sections": {
+      "news": {
+        "eyebrow": "Vie associative",
+        "title": "Actualités",
+        "body": "Retrouve les prises de parole, les hommages, les actions associatives et les temps forts qui font vivre la mémoire au quotidien.",
+        "actionLabel": "Toute l'actualité"
+      },
+      "events": {
+        "eyebrow": "Rendez-vous",
+        "title": "Agenda",
+        "body": "Commémorations, rencontres, conférences et rendez-vous associatifs : les prochains temps forts de l'AHEDNA sont réunis ici.",
+        "actionLabel": "Tous les événements"
+      }
+    },
+    "about": {
+      "eyebrow": "Qui sommes-nous ?",
+      "title": "Transmettre, reconnaître et rassembler autour de la mémoire harki",
+      "body1": "AHEDNA, l'Association de Harkis et de leurs Enfants de Dordogne et Nouvelle-Aquitaine, fait vivre l'histoire des harkis et de leurs familles à travers des actions de mémoire, de transmission et de solidarité.",
+      "body2": "Nous relions les récits familiaux, les archives, les commémorations et les rencontres associatives pour rendre cette mémoire visible, accessible et vivante.",
+      "cta": "Découvrir notre histoire",
+      "visual": {
+        "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Journ%C3%A9e%20hommage%20harkis%20Reims%201200559.jpg",
+        "alt": "Participants a une journee d'hommage aux harkis, dans un esprit de transmission entre generations",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Journ%C3%A9e_hommage_harkis_Reims_1200559.jpg",
+        "sourceLabel": "Journee d'hommage aux harkis, Reims, 2021"
+      },
+      "cards": {
+        "transmission": {
+          "kicker": "Mémoire",
+          "title": "Une histoire à transmettre",
+          "body": "Nous documentons les parcours, recueillons les témoignages et rendons l'histoire lisible pour les jeunes générations."
+        },
+        "recognition": {
+          "kicker": "Reconnaissance",
+          "title": "Une parole à faire entendre",
+          "body": "Nous participons à la reconnaissance publique de cette histoire par des temps de mémoire, de pédagogie et de commémoration."
+        },
+        "community": {
+          "kicker": "Communauté",
+          "title": "Un lien associatif vivant",
+          "body": "Nous créons des espaces pour se rencontrer, échanger et agir ensemble, au-delà des événements et des publications."
+        }
+      }
+    },
+    "team": {
+      "eyebrow": "Le bureau",
+      "title": "Les membres du bureau",
+      "body": "Faites défiler les portraits pour découvrir celles et ceux qui portent l'association, accompagnent ses actions et font vivre AHEDNA au quotidien.",
+      "previousLabel": "Voir les membres précédents",
+      "nextLabel": "Voir les membres suivants",
+      "members": [
+        {
+          "name": "Nom à renseigner",
+          "role": "Présidence",
+          "photoUrl": ""
+        },
+        {
+          "name": "Nom à renseigner",
+          "role": "Vice-présidence",
+          "photoUrl": ""
+        },
+        {
+          "name": "Nom à renseigner",
+          "role": "Secrétariat",
+          "photoUrl": ""
+        },
+        {
+          "name": "Nom à renseigner",
+          "role": "Trésorerie",
+          "photoUrl": ""
+        },
+        {
+          "name": "Nom à renseigner",
+          "role": "Communication",
+          "photoUrl": ""
+        },
+        {
+          "name": "Nom à renseigner",
+          "role": "Mémoire et transmission",
+          "photoUrl": ""
+        }
+      ]
+    },
+    "fallbackNews": [
+      {
+        "title": "Préserver la mémoire, transmettre les parcours",
+        "body": "L'association poursuit son travail de collecte, de valorisation et de transmission autour de l'histoire des harkis et de leurs familles.",
+        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Harki-j.jpg",
+        "imageAlt": "Jeune harki photographié en Algérie pendant la guerre d'Algérie",
+        "dateLabel": "Mémoire vivante"
+      },
+      {
+        "title": "Commémorations et présence publique",
+        "body": "Les cérémonies et prises de parole publiques permettent d'ancrer cette histoire dans l'espace collectif et républicain.",
+        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/C%C3%A9r%C3%A9monie%20d%27hommage%20aux%20Harkis%20Toulon%20IX-2006.jpg",
+        "imageAlt": "Cérémonie d'hommage aux harkis à Toulon",
+        "dateLabel": "Reconnaissance"
+      },
+      {
+        "title": "Archives, témoignages et médiation",
+        "body": "Témoignages familiaux, documents, conférences et expositions nourrissent une transmission plus juste et plus visible.",
+        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Carte-combattant%20pour%20les%20Harkis.jpg",
+        "imageAlt": "Carte du combattant pour les harkis",
+        "dateLabel": "Transmission"
+      },
+      {
+        "title": "Une mémoire locale et nationale",
+        "body": "Entre ancrage régional et histoire nationale, l'AHEDNA relie les générations autour d'une mémoire partagée.",
+        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Journ%C3%A9e%20hommage%20harkis%20Reims%201200567.jpg",
+        "imageAlt": "Journée d'hommage aux harkis à Reims",
+        "dateLabel": "Association"
+      }
+    ],
+    "fallbackEvents": [
+      {
+        "title": "Temps de mémoire et de transmission",
+        "body": "Un rendez-vous pour transmettre l'histoire, partager les récits et faire vivre une mémoire commune.",
+        "dateLabel": "Prochainement",
+        "location": "Dordogne et Nouvelle-Aquitaine",
+        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Journ%C3%A9e%20hommage%20harkis%20Reims%201200567.jpg",
+        "imageAlt": "Journée nationale d'hommage aux harkis à Reims"
+      },
+      {
+        "title": "Rencontre autour des témoignages",
+        "body": "Une rencontre associative pour écouter, documenter et transmettre les mémoires familiales.",
+        "dateLabel": "À venir",
+        "location": "Réseau associatif AHEDNA",
+        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Hameau%20de%20forestage%20montmeyan.jpg",
+        "imageAlt": "Ancien hameau de forestage de Montmeyan"
+      },
+      {
+        "title": "Commémoration et présence publique",
+        "body": "Une séquence d'hommage pour rappeler le parcours des harkis et l'importance de leur reconnaissance.",
+        "dateLabel": "Agenda associatif",
+        "location": "Lieu de mémoire",
+        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Rivesaltes%20Camp%20Memorial%20-%20Temporary%20exhibition%20-%20Treize%20Chibanis%20harkis%20-%20Serge%20Vollin%20-%20Fatima%20Besnaci-Lancou%20-%20Poster.jpg",
+        "imageAlt": "Affiche d'exposition au mémorial de Rivesaltes"
+      }
+    ],
+    "gallery": [
+      {
+        "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Harki-j.jpg",
+        "alt": "Jeune harki photographié en Algérie pendant la guerre d'Algérie",
+        "title": "Archives",
+        "caption": "L'engagement des harkis au cœur de la guerre d'Algérie.",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Harki-j.jpg",
+        "sourceLabel": "Jeune harki en Algérie, été 1961"
+      },
+      {
+        "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Camps%20de%20Rivesaltes%2016-05%20MH-PO%206797.jpg",
+        "alt": "Entrée du camp de Rivesaltes et du mémorial",
+        "title": "Exil",
+        "caption": "Les camps et les lieux de mémoire racontent l'après-1962.",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Camps_de_Rivesaltes_16-05_MH-PO_6797.jpg",
+        "sourceLabel": "Camp de Rivesaltes et mémorial"
+      },
+      {
+        "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Journ%C3%A9e%20hommage%20harkis%20Reims%201200567.jpg",
+        "alt": "Journée nationale d'hommage aux harkis à Reims",
+        "title": "Transmission",
+        "caption": "Une mémoire encore portée publiquement aujourd'hui.",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Journ%C3%A9e_hommage_harkis_Reims_1200567.jpg",
+        "sourceLabel": "Journée nationale d'hommage aux harkis, Reims, 2021"
+      }
+    ],
+    "memory": {
+      "eyebrow": "Territoire et mémoire",
+      "title": "Une mémoire portée ici, transmise pour demain",
+      "body": "Entre la Dordogne, la Nouvelle-Aquitaine et les grands lieux de mémoire harkie, l'AHEDNA relie les parcours familiaux, les commémorations, les archives et la vie associative pour donner une place visible et durable à cette histoire.",
+      "actionLabel": "Explorer la frise historique",
+      "visual": {
+        "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Journ%C3%A9e%20hommage%20harkis%20Reims%201200567.jpg",
+        "alt": "Journée nationale d'hommage aux harkis à Reims",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Journ%C3%A9e_hommage_harkis_Reims_1200567.jpg",
+        "sourceLabel": "Journée nationale d'hommage aux harkis, Reims, 2021"
+      },
+      "stats": [
+        {
+          "value": "1954-2025",
+          "label": "Un récit historique à transmettre"
+        },
+        {
+          "value": "Mémoire",
+          "label": "Actions, hommages et transmission"
+        },
+        {
+          "value": "AHEDNA",
+          "label": "Un lien associatif vivant"
+        }
+      ]
+    },
+    "features": {
+      "title": "Nos espaces de mémoire et de transmission",
+      "history": {
+        "title": "Une histoire à transmettre",
+        "body": "Parcourez une frise éditoriale enrichie de repères, d'archives et de photographies pour comprendre le parcours des harkis.",
+        "cta": "Explorer la frise"
+      },
+      "events": {
+        "title": "Des temps de rencontre",
+        "body": "Retrouvez nos cérémonies, commémorations et rendez-vous associatifs pour faire vivre cette mémoire ensemble.",
+        "cta": "Voir les événements"
+      },
+      "community": {
+        "title": "Une communauté active",
+        "body": "Partagez vos témoignages, échangez sur le forum et participez à la vie de l'association au quotidien.",
+        "cta": "Rejoindre le forum"
+      }
+    },
+    "cta": {
+      "title": "Faisons vivre cette mémoire ensemble",
+      "body": "Créez votre compte pour participer aux échanges, suivre nos actualités et rejoindre les actions de l'association.",
+      "button": "Créer un compte"
+    }
+  },
+  "footer": {
+    "brand": "AHEDNA",
+    "line1": "Association de Harkis et de leurs Enfants",
+    "line2": "Dordogne et Nouvelle-Aquitaine",
+    "contact": "Nous contacter",
+    "legal": "Mentions légales",
+    "privacy": "Politique de confidentialité",
+    "copyright": "© AHEDNA. Tous droits réservés.",
+    "language": {
+      "title": "Choix de la langue",
+      "options": {
+        "fr": "Français",
+        "en": "English"
+      }
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Connexion",
+      "subtitle": "Association de Harkis et de leurs Enfants - AHEDNA",
+      "fields": {
+        "email": {
+          "label": "Email",
+          "placeholder": "votre@email.fr"
+        },
+        "password": {
+          "label": "Mot de passe",
+          "placeholder": "Mot de passe"
+        }
+      },
+      "actions": {
+        "submit": "Se connecter",
+        "submitting": "Connexion...",
+        "backHome": "Retour à l'accueil",
+        "noAccount": "Pas encore de compte ?",
+        "register": "S'inscrire"
+      },
+      "errors": {
+        "default": "Impossible de se connecter pour le moment."
+      }
+    },
+    "register": {
+      "title": "Inscription",
+      "subtitle": "Rejoignez l'Association de Harkis et de leurs Enfants",
+      "fields": {
+        "firstName": {
+          "label": "Prénom",
+          "placeholder": "Prénom"
+        },
+        "lastName": {
+          "label": "Nom",
+          "placeholder": "Nom"
+        },
+        "email": {
+          "label": "Email",
+          "placeholder": "votre@email.fr"
+        },
+        "password": {
+          "label": "Mot de passe",
+          "placeholder": "Mot de passe (min 8 caractères)"
+        },
+        "wantMembership": "Je souhaite devenir adhérent"
+      },
+      "actions": {
+        "submit": "S'inscrire",
+        "submitting": "Inscription...",
+        "backHome": "Retour à l'accueil",
+        "hasAccount": "Déjà un compte ?",
+        "login": "Se connecter"
+      },
+      "errors": {
+        "default": "Impossible de créer le compte pour le moment."
+      }
+    }
+  },
+  "news": {
+    "list": {
+      "title": "Actualités",
+      "subtitle": "Prises de parole, hommages et vie associative autour de la mémoire harki.",
+      "loading": "Chargement des actualités...",
+      "empty": {
+        "title": "Aucune actualité pour le moment",
+        "body": "Revenez bientôt pour découvrir nos dernières nouvelles."
+      }
+    }
+  },
+  "events": {
+    "list": {
+      "title": "Événements",
+      "subtitle": "Cérémonies, rencontres et moments de partage",
+      "filters": {
+        "upcoming": "À venir",
+        "past": "Passés"
+      },
+      "loading": "Chargement des événements...",
+      "empty": {
+        "upcoming": "Aucun événement à venir",
+        "past": "Aucun événement passé"
+      }
+    }
+  },
+  "forum": {
+    "list": {
+      "title": "Forum",
+      "subtitle": "Échangez avec la communauté",
+      "sidebar": {
+        "kicker": "Prendre la parole",
+        "title": "Un espace pour partager récits, questions et mémoire",
+        "body": "Le forum rassemble les témoignages, les questions et les échanges entre membres autour de l'histoire harki, des familles et des transmissions."
+      },
+      "stats": {
+        "topics": "Sujets",
+        "responses": "Réponses"
+      },
+      "createTitle": "Créer un nouveau sujet",
+      "fields": {
+        "title": {
+          "label": "Titre",
+          "placeholder": "Donnez un titre clair à votre sujet"
+        },
+        "content": {
+          "label": "Message",
+          "placeholder": "Partagez votre message, votre question ou votre témoignage"
+        }
+      },
+      "actions": {
+        "cancel": "Annuler",
+        "newTopic": "+ Nouveau sujet",
+        "loginToPost": "Se connecter pour publier",
+        "publish": "Publier",
+        "creating": "Création..."
+      },
+      "access": {
+        "kicker": "Accès réservé",
+        "title": "Veuillez vous connecter pour accéder au forum",
+        "body": "Le forum est réservé aux personnes connectées afin de préserver un espace d'échange clair, modéré et respectueux pour la communauté.",
+        "button": "Se connecter"
+      },
+      "loading": "Chargement du forum...",
+      "empty": {
+        "title": "Aucun sujet pour le moment",
+        "body": "Soyez le premier à lancer une discussion."
+      },
+      "topic": {
+        "responseSingle": "réponse",
+        "responsePlural": "réponses",
+        "pendingValidation": "En attente de validation",
+        "fallbackInitial": "U"
+      },
+      "messages": {
+        "createSuccess": "Sujet publié avec succès. Il sera visible après validation.",
+        "createError": "Impossible de publier ce sujet pour le moment."
+      }
+    }
+  },
+  "gallery": {
+    "title": "Galerie Photos",
+    "subtitle": "Albums d'événements, souvenirs partagés et contributions validées par l'association.",
+    "loading": "Chargement de la galerie...",
+    "intro": {
+      "kicker": "Albums ouverts",
+      "title": "Des galeries liées à nos événements",
+      "body": "Chaque album correspond à un événement ouvert par l'administration. Les adhérents peuvent y proposer leurs photos, puis l'équipe valide les contributions avant publication."
+    },
+    "upload": {
+      "kicker": "Contribuer",
+      "title": "Ajouter une photo à un événement",
+      "subtitle": "Sélectionnez un événement ouvert et proposez une photo. Elle apparaîtra dans la galerie après validation par l'administration.",
+      "fields": {
+        "event": "Événement galerie",
+        "photoUrl": "URL de la photo",
+        "photoUrlPlaceholder": "https://...",
+        "description": "Légende ou souvenir",
+        "descriptionPlaceholder": "Décrivez la photo, le moment ou les personnes présentes."
+      },
+      "actions": {
+        "submit": "Envoyer pour validation",
+        "submitting": "Envoi en cours...",
+        "login": "Se connecter",
+        "membership": "Adhérer"
+      },
+      "messages": {
+        "loginRequired": "Connectez-vous pour proposer une photo dans les albums ouverts.",
+        "success": "Votre photo a bien été envoyée. Elle sera visible après validation.",
+        "error": "Impossible d'envoyer cette photo pour le moment."
+      },
+      "membership": {
+        "pending": "Votre adhésion est en attente. La contribution photo sera disponible dès validation de votre adhésion.",
+        "active": "Votre adhésion est active.",
+        "expired": "Votre adhésion n'est plus active. Renouvelez-la pour contribuer à la galerie."
+      }
+    },
+    "event": {
+      "openBadge": "Galerie ouverte",
+      "photoCount": "photos validées",
+      "noLocation": "Lieu à préciser",
+      "noDescription": "Cet événement est ouvert à la contribution photo. Ajoutez vos souvenirs pour enrichir l'album de cette rencontre.",
+      "empty": "Aucune photo validée pour cet événement pour le moment.",
+      "defaultCaption": "Souvenir partagé"
+    },
+    "empty": {
+      "title": "Aucune galerie ouverte pour le moment",
+      "body": "L'administration n'a pas encore ouvert d'événement galerie. Revenez bientôt pour découvrir les prochains albums."
+    }
+  },
+  "membership": {
+    "hero": {
+      "title": "Adhésion & Dons",
+      "subtitle": "Rejoignez notre association et contribuez à préserver la mémoire des harkis."
+    },
+    "adhesion": {
+      "title": "Adhésion annuelle",
+      "body": "Rejoignez l'AHEDNA et participez activement à nos actions pour préserver la mémoire des harkis.",
+      "features": {
+        "events": "Accès à tous les événements et activités",
+        "community": "Participation au forum et à la galerie",
+        "newsletter": "Recevez notre newsletter et actualités",
+        "memory": "Soutenez nos actions de mémoire et de transmission"
+      },
+      "button": "Adhérer via HelloAsso"
+    },
+    "donation": {
+      "title": "Faire un don",
+      "body": "Votre don nous permet de financer nos actions et de préserver la mémoire des harkis pour les générations futures.",
+      "customAmountLabel": "Montant personnalisé (€)",
+      "customAmountPlaceholder": "Montant libre",
+      "button": "Faire un don via HelloAsso",
+      "alternativeLabel": "Ou payer directement avec",
+      "stripeButton": "Payer avec Stripe"
+    },
+    "support": {
+      "title": "Pourquoi nous soutenir ?",
+      "reasons": {
+        "memory": {
+          "title": "Préservation de la mémoire",
+          "body": "Contribuez à maintenir vivante l'histoire des harkis et à la transmettre aux générations futures."
+        },
+        "community": {
+          "title": "Soutien à la communauté",
+          "body": "Aidez-nous à organiser des événements, des conférences et des activités pour rassembler la communauté."
+        },
+        "research": {
+          "title": "Recherche et documentation",
+          "body": "Financez nos projets de recherche historique et de documentation pour enrichir notre patrimoine."
+        },
+        "tax": {
+          "title": "Déduction fiscale",
+          "body": "Vos dons sont déductibles des impôts à hauteur de 66 % pour les particuliers et 60 % pour les entreprises."
+        }
+      }
+    }
+  },
+  "admin": {
+    "header": {
+      "title": "Espace administrateur",
+      "backToSite": "Retour au site"
+    },
+    "stats": {
+      "users": "Utilisateurs",
+      "activeMemberships": "Adhésions actives",
+      "pendingMemberships": "Adhésions en attente",
+      "news": "Actualités",
+      "publishedNews": "Actualités publiées",
+      "events": "Événements",
+      "upcomingEvents": "Événements à venir",
+      "topics": "Sujets forum",
+      "photos": "Photos galerie",
+      "pendingModeration": "Modération en attente"
+    },
+    "tabs": {
+      "users": "Utilisateurs",
+      "news": "Actualités",
+      "forum": "Forum",
+      "gallery": "Galerie",
+      "events": "Événements"
+    },
+    "users": {
+      "title": "Gestion des utilisateurs",
+      "table": {
+        "email": "Email",
+        "name": "Nom",
+        "membershipNumber": "Numéro d'adhérent",
+        "role": "Rôle",
+        "createdAt": "Inscription",
+        "actions": "Actions"
+      },
+      "roles": {
+        "member": "Membre",
+        "author": "Auteur",
+        "admin": "Admin"
+      },
+      "actions": {
+        "delete": "Supprimer",
+        "deleting": "Suppression...",
+        "currentUser": "Compte actuel"
+      }
+    },
+    "recent": {
+      "empty": "Aucune activité récente disponible",
+      "users": {
+        "title": "Dernières inscriptions",
+        "subtitle": "Les comptes créés récemment."
+      },
+      "news": {
+        "title": "Dernières actualités",
+        "subtitle": "Les articles les plus récents, publiés ou non."
+      },
+      "events": {
+        "title": "Derniers événements",
+        "subtitle": "Les événements récemment créés ou modifiés."
+      }
+    },
+    "news": {
+      "createTitle": "Créer une actualité",
+      "editTitle": "Modifier une actualité",
+      "subtitle": "Rédigez, publiez et maintenez la ligne éditoriale de l'association.",
+      "listTitle": "Actualités existantes",
+      "listSubtitle": "Retrouvez ici toutes les actualités, brouillons compris.",
+      "fields": {
+        "title": "Titre",
+        "excerpt": "Extrait",
+        "content": "Contenu",
+        "imageUrl": "Image de couverture",
+        "published": "Publier immédiatement"
+      },
+      "status": {
+        "published": "Publié",
+        "draft": "Brouillon"
+      },
+      "actions": {
+        "create": "Créer",
+        "update": "Mettre à jour",
+        "saving": "Enregistrement...",
+        "cancel": "Annuler",
+        "edit": "Modifier",
+        "delete": "Supprimer",
+        "deleting": "Suppression..."
+      }
+    },
+    "forum": {
+      "title": "Modération du forum",
+      "empty": "Aucun sujet en attente de validation",
+      "validate": "Valider",
+      "reject": "Refuser"
+    },
+    "gallery": {
+      "title": "Modération de la galerie",
+      "subtitle": "Validez les photos déposées par les adhérents dans les albums d'événements.",
+      "createAlbumTitle": "Créer un album d'événement",
+      "createAlbumSubtitle": "Ouvrez ici un dossier galerie lié à un événement afin que les adhérents puissent y ajouter leurs photos.",
+      "addPhotoTitle": "Ajouter une photo admin",
+      "addPhotoSubtitle": "Ajoutez directement une photo dans un album ouvert depuis l'espace administrateur.",
+      "listTitle": "Albums galerie ouverts",
+      "listSubtitle": "Retrouvez ici les événements déjà ouverts à la contribution photo.",
+      "pendingTitle": "Photos en attente de validation",
+      "emptyAlbums": "Aucun album galerie n'est encore ouvert. Créez d'abord un événement galerie.",
+      "publishNote": "Les photos ajoutées par l'administration sont publiées immédiatement dans la galerie.",
+      "empty": "Aucune photo en attente de validation",
+      "validate": "Valider",
+      "reject": "Refuser",
+      "actions": {
+        "createAlbum": "Créer l'album",
+        "creatingAlbum": "Création...",
+        "addPhoto": "Ajouter la photo",
+        "uploadingPhoto": "Ajout en cours...",
+        "manageEvent": "Modifier l'événement",
+        "deleteEvent": "Supprimer l'événement"
+      },
+      "messages": {
+        "eventCreated": "Album galerie créé avec succès.",
+        "eventCreateError": "Impossible de créer cet album galerie.",
+        "photoUploaded": "Photo ajoutée avec succès.",
+        "photoUploadError": "Impossible d'ajouter cette photo pour le moment."
+      }
+    },
+    "events": {
+      "title": "Gestion des événements",
+      "createTitle": "Créer un événement",
+      "editTitle": "Modifier un événement",
+      "subtitle": "Préparez les prochains rendez-vous et mettez à jour l'historique des événements.",
+      "listTitle": "Événements planifiés",
+      "listSubtitle": "Tous les événements visibles par l'administration.",
+      "noLocation": "Lieu à préciser",
+      "fields": {
+        "title": "Titre",
+        "description": "Description",
+        "date": "Date et heure",
+        "location": "Lieu",
+        "type": "Type",
+        "galleryEnabled": "Ouvrir une galerie photo pour cet événement"
+      },
+      "galleryBadge": "Galerie ouverte",
+      "types": {
+        "upcoming": "À venir",
+        "past": "Passé"
+      },
+      "actions": {
+        "create": "Créer",
+        "update": "Mettre à jour",
+        "saving": "Enregistrement...",
+        "cancel": "Annuler",
+        "edit": "Modifier",
+        "delete": "Supprimer",
+        "deleting": "Suppression..."
+      }
+    },
+    "messages": {
+      "roleUpdated": "Rôle utilisateur mis à jour.",
+      "roleUpdateError": "Impossible de mettre à jour le rôle.",
+      "validationError": "Impossible de valider cet élément.",
+      "loadNewsError": "Impossible de charger les actualités.",
+      "loadEventsError": "Impossible de charger les événements.",
+      "saveNewsError": "Impossible d'enregistrer cette actualité.",
+      "saveEventError": "Impossible d'enregistrer cet événement.",
+      "confirmDeleteNews": "Voulez-vous vraiment supprimer cette actualité ?",
+      "confirmDeleteEvent": "Voulez-vous vraiment supprimer cet événement ?",
+      "confirmDeleteTopic": "Voulez-vous vraiment refuser et supprimer ce sujet ?",
+      "deleteError": "Impossible de supprimer cet élément.",
+      "confirmDeletePhoto": "Voulez-vous vraiment refuser et supprimer cette photo ?",
+      "confirmDeleteUser": "Voulez-vous vraiment supprimer le compte {{ email }} ?",
+      "deleteUserError": "Impossible de supprimer cet utilisateur.",
+      "uploadImageError": "Impossible de téléverser cette image."
+    }
+  },
+  "profile": {
+    "eyebrow": "Espace membre",
+    "title": "Mon profil",
+    "subtitle": "Gérez vos informations personnelles, vos accès et vos documents membres depuis un seul espace.",
+    "loading": "Chargement de votre espace membre...",
+    "roles": {
+      "member": "Membre",
+      "author": "Auteur",
+      "admin": "Administrateur"
+    },
+    "summary": {
+      "memberSince": "Membre depuis",
+      "membershipNumber": "Numéro d'adhérent",
+      "membershipWindow": "Période d'adhésion",
+      "notAssigned": "Non attribué",
+      "notAvailable": "Non renseigné"
+    },
+    "personal": {
+      "title": "Informations personnelles",
+      "subtitle": "Gardez vos coordonnées à jour pour faciliter le suivi de l'association."
+    },
+    "fields": {
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "Email",
+      "phone": "Téléphone",
+      "addressLine1": "Adresse",
+      "addressLine2": "Complément d'adresse",
+      "postalCode": "Code postal",
+      "city": "Ville",
+      "country": "Pays",
+      "bio": "Présentation",
+      "avatarUrl": "URL de l'avatar"
+    },
+    "membership": {
+      "status": {
+        "pending": "Adhésion en attente",
+        "active": "Adhésion active",
+        "expired": "Adhésion expirée"
+      }
+    },
+    "documents": {
+      "title": "Documents à télécharger",
+      "subtitle": "Accédez aux ressources utiles selon votre rôle dans l'association.",
+      "items": {
+        "member-guide": {
+          "title": "Guide adhérent",
+          "description": "Les informations essentielles pour participer à la vie de l'association."
+        },
+        "association-charter": {
+          "title": "Charte de l'association",
+          "description": "Le cadre commun, les engagements et les bonnes pratiques partagés."
+        },
+        "content-kit": {
+          "title": "Kit auteur",
+          "description": "Le référentiel éditorial pour rédiger des contenus fiables et cohérents."
+        },
+        "admin-operations": {
+          "title": "Guide administrateur",
+          "description": "Les repères opérationnels pour piloter les contenus et la modération."
+        }
+      }
+    },
+    "security": {
+      "title": "Sécurité du compte",
+      "subtitle": "Changez votre mot de passe quand vous en avez besoin."
+    },
+    "password": {
+      "current": "Mot de passe actuel",
+      "next": "Nouveau mot de passe"
+    },
+    "account": {
+      "title": "Gestion du compte",
+      "subtitle": "Déconnectez-vous ici ou supprimez définitivement votre compte avec confirmation.",
+      "deleteTitle": "Supprimer mon compte",
+      "deleteDescription": "Cette action supprime votre profil, vos documents associés et vos contenus liés au compte.",
+      "deleteWarning": "Action irréversible",
+      "confirmEmail": "Confirmez votre email",
+      "confirmHint": "Saisissez exactement {{ email }} pour autoriser la suppression."
+    },
+    "actions": {
+      "saveProfile": "Enregistrer le profil",
+      "saving": "Enregistrement...",
+      "updatePassword": "Mettre à jour le mot de passe",
+      "savingPassword": "Mise à jour...",
+      "logout": "Se déconnecter",
+      "deleteAccount": "Supprimer définitivement le compte",
+      "deletingAccount": "Suppression du compte..."
+    },
+    "messages": {
+      "loadError": "Impossible de charger le profil.",
+      "updateProfileError": "Impossible de mettre à jour le profil.",
+      "updatePasswordError": "Impossible de mettre à jour le mot de passe.",
+      "deleteAccountConfirmEmail": "Confirmez votre adresse email pour supprimer le compte.",
+      "deleteAccountError": "Impossible de supprimer le compte."
+    }
+  },
+  "content": {
+    "eyebrow": "Espace auteur",
+    "title": "Gestion des contenus",
+    "subtitle": "Créez et mettez à jour les actualités, événements et albums galerie de l'association selon votre rôle.",
+    "tabs": {
+      "news": "Actualités",
+      "events": "Événements",
+      "gallery": "Galerie"
+    },
+    "form": {
+      "createTitle": "Nouvelle actualité",
+      "editTitle": "Modifier l'actualité",
+      "subtitle": "Préparez un titre clair, un extrait court et un contenu complet."
+    },
+    "fields": {
+      "title": "Titre",
+      "excerpt": "Extrait",
+      "content": "Contenu",
+      "imageUrl": "Image de couverture",
+      "imageFile": "Image depuis l'appareil",
+      "published": "Publier immédiatement"
+    },
+    "list": {
+      "title": "Vos actualités",
+      "subtitle": "Retrouvez ici les contenus que vous pouvez administrer.",
+      "loading": "Chargement des contenus...",
+      "empty": "Aucune actualité à gérer pour le moment."
+    },
+    "status": {
+      "published": "Publié",
+      "draft": "Brouillon"
+    },
+    "actions": {
+      "newArticle": "Nouvel article",
+      "newEvent": "Nouvel événement",
+      "newGalleryAlbum": "Nouvel album galerie",
+      "create": "Créer",
+      "update": "Mettre à jour",
+      "saving": "Enregistrement...",
+      "cancel": "Annuler",
+      "addPhoto": "Ajouter la photo",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "deletePhoto": "Supprimer la photo",
+      "deleting": "Suppression...",
+      "confirmDelete": "Voulez-vous vraiment supprimer cette actualité ?",
+      "confirmDeleteEvent": "Voulez-vous vraiment supprimer cet événement ?",
+      "confirmDeletePhoto": "Voulez-vous vraiment supprimer cette photo ?"
+    },
+    "events": {
+      "form": {
+        "createTitle": "Nouvel événement",
+        "editTitle": "Modifier l'événement",
+        "subtitle": "Préparez les informations essentielles de l'événement et activez la galerie si besoin."
+      },
+      "list": {
+        "title": "Événements",
+        "subtitle": "Retrouvez ici les événements publiés ou à venir que vous pouvez administrer.",
+        "loading": "Chargement des événements...",
+        "empty": "Aucun événement à gérer pour le moment."
+      }
+    },
+    "gallery": {
+      "albumForm": {
+        "createTitle": "Nouvel album d'événement",
+        "editTitle": "Modifier l'album galerie",
+        "subtitle": "Créez un dossier événement pour accueillir les photos validées par l'association."
+      },
+      "photoForm": {
+        "title": "Ajouter une photo",
+        "subtitle": "Ajoutez directement une photo dans un album galerie existant."
+      },
+      "list": {
+        "title": "Albums galerie",
+        "subtitle": "Chaque album regroupe les photos déjà publiées pour un événement donné.",
+        "loading": "Chargement des albums galerie...",
+        "empty": "Aucun album galerie n'est disponible pour le moment."
+      },
+      "album": {
+        "photoCount": "photos",
+        "empty": "Aucune photo publiée dans cet album pour le moment."
+      }
+    },
+    "quickAdd": {
+      "news": "Ajouter une actualité",
+      "events": "Ajouter un événement",
+      "gallery": "Ajouter à la galerie"
+    },
+    "messages": {
+      "loadError": "Impossible de charger les contenus.",
+      "saveError": "Impossible d'enregistrer ce contenu.",
+      "deleteError": "Impossible de supprimer ce contenu.",
+      "loadEventsError": "Impossible de charger les événements.",
+      "saveEventError": "Impossible d'enregistrer cet événement.",
+      "deleteEventError": "Impossible de supprimer cet événement.",
+      "loadGalleryError": "Impossible de charger les albums galerie.",
+      "saveGalleryError": "Impossible d'enregistrer cet album galerie.",
+      "saveGalleryPhotoError": "Impossible d'ajouter cette photo.",
+      "deleteGalleryPhotoError": "Impossible de supprimer cette photo.",
+      "uploadingImage": "Téléversement de l'image...",
+      "uploadImageError": "Impossible de téléverser cette image."
+    }
+  }
+}

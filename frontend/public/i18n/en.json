@@ -1,0 +1,1149 @@
+{
+  "navbar": {
+    "brand": {
+      "name": "AHEDNA",
+      "region": "Dordogne & Nouvelle-Aquitaine",
+      "logoAlt": "AHEDNA association logo"
+    },
+    "links": {
+      "home": "Home",
+      "history": "History",
+      "news": "News",
+      "events": "Events",
+      "forum": "Forum",
+      "gallery": "Gallery",
+      "membership": "Membership"
+    },
+    "language": {
+      "label": "Language",
+      "options": {
+        "fr": "FR",
+        "en": "EN"
+      }
+    },
+    "auth": {
+      "admin": "Admin",
+      "accountMenu": "Open account menu",
+      "logout": "Log out",
+      "login": "Log in",
+      "register": "Sign up",
+      "profile": "My profile",
+      "content": "Content"
+    },
+    "mobile": {
+      "open": "Open menu",
+      "close": "Close menu"
+    }
+  },
+  "history": {
+    "hero": {
+      "badge": "Documentary timeline",
+      "title": "History of the Harkis",
+      "subtitle": "A visual and documentary journey through commitment, abandonment, exile, and the transmission of Harki memory.",
+      "highlights": [
+        {
+          "value": "1954-2025",
+          "label": "Historical landmarks"
+        },
+        {
+          "value": "7",
+          "label": "Key chapters"
+        },
+        {
+          "value": "Memory",
+          "label": "Passed on and documented"
+        }
+      ]
+    },
+    "loadingLabel": "Loading the history...",
+    "emptyState": {
+      "title": "History coming soon",
+      "body": "Historical content will be available soon. In the meantime, explore our other sections.",
+      "ctaLabel": "Back to home"
+    },
+    "labels": {
+      "chapter": "Chapter",
+      "visual": "Visual reference",
+      "source": "Source",
+      "photoPlaceholder": "Photo coming soon",
+      "tones": {
+        "archive": "Archive",
+        "document": "Document",
+        "ceremony": "Commemoration",
+        "memory": "Memory"
+      }
+    },
+    "cta": {
+      "title": "Let us preserve this memory together",
+      "body": "Join our community to share testimonies and contribute to our collective memory.",
+      "actionLabel": "Join AHEDNA"
+    },
+    "chapters": [
+      {
+        "id": "origins",
+        "title": "Origins: the commitment of the Harkis",
+        "content": "In 1954, as the Algerian War began, many Muslim Algerians chose to join the French side. These men, known as Harkis (from the Arabic word harka, meaning movement), were recruited as auxiliaries of the French army. They served in special units known as harkas and took part in operations aimed at maintaining order and pacification.\n\nTheir commitment was driven by a range of motives: loyalty to France, opposition to the FLN, the hope of a French Algeria, or simply economic necessity. Often from rural backgrounds, they saw this commitment as a way to serve and protect their families.\n\nBetween 1954 and 1962, roughly 200,000 to 250,000 Harkis served in the ranks of the French army, forming an essential force in the fight against the nationalist insurgency.",
+        "chapterOrder": 1,
+        "yearStart": 1954,
+        "yearEnd": 1956,
+        "media": [
+          {
+            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Harki-j.jpg",
+            "alt": "Young Harki photographed in Algeria during the Algerian War",
+            "caption": "A young Harki photographed in Algeria during the Algerian War.",
+            "credit": "Poussin jean / Wikimedia Commons",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Harki-j.jpg",
+            "sourceLabel": "Young Harki in Algeria, summer 1961",
+            "focus": "Commitment and recruitment",
+            "tone": "archive",
+            "orientation": "portrait"
+          }
+        ]
+      },
+      {
+        "id": "intensification",
+        "title": "Escalation: in the heart of the conflict",
+        "content": "From 1957 onward, the conflict intensified. The Harkis became increasingly involved in military operations. They knew the land, the language, and local customs, which made them invaluable auxiliaries for the French army.\n\nThey took part in major operations, sweeps in the djebels, border surveillance, and intelligence gathering. Their role became crucial in the fight against FLN guerrilla units.\n\nThis period was also marked by escalating violence. The Harkis and their families became prime targets for the FLN, which viewed them as traitors. Despite these risks, many continued to serve with courage, often at the cost of their own lives and those of their relatives.",
+        "chapterOrder": 2,
+        "yearStart": 1957,
+        "yearEnd": 1960,
+        "media": [
+          {
+            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Harki-ag.jpg",
+            "alt": "Portrait of a Harki veteran of World War II during the Algerian War",
+            "caption": "Portrait of a Harki veteran of World War II during the Algerian War.",
+            "credit": "Poussin jean / Wikimedia Commons",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Harki-ag.jpg",
+            "sourceLabel": "Harki veteran of 1939-45, summer 1961",
+            "focus": "Conflict hardening",
+            "tone": "archive",
+            "orientation": "portrait"
+          }
+        ]
+      },
+      {
+        "id": "abandonment",
+        "title": "Abandonment: the Évian Accords and their consequences",
+        "content": "On March 18, 1962, the Évian Accords brought the Algerian War to an end. Algeria's independence was proclaimed, but the accords offered no protection for the Harkis and their families.\n\nIn this context, the French army was ordered not to repatriate the Harkis. Only a few thousand managed to leave Algeria clandestinely or with the help of officers who disobeyed orders.\n\nFor the vast majority of Harkis, this meant abandonment. Disarmed and left on their own in an independent Algeria, they were exposed to immediate reprisals. Between April and September 1962, tens of thousands were massacred. Estimates range from 30,000 to 150,000 deaths.",
+        "chapterOrder": 3,
+        "yearStart": 1961,
+        "yearEnd": 1962,
+        "media": [
+          {
+            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/%C3%89vian%20Accords.jpg",
+            "alt": "FLN delegation during the Évian Accords negotiations in 1962",
+            "caption": "The FLN delegation during the Évian Accords negotiations in 1962.",
+            "credit": "UtCon Collection / Wikimedia Commons",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:%C3%89vian_Accords.jpg",
+            "sourceLabel": "Évian Accords, March 18, 1962",
+            "focus": "End of war and political turning point",
+            "tone": "document",
+            "orientation": "landscape"
+          }
+        ]
+      },
+      {
+        "id": "exile",
+        "title": "Exile: transit and housing camps",
+        "content": "The Harkis who managed to leave Algeria arrived in France under dramatic conditions. They were first confined in makeshift transit camps, then in housing camps such as Rivesaltes, Bias, and Saint-Maurice-l'Ardoise.\n\nThese camps, often located in former military sites or precarious barracks, housed entire families in extremely difficult conditions. Isolation, overcrowding, poor hygiene, and the absence of privacy deeply marked this generation.\n\nMany families remained there for years. Children grew up in these places, facing exclusion and discrimination. Even so, the Harkis tried to rebuild their lives, taking on the hardest jobs to support their loved ones.",
+        "chapterOrder": 4,
+        "yearStart": 1962,
+        "yearEnd": 1975,
+        "media": [
+          {
+            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Camps%20de%20Rivesaltes%2016-05%20MH-PO%206797.jpg",
+            "alt": "Entrance to the Rivesaltes camp and memorial",
+            "caption": "Entrance to the Rivesaltes camp and memorial, a central site in the memory of exile.",
+            "credit": "Jebulon / Wikimedia Commons",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Camps_de_Rivesaltes_16-05_MH-PO_6797.jpg",
+            "sourceLabel": "Rivesaltes camp and memorial",
+            "focus": "Housing camps and exile",
+            "tone": "memory",
+            "orientation": "landscape"
+          },
+          {
+            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Hameau%20de%20forestage%20montmeyan.jpg",
+            "alt": "Former dwelling in the Montmeyan forestry hamlet",
+            "caption": "A former dwelling in the Montmeyan forestry hamlet, another long-term form of settlement in France.",
+            "credit": "Faqscl / Wikimedia Commons",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hameau_de_forestage_montmeyan.jpg",
+            "sourceLabel": "Former forestry hamlet in Montmeyan",
+            "focus": "Daily life after repatriation",
+            "tone": "memory",
+            "orientation": "landscape"
+          }
+        ]
+      },
+      {
+        "id": "recognition",
+        "title": "Recognition: toward official memory",
+        "content": "From the 1970s onward, the situation slowly began to change. Children of Harkis born in France organized themselves and demanded recognition for their parents' history.\n\nIn 1975, an initial law was passed to improve the condition of the Harkis, but it remained insufficient. Associations multiplied to defend their rights and make their history known.\n\nThe 1980s and 1990s saw a gradual awakening. Historians began writing about this forgotten chapter of history. The media also became more interested in a community that had long been pushed into silence.\n\nIn 1994, a law officially recognized the Harkis as repatriates of North African origin. Some measures were introduced, but much remained to be done.",
+        "chapterOrder": 5,
+        "yearStart": 1975,
+        "yearEnd": 2000,
+        "media": [
+          {
+            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Carte-combattant%20pour%20les%20Harkis.jpg",
+            "alt": "Veteran card for the Harkis",
+            "caption": "A veteran card related to the Harkis, a concrete symbol of recognition that came late and remained partial.",
+            "credit": "Poussin jean / Wikimedia Commons",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Carte-combattant_pour_les_Harkis.jpg",
+            "sourceLabel": "Veteran card for the Harkis",
+            "focus": "Rights, status, and gradual recognition",
+            "tone": "document",
+            "orientation": "landscape"
+          }
+        ]
+      },
+      {
+        "id": "official-recognition",
+        "title": "Official recognition: from memory to history",
+        "content": "On September 25, 2001, President Jacques Chirac officially acknowledged France's debt of honor to the Harkis. This statement marked a historical turning point.\n\nIn 2005, a compensation fund was created for the Harkis and their descendants. Social and professional support measures were also strengthened.\n\nOn April 14, 2012, President Nicolas Sarkozy acknowledged France's responsibility in abandoning the Harkis. This long-awaited statement carried great symbolic weight for the whole community.\n\nAt the same time, commemorative monuments were erected and the national day of homage on September 25 became firmly established in public life.",
+        "chapterOrder": 6,
+        "yearStart": 2001,
+        "yearEnd": 2012,
+        "media": [
+          {
+            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/C%C3%A9r%C3%A9monie%20d%27hommage%20aux%20Harkis%20Toulon%20IX-2006.jpg",
+            "alt": "Homage ceremony for the Harkis in Toulon in 2006",
+            "caption": "A ceremony honoring the Harkis in Toulon, illustrating their gradual inclusion in official commemorations.",
+            "credit": "Aussie Oc / Wikimedia Commons",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:C%C3%A9r%C3%A9monie_d%27hommage_aux_Harkis_Toulon_IX-2006.jpg",
+            "sourceLabel": "Homage ceremony for the Harkis, Toulon, 2006",
+            "focus": "Official recognition",
+            "tone": "ceremony",
+            "orientation": "landscape"
+          },
+          {
+            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Saint-Pons-de-Thomieres%20Stele%20des%20Harkis.JPG",
+            "alt": "Harkis memorial stele in Saint-Pons-de-Thomières",
+            "caption": "The Harkis memorial stele in Saint-Pons-de-Thomières shows how this memory has entered public space.",
+            "credit": "Fagairolles 34 / Wikimedia Commons",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Saint-Pons-de-Thomieres_Stele_des_Harkis.JPG",
+            "sourceLabel": "Harkis memorial stele in Saint-Pons-de-Thomières",
+            "focus": "Public memory and monuments",
+            "tone": "memory",
+            "orientation": "landscape"
+          }
+        ]
+      },
+      {
+        "id": "transmission",
+        "title": "Transmission: preserving memory for the future",
+        "content": "Today, the community of Harkis and their descendants numbers several hundred thousand people in France. The third and fourth generations carry this memory and continue the struggle for recognition and transmission.\n\nAssociations such as AHEDNA play an essential role in preserving this memory. They organize commemorations, conferences, exhibitions, and moments of exchange to make this history known to younger generations.\n\nThe contemporary challenge is twofold: transmitting this history within families and fully anchoring it in the national narrative. It is about making this chapter of history known, understanding the suffering it involved, and honoring the courage and loyalty of the Harkis.\n\nThe future depends on education, memory, and recognition. Descendants of the Harkis are fully French while also carrying a history that is an integral part of the history of France.",
+        "chapterOrder": 7,
+        "yearStart": 2013,
+        "yearEnd": 2025,
+        "media": [
+          {
+            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Journ%C3%A9e%20hommage%20harkis%20Reims%201200567.jpg",
+            "alt": "National Harkis tribute day in Reims",
+            "caption": "National Harkis tribute day in Reims, reflecting the public transmission work carried out today.",
+            "credit": "Gérald Garitan / Wikimedia Commons",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Journ%C3%A9e_hommage_harkis_Reims_1200567.jpg",
+            "sourceLabel": "National Harkis tribute day, Reims, 2021",
+            "focus": "Contemporary transmission",
+            "tone": "ceremony",
+            "orientation": "landscape"
+          },
+          {
+            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Rivesaltes%20Camp%20Memorial%20-%20Temporary%20exhibition%20-%20Treize%20Chibanis%20harkis%20-%20Serge%20Vollin%20-%20Fatima%20Besnaci-Lancou%20-%20Poster.jpg",
+            "alt": "Poster for the Treize chibanis harkis exhibition at the Rivesaltes memorial",
+            "caption": "Poster for the 'Treize chibanis harkis' exhibition at the Rivesaltes memorial, a sign of today's transmission work.",
+            "credit": "Ji-Elle / Wikimedia Commons",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rivesaltes_Camp_Memorial_-_Temporary_exhibition_-_Treize_Chibanis_harkis_-_Serge_Vollin_-_Fatima_Besnaci-Lancou_-_Poster.jpg",
+            "sourceLabel": "'Treize chibanis harkis' exhibition at the Rivesaltes memorial",
+            "focus": "Exhibitions and education",
+            "tone": "memory",
+            "orientation": "portrait"
+          }
+        ]
+      }
+    ]
+  },
+  "common": {
+    "scrollToTop": "Back to top",
+    "byAuthor": "By {{firstName}} {{lastName}}"
+  },
+  "home": {
+    "hero": {
+      "titlePrimary": "Association de Harkis",
+      "titleSecondary": "et de leurs Enfants de Dordogne et Nouvelle-Aquitaine",
+      "region": "AHEDNA",
+      "subtitle": "A living memory carried forward through history, encounters, and collective engagement.",
+      "primaryCta": "Discover the History",
+      "secondaryCta": "Join and support",
+      "visual": {
+        "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Camps%20de%20Rivesaltes%2016-05%20MH-PO%206797.jpg",
+        "alt": "Rivesaltes camp and memorial, a major site of Harki memory",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Camps_de_Rivesaltes_16-05_MH-PO_6797.jpg",
+        "sourceLabel": "Rivesaltes camp and memorial"
+      }
+    },
+    "shortcuts": [
+      {
+        "label": "History",
+        "route": "/histoire",
+        "icon": "history"
+      },
+      {
+        "label": "News",
+        "route": "/actualites",
+        "icon": "news"
+      },
+      {
+        "label": "Agenda",
+        "route": "/evenements",
+        "icon": "events"
+      },
+      {
+        "label": "Forum",
+        "route": "/forum",
+        "icon": "forum"
+      },
+      {
+        "label": "Membership",
+        "route": "/adhesion",
+        "icon": "membership"
+      }
+    ],
+    "sections": {
+      "news": {
+        "eyebrow": "Association life",
+        "title": "News",
+        "body": "Updates, tributes, association initiatives, and public moments that keep this memory alive day after day.",
+        "actionLabel": "All news"
+      },
+      "events": {
+        "eyebrow": "Upcoming",
+        "title": "Agenda",
+        "body": "Commemorations, gatherings, conferences, and association events: the next key moments of AHEDNA are gathered here.",
+        "actionLabel": "All events"
+      }
+    },
+    "about": {
+      "eyebrow": "Who are we?",
+      "title": "Transmit, recognize, and bring people together around Harki memory",
+      "body1": "AHEDNA, the Association of Harkis and Their Children of Dordogne and Nouvelle-Aquitaine, keeps the history of the Harkis and their families alive through acts of remembrance, transmission, and solidarity.",
+      "body2": "We connect family stories, archives, commemorations, and association gatherings to make this memory visible, accessible, and alive.",
+      "cta": "Discover our history",
+      "visual": {
+        "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Journ%C3%A9e%20hommage%20harkis%20Reims%201200559.jpg",
+        "alt": "Participants in a Harkis tribute day, evoking intergenerational transmission",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Journ%C3%A9e_hommage_harkis_Reims_1200559.jpg",
+        "sourceLabel": "Harkis tribute day, Reims, 2021"
+      },
+      "cards": {
+        "transmission": {
+          "kicker": "Memory",
+          "title": "A history to pass on",
+          "body": "We document journeys, collect testimonies, and make this history understandable for younger generations."
+        },
+        "recognition": {
+          "kicker": "Recognition",
+          "title": "A voice to be heard",
+          "body": "We contribute to public recognition of this history through remembrance, education, and commemorative moments."
+        },
+        "community": {
+          "kicker": "Community",
+          "title": "A living association network",
+          "body": "We create spaces to meet, share, and act together beyond events and publications."
+        }
+      }
+    },
+    "team": {
+      "eyebrow": "The board",
+      "title": "Board members",
+      "body": "Browse the portraits to discover the people who lead the association, support its actions, and keep AHEDNA active day after day.",
+      "previousLabel": "View previous members",
+      "nextLabel": "View next members",
+      "members": [
+        {
+          "name": "Name to add",
+          "role": "President",
+          "photoUrl": ""
+        },
+        {
+          "name": "Name to add",
+          "role": "Vice-president",
+          "photoUrl": ""
+        },
+        {
+          "name": "Name to add",
+          "role": "Secretary",
+          "photoUrl": ""
+        },
+        {
+          "name": "Name to add",
+          "role": "Treasurer",
+          "photoUrl": ""
+        },
+        {
+          "name": "Name to add",
+          "role": "Communication",
+          "photoUrl": ""
+        },
+        {
+          "name": "Name to add",
+          "role": "Memory and transmission",
+          "photoUrl": ""
+        }
+      ]
+    },
+    "fallbackNews": [
+      {
+        "title": "Preserving memory, passing on journeys",
+        "body": "The association continues its work of collecting, sharing, and transmitting the history of the Harkis and their families.",
+        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Harki-j.jpg",
+        "imageAlt": "Young Harki photographed in Algeria during the Algerian War",
+        "dateLabel": "Living memory"
+      },
+      {
+        "title": "Commemorations and public presence",
+        "body": "Ceremonies and public speaking moments help anchor this history in collective and civic space.",
+        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/C%C3%A9r%C3%A9monie%20d%27hommage%20aux%20Harkis%20Toulon%20IX-2006.jpg",
+        "imageAlt": "Homage ceremony for the Harkis in Toulon",
+        "dateLabel": "Recognition"
+      },
+      {
+        "title": "Archives, testimonies, and mediation",
+        "body": "Family testimonies, documents, conferences, and exhibitions support a clearer and more visible transmission of memory.",
+        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Carte-combattant%20pour%20les%20Harkis.jpg",
+        "imageAlt": "Combatant card for the Harkis",
+        "dateLabel": "Transmission"
+      },
+      {
+        "title": "A local and national memory",
+        "body": "Between regional roots and national history, AHEDNA connects generations around a shared memory.",
+        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Journ%C3%A9e%20hommage%20harkis%20Reims%201200567.jpg",
+        "imageAlt": "Harkis tribute day in Reims",
+        "dateLabel": "Association"
+      }
+    ],
+    "fallbackEvents": [
+      {
+        "title": "Moments of memory and transmission",
+        "body": "A gathering to pass on history, share stories, and keep a common memory alive.",
+        "dateLabel": "Coming soon",
+        "location": "Dordogne and New Aquitaine",
+        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Journ%C3%A9e%20hommage%20harkis%20Reims%201200567.jpg",
+        "imageAlt": "National Harkis tribute day in Reims"
+      },
+      {
+        "title": "Meeting around testimonies",
+        "body": "An association gathering to listen, document, and pass on family memories.",
+        "dateLabel": "Upcoming",
+        "location": "AHEDNA association network",
+        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Hameau%20de%20forestage%20montmeyan.jpg",
+        "imageAlt": "Former dwelling in the Montmeyan forestry hamlet"
+      },
+      {
+        "title": "Commemoration and public presence",
+        "body": "A tribute sequence to recall the Harkis' journey and the importance of recognition.",
+        "dateLabel": "Association agenda",
+        "location": "Memory site",
+        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Rivesaltes%20Camp%20Memorial%20-%20Temporary%20exhibition%20-%20Treize%20Chibanis%20harkis%20-%20Serge%20Vollin%20-%20Fatima%20Besnaci-Lancou%20-%20Poster.jpg",
+        "imageAlt": "Exhibition poster at the Rivesaltes memorial"
+      }
+    ],
+    "gallery": [
+      {
+        "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Harki-j.jpg",
+        "alt": "Young Harki photographed in Algeria during the Algerian War",
+        "title": "Archive",
+        "caption": "The Harkis' engagement at the heart of the Algerian War.",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Harki-j.jpg",
+        "sourceLabel": "Young Harki in Algeria, summer 1961"
+      },
+      {
+        "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Camps%20de%20Rivesaltes%2016-05%20MH-PO%206797.jpg",
+        "alt": "Entrance to the Rivesaltes camp and memorial",
+        "title": "Exile",
+        "caption": "Camps and memorial sites tell the story of the post-1962 years.",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Camps_de_Rivesaltes_16-05_MH-PO_6797.jpg",
+        "sourceLabel": "Rivesaltes camp and memorial"
+      },
+      {
+        "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Journ%C3%A9e%20hommage%20harkis%20Reims%201200567.jpg",
+        "alt": "National Harkis tribute day in Reims",
+        "title": "Transmission",
+        "caption": "A memory that is still carried in public today.",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Journ%C3%A9e_hommage_harkis_Reims_1200567.jpg",
+        "sourceLabel": "National Harkis tribute day, Reims, 2021"
+      }
+    ],
+    "memory": {
+      "eyebrow": "Territory and memory",
+      "title": "A memory carried here, passed on for tomorrow",
+      "body": "Between Dordogne, New Aquitaine, and the major sites of Harki memory, AHEDNA connects family journeys, commemorations, archives, and association life to give this history a visible and lasting place.",
+      "actionLabel": "Explore the historical timeline",
+      "visual": {
+        "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Journ%C3%A9e%20hommage%20harkis%20Reims%201200567.jpg",
+        "alt": "National Harkis tribute day in Reims",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Journ%C3%A9e_hommage_harkis_Reims_1200567.jpg",
+        "sourceLabel": "National Harkis tribute day, Reims, 2021"
+      },
+      "stats": [
+        {
+          "value": "1954-2025",
+          "label": "A historical narrative to pass on"
+        },
+        {
+          "value": "Memory",
+          "label": "Actions, tributes, and transmission"
+        },
+        {
+          "value": "AHEDNA",
+          "label": "A living association network"
+        }
+      ]
+    },
+    "features": {
+      "title": "Our spaces for memory and transmission",
+      "history": {
+        "title": "A history to pass on",
+        "body": "Explore an editorial timeline enriched with milestones, archives, and photographs to understand the journey of the Harkis.",
+        "cta": "Explore the timeline"
+      },
+      "events": {
+        "title": "Moments to gather",
+        "body": "Find our ceremonies, commemorations, and association events that keep this memory alive together.",
+        "cta": "View events"
+      },
+      "community": {
+        "title": "An active community",
+        "body": "Share testimonies, join the forum, and take part in the association's day-to-day life.",
+        "cta": "Join the forum"
+      }
+    },
+    "cta": {
+      "title": "Let us keep this memory alive together",
+      "body": "Create your account to join the conversation, follow our news, and take part in the association's actions.",
+      "button": "Create an account"
+    }
+  },
+  "footer": {
+    "brand": "AHEDNA",
+    "line1": "Association of Harkis and Their Children",
+    "line2": "Dordogne and Nouvelle-Aquitaine",
+    "contact": "Contact us",
+    "legal": "Legal notice",
+    "privacy": "Privacy policy",
+    "copyright": "© AHEDNA. All rights reserved.",
+    "language": {
+      "title": "Language choice",
+      "options": {
+        "fr": "French",
+        "en": "English"
+      }
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Log in",
+      "subtitle": "Association of Harkis and Their Children - AHEDNA",
+      "fields": {
+        "email": {
+          "label": "Email",
+          "placeholder": "your@email.com"
+        },
+        "password": {
+          "label": "Password",
+          "placeholder": "Password"
+        }
+      },
+      "actions": {
+        "submit": "Log in",
+        "submitting": "Logging in...",
+        "backHome": "Back to home",
+        "noAccount": "No account yet?",
+        "register": "Sign up"
+      },
+      "errors": {
+        "default": "Unable to log in right now."
+      }
+    },
+    "register": {
+      "title": "Sign up",
+      "subtitle": "Join the Association of Harkis and Their Children",
+      "fields": {
+        "firstName": {
+          "label": "First name",
+          "placeholder": "First name"
+        },
+        "lastName": {
+          "label": "Last name",
+          "placeholder": "Last name"
+        },
+        "email": {
+          "label": "Email",
+          "placeholder": "your@email.com"
+        },
+        "password": {
+          "label": "Password",
+          "placeholder": "Password (min 8 characters)"
+        },
+        "wantMembership": "I would like to become a member"
+      },
+      "actions": {
+        "submit": "Sign up",
+        "submitting": "Signing up...",
+        "backHome": "Back to home",
+        "hasAccount": "Already have an account?",
+        "login": "Log in"
+      },
+      "errors": {
+        "default": "Unable to create the account right now."
+      }
+    }
+  },
+  "news": {
+    "list": {
+      "title": "News",
+      "subtitle": "Statements, tributes, and community life around Harki memory.",
+      "loading": "Loading news...",
+      "empty": {
+        "title": "No news for now",
+        "body": "Come back soon to discover our latest updates."
+      }
+    }
+  },
+  "events": {
+    "list": {
+      "title": "Events",
+      "subtitle": "Ceremonies, gatherings, and shared moments",
+      "filters": {
+        "upcoming": "Upcoming",
+        "past": "Past"
+      },
+      "loading": "Loading events...",
+      "empty": {
+        "upcoming": "No upcoming events",
+        "past": "No past events"
+      }
+    }
+  },
+  "forum": {
+    "list": {
+      "title": "Forum",
+      "subtitle": "Talk with the community",
+      "sidebar": {
+        "kicker": "Join the conversation",
+        "title": "A space to share stories, questions, and memory",
+        "body": "The forum brings together testimonies, questions, and exchanges between members around Harki history, families, and transmission."
+      },
+      "stats": {
+        "topics": "Topics",
+        "responses": "Replies"
+      },
+      "createTitle": "Create a new topic",
+      "fields": {
+        "title": {
+          "label": "Title",
+          "placeholder": "Give your topic a clear title"
+        },
+        "content": {
+          "label": "Message",
+          "placeholder": "Share your message, question, or testimony"
+        }
+      },
+      "actions": {
+        "cancel": "Cancel",
+        "newTopic": "+ New topic",
+        "loginToPost": "Log in to post",
+        "publish": "Publish",
+        "creating": "Creating..."
+      },
+      "access": {
+        "kicker": "Restricted access",
+        "title": "Please log in to access the forum",
+        "body": "The forum is reserved for signed-in users so the association can keep the space moderated, respectful, and easy to follow for the community.",
+        "button": "Log in"
+      },
+      "loading": "Loading forum...",
+      "empty": {
+        "title": "No topics for now",
+        "body": "Be the first to start a discussion."
+      },
+      "topic": {
+        "responseSingle": "response",
+        "responsePlural": "responses",
+        "pendingValidation": "Pending validation",
+        "fallbackInitial": "U"
+      },
+      "messages": {
+        "createSuccess": "Topic created successfully. It will appear after validation.",
+        "createError": "Unable to publish this topic right now."
+      }
+    }
+  },
+  "gallery": {
+    "title": "Photo Gallery",
+    "subtitle": "Event albums, shared memories, and contributions reviewed by the association.",
+    "loading": "Loading gallery...",
+    "intro": {
+      "kicker": "Open albums",
+      "title": "Galleries linked to our events",
+      "body": "Each album is tied to an event opened by the admin team. Members can submit their photos, and the team validates each contribution before publication."
+    },
+    "upload": {
+      "kicker": "Contribute",
+      "title": "Add a photo to an event",
+      "subtitle": "Choose an open event and submit a photo. It will appear in the gallery after admin validation.",
+      "fields": {
+        "event": "Gallery event",
+        "photoUrl": "Photo URL",
+        "photoUrlPlaceholder": "https://...",
+        "description": "Caption or memory",
+        "descriptionPlaceholder": "Describe the photo, the moment, or the people present."
+      },
+      "actions": {
+        "submit": "Send for review",
+        "submitting": "Sending...",
+        "login": "Log in",
+        "membership": "Become a member"
+      },
+      "messages": {
+        "loginRequired": "Log in to submit a photo to the open albums.",
+        "success": "Your photo has been sent. It will be visible after validation.",
+        "error": "Unable to send this photo right now."
+      },
+      "membership": {
+        "pending": "Your membership is pending. Photo submissions will open once your membership is validated.",
+        "active": "Your membership is active.",
+        "expired": "Your membership is no longer active. Renew it to contribute to the gallery."
+      }
+    },
+    "event": {
+      "openBadge": "Gallery open",
+      "photoCount": "approved photos",
+      "noLocation": "Location to be confirmed",
+      "noDescription": "This event is open for photo contributions. Add your memories to enrich its album.",
+      "empty": "No approved photo for this event yet.",
+      "defaultCaption": "Shared memory"
+    },
+    "empty": {
+      "title": "No open gallery yet",
+      "body": "The admin team has not opened an event gallery yet. Check back soon for the next albums."
+    }
+  },
+  "membership": {
+    "hero": {
+      "title": "Membership & Donations",
+      "subtitle": "Join our association and help preserve the memory of the Harkis."
+    },
+    "adhesion": {
+      "title": "Annual membership",
+      "body": "Join AHEDNA and take an active part in our work to preserve the memory of the Harkis.",
+      "features": {
+        "events": "Access to all events and activities",
+        "community": "Participation in the forum and gallery",
+        "newsletter": "Receive our newsletter and updates",
+        "memory": "Support our actions for memory and transmission"
+      },
+      "button": "Join via HelloAsso"
+    },
+    "donation": {
+      "title": "Make a donation",
+      "body": "Your donation helps us fund our actions and preserve the memory of the Harkis for future generations.",
+      "customAmountLabel": "Custom amount (€)",
+      "customAmountPlaceholder": "Open amount",
+      "button": "Donate via HelloAsso",
+      "alternativeLabel": "Or pay directly with",
+      "stripeButton": "Pay with Stripe"
+    },
+    "support": {
+      "title": "Why support us?",
+      "reasons": {
+        "memory": {
+          "title": "Preserving memory",
+          "body": "Help keep the history of the Harkis alive and pass it on to future generations."
+        },
+        "community": {
+          "title": "Supporting the community",
+          "body": "Help us organize events, talks, and activities that bring the community together."
+        },
+        "research": {
+          "title": "Research and documentation",
+          "body": "Fund our historical research and documentation projects to enrich our shared heritage."
+        },
+        "tax": {
+          "title": "Tax deduction",
+          "body": "Your donations are tax-deductible up to 66% for individuals and 60% for companies."
+        }
+      }
+    }
+  },
+  "admin": {
+    "header": {
+      "title": "Admin area",
+      "backToSite": "Back to site"
+    },
+    "stats": {
+      "users": "Users",
+      "activeMemberships": "Active memberships",
+      "pendingMemberships": "Pending memberships",
+      "news": "News",
+      "publishedNews": "Published news",
+      "events": "Events",
+      "upcomingEvents": "Upcoming events",
+      "topics": "Forum topics",
+      "photos": "Gallery photos",
+      "pendingModeration": "Pending moderation"
+    },
+    "tabs": {
+      "users": "Users",
+      "news": "News",
+      "forum": "Forum",
+      "gallery": "Gallery",
+      "events": "Events"
+    },
+    "users": {
+      "title": "User management",
+      "table": {
+        "email": "Email",
+        "name": "Name",
+        "membershipNumber": "Membership number",
+        "role": "Role",
+        "createdAt": "Created",
+        "actions": "Actions"
+      },
+      "roles": {
+        "member": "Member",
+        "author": "Author",
+        "admin": "Admin"
+      },
+      "actions": {
+        "delete": "Delete",
+        "deleting": "Deleting...",
+        "currentUser": "Current account"
+      }
+    },
+    "recent": {
+      "empty": "No recent activity available",
+      "users": {
+        "title": "Recent sign-ups",
+        "subtitle": "Accounts created most recently."
+      },
+      "news": {
+        "title": "Recent news",
+        "subtitle": "The latest articles, published or not."
+      },
+      "events": {
+        "title": "Recent events",
+        "subtitle": "Events created or updated most recently."
+      }
+    },
+    "news": {
+      "createTitle": "Create news",
+      "editTitle": "Edit news",
+      "subtitle": "Write, publish, and maintain the association's editorial line.",
+      "listTitle": "Existing news",
+      "listSubtitle": "Find every article here, including drafts.",
+      "fields": {
+        "title": "Title",
+        "excerpt": "Excerpt",
+        "content": "Content",
+        "imageUrl": "Cover image",
+        "published": "Publish immediately"
+      },
+      "status": {
+        "published": "Published",
+        "draft": "Draft"
+      },
+      "actions": {
+        "create": "Create",
+        "update": "Update",
+        "saving": "Saving...",
+        "cancel": "Cancel",
+        "edit": "Edit",
+        "delete": "Delete",
+        "deleting": "Deleting..."
+      }
+    },
+    "forum": {
+      "title": "Forum moderation",
+      "empty": "No topics pending validation",
+      "validate": "Approve",
+      "reject": "Reject"
+    },
+    "gallery": {
+      "title": "Gallery moderation",
+      "subtitle": "Review photos submitted by members to event albums.",
+      "createAlbumTitle": "Create an event album",
+      "createAlbumSubtitle": "Open a gallery folder linked to an event so members can add their photos to it.",
+      "addPhotoTitle": "Add an admin photo",
+      "addPhotoSubtitle": "Add a photo directly to an open album from the admin area.",
+      "listTitle": "Open gallery albums",
+      "listSubtitle": "All events currently open for photo contributions are listed here.",
+      "pendingTitle": "Photos pending validation",
+      "emptyAlbums": "No gallery album is open yet. Create a gallery event first.",
+      "publishNote": "Photos added by the admin are published immediately in the gallery.",
+      "empty": "No photos pending validation",
+      "validate": "Approve",
+      "reject": "Reject",
+      "actions": {
+        "createAlbum": "Create album",
+        "creatingAlbum": "Creating...",
+        "addPhoto": "Add photo",
+        "uploadingPhoto": "Adding...",
+        "manageEvent": "Edit event",
+        "deleteEvent": "Delete event"
+      },
+      "messages": {
+        "eventCreated": "Gallery album created successfully.",
+        "eventCreateError": "Unable to create this gallery album.",
+        "photoUploaded": "Photo added successfully.",
+        "photoUploadError": "Unable to add this photo right now."
+      }
+    },
+    "events": {
+      "title": "Event management",
+      "createTitle": "Create event",
+      "editTitle": "Edit event",
+      "subtitle": "Prepare upcoming meetings and keep the event history accurate.",
+      "listTitle": "Scheduled events",
+      "listSubtitle": "All events currently visible to the administration.",
+      "noLocation": "Location to be confirmed",
+      "fields": {
+        "title": "Title",
+        "description": "Description",
+        "date": "Date and time",
+        "location": "Location",
+        "type": "Type",
+        "galleryEnabled": "Open a photo gallery for this event"
+      },
+      "galleryBadge": "Gallery open",
+      "types": {
+        "upcoming": "Upcoming",
+        "past": "Past"
+      },
+      "actions": {
+        "create": "Create",
+        "update": "Update",
+        "saving": "Saving...",
+        "cancel": "Cancel",
+        "edit": "Edit",
+        "delete": "Delete",
+        "deleting": "Deleting..."
+      }
+    },
+    "messages": {
+      "roleUpdated": "User role updated.",
+      "roleUpdateError": "Unable to update the role.",
+      "validationError": "Unable to validate this item.",
+      "loadNewsError": "Unable to load news.",
+      "loadEventsError": "Unable to load events.",
+      "saveNewsError": "Unable to save this news item.",
+      "saveEventError": "Unable to save this event.",
+      "confirmDeleteNews": "Do you really want to delete this news item?",
+      "confirmDeleteEvent": "Do you really want to delete this event?",
+      "confirmDeleteTopic": "Do you really want to reject and delete this topic?",
+      "deleteError": "Unable to delete this item.",
+      "confirmDeletePhoto": "Do you really want to reject and delete this photo?",
+      "confirmDeleteUser": "Do you really want to delete the account {{ email }}?",
+      "deleteUserError": "Unable to delete this user.",
+      "uploadImageError": "Unable to upload this image."
+    }
+  },
+  "profile": {
+    "eyebrow": "Member area",
+    "title": "My profile",
+    "subtitle": "Manage your personal information, account access, and member downloads in one place.",
+    "loading": "Loading your member area...",
+    "roles": {
+      "member": "Member",
+      "author": "Author",
+      "admin": "Administrator"
+    },
+    "summary": {
+      "memberSince": "Member since",
+      "membershipNumber": "Membership number",
+      "membershipWindow": "Membership period",
+      "notAssigned": "Not assigned",
+      "notAvailable": "Not available"
+    },
+    "personal": {
+      "title": "Personal information",
+      "subtitle": "Keep your details up to date so the association can stay in touch."
+    },
+    "fields": {
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "phone": "Phone",
+      "addressLine1": "Address",
+      "addressLine2": "Address details",
+      "postalCode": "Postal code",
+      "city": "City",
+      "country": "Country",
+      "bio": "Short bio",
+      "avatarUrl": "Avatar URL"
+    },
+    "membership": {
+      "status": {
+        "pending": "Membership pending",
+        "active": "Membership active",
+        "expired": "Membership expired"
+      }
+    },
+    "documents": {
+      "title": "Downloadable documents",
+      "subtitle": "Access the resources available for your role in the association.",
+      "items": {
+        "member-guide": {
+          "title": "Member guide",
+          "description": "The essential information to take part in the association's activities."
+        },
+        "association-charter": {
+          "title": "Association charter",
+          "description": "The common framework, commitments, and shared good practices."
+        },
+        "content-kit": {
+          "title": "Author kit",
+          "description": "Editorial guidance for producing reliable and consistent content."
+        },
+        "admin-operations": {
+          "title": "Admin guide",
+          "description": "Operational guidance for content, moderation, and coordination."
+        }
+      }
+    },
+    "security": {
+      "title": "Account security",
+      "subtitle": "Change your password whenever needed."
+    },
+    "password": {
+      "current": "Current password",
+      "next": "New password"
+    },
+    "account": {
+      "title": "Account management",
+      "subtitle": "Log out here or permanently delete your account with confirmation.",
+      "deleteTitle": "Delete my account",
+      "deleteDescription": "This action removes your profile, linked documents, and account-related content.",
+      "deleteWarning": "This action cannot be undone",
+      "confirmEmail": "Confirm your email",
+      "confirmHint": "Enter exactly {{ email }} to allow account deletion."
+    },
+    "actions": {
+      "saveProfile": "Save profile",
+      "saving": "Saving...",
+      "updatePassword": "Update password",
+      "savingPassword": "Updating...",
+      "logout": "Log out",
+      "deleteAccount": "Delete account permanently",
+      "deletingAccount": "Deleting account..."
+    },
+    "messages": {
+      "loadError": "Unable to load the profile.",
+      "updateProfileError": "Unable to update the profile.",
+      "updatePasswordError": "Unable to update the password.",
+      "deleteAccountConfirmEmail": "Confirm your email address to delete the account.",
+      "deleteAccountError": "Unable to delete the account."
+    }
+  },
+  "content": {
+    "eyebrow": "Author area",
+    "title": "Content management",
+    "subtitle": "Create and update the association's news, events, and gallery albums according to your role.",
+    "tabs": {
+      "news": "News",
+      "events": "Events",
+      "gallery": "Gallery"
+    },
+    "form": {
+      "createTitle": "New article",
+      "editTitle": "Edit article",
+      "subtitle": "Prepare a clear title, a concise excerpt, and complete content."
+    },
+    "fields": {
+      "title": "Title",
+      "excerpt": "Excerpt",
+      "content": "Content",
+      "imageUrl": "Cover image",
+      "imageFile": "Image from device",
+      "published": "Publish immediately"
+    },
+    "list": {
+      "title": "Your articles",
+      "subtitle": "Find the content you can manage here.",
+      "loading": "Loading content...",
+      "empty": "No article to manage for now."
+    },
+    "status": {
+      "published": "Published",
+      "draft": "Draft"
+    },
+    "actions": {
+      "newArticle": "New article",
+      "newEvent": "New event",
+      "newGalleryAlbum": "New gallery album",
+      "create": "Create",
+      "update": "Update",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "addPhoto": "Add photo",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deletePhoto": "Delete photo",
+      "deleting": "Deleting...",
+      "confirmDelete": "Do you really want to delete this article?",
+      "confirmDeleteEvent": "Do you really want to delete this event?",
+      "confirmDeletePhoto": "Do you really want to delete this photo?"
+    },
+    "events": {
+      "form": {
+        "createTitle": "New event",
+        "editTitle": "Edit event",
+        "subtitle": "Prepare the core event details and enable the gallery when needed."
+      },
+      "list": {
+        "title": "Events",
+        "subtitle": "All events you can manage are listed here.",
+        "loading": "Loading events...",
+        "empty": "No event to manage for now."
+      }
+    },
+    "gallery": {
+      "albumForm": {
+        "createTitle": "New event album",
+        "editTitle": "Edit gallery album",
+        "subtitle": "Create an event folder to host the photos approved by the association."
+      },
+      "photoForm": {
+        "title": "Add a photo",
+        "subtitle": "Add a photo directly to an existing gallery album."
+      },
+      "list": {
+        "title": "Gallery albums",
+        "subtitle": "Each album gathers the photos already published for a specific event.",
+        "loading": "Loading gallery albums...",
+        "empty": "No gallery album is available right now."
+      },
+      "album": {
+        "photoCount": "photos",
+        "empty": "No published photo in this album yet."
+      }
+    },
+    "quickAdd": {
+      "news": "Add news",
+      "events": "Add event",
+      "gallery": "Add to gallery"
+    },
+    "messages": {
+      "loadError": "Unable to load content.",
+      "saveError": "Unable to save this content.",
+      "deleteError": "Unable to delete this content.",
+      "loadEventsError": "Unable to load events.",
+      "saveEventError": "Unable to save this event.",
+      "deleteEventError": "Unable to delete this event.",
+      "loadGalleryError": "Unable to load gallery albums.",
+      "saveGalleryError": "Unable to save this gallery album.",
+      "saveGalleryPhotoError": "Unable to add this photo.",
+      "deleteGalleryPhotoError": "Unable to delete this photo.",
+      "uploadingImage": "Uploading image...",
+      "uploadImageError": "Unable to upload this image."
+    }
+  }
+}
