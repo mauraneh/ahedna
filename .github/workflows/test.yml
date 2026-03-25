@@ -4,9 +4,12 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   test-backend:
-    name: Test Backend
+    name: Test Backend (Fastify)
     runs-on: ubuntu-latest
     
     services:
@@ -35,6 +38,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'yarn'
+          cache-dependency-path: backend/yarn.lock
       - run: yarn install --frozen-lockfile
         working-directory: ./backend
       - run: yarn test:backend || echo "Tests à implémenter"
@@ -52,6 +56,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'yarn'
+          cache-dependency-path: frontend/yarn.lock
       - name: Install dependencies
         working-directory: ./frontend
         run: yarn install --frozen-lockfile

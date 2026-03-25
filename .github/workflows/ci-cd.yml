@@ -6,10 +6,13 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   # Tests Backend
   test-backend:
-    name: Test Backend (Next.js)
+    name: Test Backend (Fastify)
     runs-on: ubuntu-latest
     
     services:
@@ -41,6 +44,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'yarn'
+          cache-dependency-path: backend/yarn.lock
 
       - name: Install dependencies
         working-directory: ./backend
@@ -68,6 +72,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'yarn'
+          cache-dependency-path: frontend/yarn.lock
 
       - name: Install dependencies
         working-directory: ./frontend
@@ -83,7 +88,7 @@ jobs:
 
   # Build Backend
   build-backend:
-    name: Build Backend (Next.js)
+    name: Build Backend (Fastify)
     runs-on: ubuntu-latest
     needs: [test-backend]
 
@@ -96,24 +101,18 @@ jobs:
         with:
           node-version: '20'
           cache: 'yarn'
+          cache-dependency-path: backend/yarn.lock
 
       - name: Install dependencies
         working-directory: ./backend
         run: yarn install --frozen-lockfile
 
-      - name: Build Next.js
+      - name: Build backend
         working-directory: ./backend
         run: yarn build
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: backend-build
-          path: backend/.next
-          retention-days: 1
 
   # Déploiement Vercel (Backend + Frontend)
   deploy-vercel:
