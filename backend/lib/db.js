@@ -236,7 +236,30 @@ async function initDatabase() {
   }
 }
 
+async function checkDatabaseHealth() {
+  const startedAt = Date.now();
+
+  try {
+    await pool.query('SELECT 1 AS ok');
+
+    return {
+      ok: true,
+      checkedAt: new Date().toISOString(),
+      latencyMs: Date.now() - startedAt,
+      message: 'Database connection successful',
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      checkedAt: new Date().toISOString(),
+      latencyMs: Date.now() - startedAt,
+      message: error.message,
+    };
+  }
+}
+
 module.exports = {
   pool,
-  initDatabase
+  initDatabase,
+  checkDatabaseHealth,
 };

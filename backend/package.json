@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "node server.js",
+    "test:backend": "node --test tests/*.test.js",
+    "lint:backend": "node --check server.js && node --check lib/api-handler.js && node --check lib/auth.js && node --check lib/db.js && node --check lib/monitoring.js && node --check lib/uploads.js && node --check tests/auth.test.js && node --check tests/monitoring.test.js && node --check tests/uploads.test.js",
     "build": "node -e \"console.log('No build step required for Fastify backend')\"",
     "start": "NODE_ENV=production node server.js"
   },

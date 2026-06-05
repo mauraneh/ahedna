@@ -29,6 +29,7 @@ export class I18nService {
 
     this.transloco.setActiveLang(lang);
     this.activeLang.set(lang);
+    this.syncDocumentLang(lang);
     this.persistLang(lang);
   }
 
@@ -84,5 +85,13 @@ export class I18nService {
     } catch {
       // Ignore storage failures and keep runtime language only.
     }
+  }
+
+  private syncDocumentLang(lang: 'fr' | 'en'): void {
+    if (typeof document === 'undefined') {
+      return;
+    }
+
+    document.documentElement.lang = lang;
   }
 }

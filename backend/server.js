@@ -2,6 +2,7 @@ const Fastify = require('fastify');
 const fs = require('fs');
 const path = require('path');
 const dotenv = require('dotenv');
+const backendPackage = require('./package.json');
 
 for (const envPath of [
   path.resolve(__dirname, '.env'),
@@ -22,6 +23,8 @@ const {
   handleDelete,
 } = require('./lib/api-handler');
 const { verifyToken } = require('./lib/auth');
+const { checkDatabaseHealth } = require('./lib/db');
+const { createMonitoringState } = require('./lib/monitoring');
 const {
   ensureUploadDirectory,
   saveBase64Image,
@@ -128,14 +131,78 @@ function buildServer() {
     logger: process.env.NODE_ENV !== 'test',
     bodyLimit: Number(process.env.BODY_LIMIT_BYTES || 10 * 1024 * 1024),
   });
+  const monitoring = createMonitoringState({
+    serviceName: 'AHEDNA API',
+    version: backendPackage.version,
+  });
 
   ensureUploadDirectory();
+
+  fastify.addHook('onRequest', async (request, reply) => {
+    monitoring.onRequestStart();
+    reply.header('X-Request-Id', request.id);
+  });
+
+  fastify.addHook('onResponse', async (_request, reply) => {
+    monitoring.onRequestComplete({ statusCode: reply.statusCode });
+  });
 
   fastify.get('/', async (_request, reply) => {
     return reply.send({
       name: 'AHEDNA API',
       status: 'ok',
     });
+  });
+
+  fastify.get('/api/health/live', async (_request, reply) => {
+    reply.header('Cache-Control', 'no-store');
+
+    return reply.send({
+      status: 'ok',
+      service: 'AHEDNA API',
+      version: backendPackage.version,
+      timestamp: new Date().toISOString(),
+    });
+  });
+
+  fastify.get('/api/health/ready', async (_request, reply) => {
+    const database = await checkDatabaseHealth();
+
+    reply.header('Cache-Control', 'no-store');
+
+    if (!database.ok) {
+      reply.code(503);
+    }
+
+    return reply.send({
+      status: database.ok ? 'ready' : 'not_ready',
+      service: 'AHEDNA API',
+      version: backendPackage.version,
+      timestamp: new Date().toISOString(),
+      database,
+    });
+  });
+
+  fastify.get('/api/health', async (_request, reply) => {
+    const database = await checkDatabaseHealth();
+    const snapshot = monitoring.getSnapshot({ database });
+
+    reply.header('Cache-Control', 'no-store');
+
+    if (!database.ok) {
+      reply.code(503);
+    }
+
+    return reply.send(snapshot);
+  });
+
+  fastify.get('/api/metrics', async (_request, reply) => {
+    const database = await checkDatabaseHealth();
+
+    reply.header('Cache-Control', 'no-store');
+    reply.type('text/plain; version=0.0.4; charset=utf-8');
+
+    return reply.send(monitoring.getMetrics({ database }));
   });
 
   fastify.get('/api/uploads/*', async (request, reply) => {
