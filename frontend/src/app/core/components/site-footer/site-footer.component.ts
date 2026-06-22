@@ -59,14 +59,20 @@ import { I18nService } from '../../services/i18n.service';
     .site-footer {
       position: relative;
       margin-top: 0;
-      padding-top: 0;
-      padding-bottom: 0.5rem;
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
       color: var(--site-ink, #23180f);
-      background: transparent;
+      background:
+        linear-gradient(rgba(37, 29, 20, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(37, 29, 20, 0.03) 1px, transparent 1px),
+        var(--site-cream, #eadbbd);
+      background-size: 34px 34px, 34px 34px, auto;
+      border-top: 1px solid var(--site-border-strong, rgba(37, 29, 20, 0.72));
     }
 
     .site-footer-inner {
-      padding: 0.1rem 0 0.35rem;
+      padding: 0.85rem 0 0.35rem;
+      border-top: 1px solid var(--site-border-strong, rgba(37, 29, 20, 0.72));
     }
 
     .footer-layout {
@@ -95,15 +101,17 @@ import { I18nService } from '../../services/i18n.service';
       align-items: center;
       gap: 0.2rem;
       padding: 0.18rem;
-      border-radius: 999px;
-      background: rgba(var(--brand-yellow-rgb), 0.14);
-      border: 1px solid rgba(var(--brand-yellow-rgb), 0.18);
+      border-radius: 0;
+      background: rgba(var(--brand-yellow-rgb), 0.12);
+      border: 1px solid var(--site-border, rgba(37, 29, 20, 0.38));
       backdrop-filter: blur(8px);
     }
 
     .footer-brand {
       color: var(--site-ink, #23180f);
       line-height: 1;
+      font-family: var(--site-display-font, 'Oswald', Arial, sans-serif);
+      text-transform: uppercase;
     }
 
     .footer-copy,
@@ -134,7 +142,7 @@ import { I18nService } from '../../services/i18n.service';
       gap: 0.38rem;
       min-height: 2rem;
       padding: 0.28rem 0.5rem;
-      border-radius: 999px;
+      border-radius: 0;
       border: 1px solid transparent;
       background: transparent;
       color: var(--site-ink, #23180f);
@@ -155,10 +163,10 @@ import { I18nService } from '../../services/i18n.service';
 
     .footer-lang-label {
       color: inherit;
-      font-family: 'Playfair Display', Georgia, serif;
+      font-family: var(--site-display-font, 'Oswald', Arial, sans-serif);
       font-size: 0.68rem;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0;
       text-transform: uppercase;
       line-height: 1;
     }
@@ -175,10 +183,10 @@ import { I18nService } from '../../services/i18n.service';
       width: 2.5rem;
       height: 2.5rem;
       padding: 0.28rem;
-      border-radius: 999px;
+      border-radius: 0;
       background:
-        radial-gradient(circle at center, rgba(255, 255, 255, 0.34), rgba(245, 230, 211, 0.04)),
-        rgba(255, 255, 255, 0.05);
+        rgba(234, 219, 189, 0.48);
+      border: 1px solid var(--site-border, rgba(37, 29, 20, 0.38));
     }
 
     .footer-logo {
@@ -220,6 +228,58 @@ import { I18nService } from '../../services/i18n.service';
         width: 100%;
         gap: 0.45rem;
       }
+    }
+
+    .site-footer {
+      margin-top: 0;
+      padding: 1.5rem clamp(0.9rem, 2.5vw, 2rem) 2.5rem;
+      background: var(--classic-bg, #d9d7cb);
+      border-top: 0;
+      color: var(--classic-ink, #111512);
+      font-family: var(--site-sans-font, Arial, sans-serif);
+    }
+
+    .site-footer-inner {
+      max-width: 1120px;
+      padding: 1.25rem clamp(1.25rem, 4vw, 2.5rem);
+      border: 1px solid var(--classic-line, #d5d1c2);
+      border-radius: var(--classic-radius, 22px);
+      background: var(--classic-panel, #f6f5ec);
+    }
+
+    .footer-brand,
+    .footer-copy,
+    .footer-links,
+    .footer-copyright,
+    .footer-lang-label {
+      font-family: var(--site-sans-font, Arial, sans-serif);
+      font-style: normal;
+      letter-spacing: 0;
+      text-transform: none;
+      text-shadow: none;
+    }
+
+    .footer-brand,
+    .footer-link:hover {
+      color: var(--classic-green, #173d27);
+    }
+
+    .footer-language-switch,
+    .footer-logo-shell {
+      border-radius: 999px;
+      border-color: var(--classic-line, #d5d1c2);
+      background: var(--classic-panel-soft, #efede2);
+      backdrop-filter: none;
+    }
+
+    .footer-lang-button {
+      border-radius: 999px;
+    }
+
+    .footer-lang-button-active {
+      border-color: var(--classic-green, #173d27);
+      background: var(--classic-green, #173d27);
+      color: #fbfaf3;
     }
   `],
 })

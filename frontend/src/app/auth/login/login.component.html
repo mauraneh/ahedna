@@ -1,5 +1,5 @@
 <ng-container *transloco="let t">
-  <div class="site-page paper-texture relative overflow-hidden login-page auth-page">
+  <div class="site-page login-page auth-page">
     <app-navbar></app-navbar>
 
     <section class="site-tool-shell site-tool-shell-narrow site-tool-stack">
@@ -14,7 +14,7 @@
       </div>
 
       <div class="site-auth-layout">
-        <div class="site-surface site-tool-panel-solid site-auth-card w-full space-y-8 paper-texture auth-page-card">
+        <div class="site-surface site-auth-card w-full auth-page-card">
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="mt-8 space-y-6">
           <div class="space-y-4">
             <div>

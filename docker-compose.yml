@@ -61,9 +61,34 @@ services:
       - backend
     environment:
       AHEDNA_API_URL: ${AHEDNA_API_URL:-/api}
+      AHEDNA_CMS_URL: ${AHEDNA_CMS_URL:-http://localhost:4000}
     networks:
       - ahedna-network
     command: sh -c "yarn install && yarn start:docker"
+    restart: unless-stopped
+
+  cms:
+    build:
+      context: ./cms
+      dockerfile: Dockerfile.cms
+    container_name: ahedna-cms
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./cms:/app
+      - /app/node_modules
+      - /app/.next
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:-change-me}
+      PAYLOAD_PUBLIC_SERVER_URL: ${PAYLOAD_PUBLIC_SERVER_URL:-http://localhost:4000}
+      PAYLOAD_DB_SCHEMA: ${PAYLOAD_DB_SCHEMA:-payload}
+      NODE_ENV: development
+    networks:
+      - ahedna-network
+    command: sh -c "npm install && npm run dev -- --hostname 0.0.0.0"
     restart: unless-stopped
 
 networks:

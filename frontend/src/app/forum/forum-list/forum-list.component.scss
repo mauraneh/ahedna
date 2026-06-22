@@ -2,10 +2,6 @@
   display: block;
 }
 
-.forum-page-hero .site-hero-image-layer {
-  background-image: url('https://commons.wikimedia.org/wiki/Special:FilePath/Carte-combattant%20pour%20les%20Harkis.jpg');
-  background-position: center 42%;
-}
 
 .forum-page-shell {
   padding-bottom: 5rem;
@@ -158,33 +154,25 @@
   grid-template-columns: 8.5rem minmax(0, 1fr);
   gap: 1.35rem;
   padding: 1.35rem 1.4rem;
-  border-radius: 1.85rem;
-  border: 1px solid rgba(95, 72, 49, 0.12);
-  background: var(--site-surface-bg);
-  box-shadow: 0 14px 28px rgba(67, 46, 31, 0.08);
-  transition:
-    transform 0.24s ease,
-    box-shadow 0.24s ease,
-    border-color 0.24s ease;
-}
-
-.forum-thread:nth-child(2n) {
-  background: var(--site-surface-bg-soft);
+  border-radius: var(--classic-card-radius);
+  border: 1px solid var(--classic-line);
+  background: var(--classic-panel);
+  box-shadow: var(--classic-shadow);
+  transition: transform 0.24s ease, box-shadow 0.24s ease;
 }
 
 .forum-thread::before {
   content: '';
   position: absolute;
   inset: 1rem auto 1rem 0.95rem;
-  width: 0.28rem;
+  width: 0.25rem;
   border-radius: 999px;
-  background: linear-gradient(180deg, var(--brand-red), var(--brand-yellow), var(--brand-turquoise));
+  background: var(--brand-red);
 }
 
 .forum-thread:hover {
   transform: translateY(-3px);
-  box-shadow: 0 18px 32px rgba(67, 46, 31, 0.1);
-  border-color: rgba(95, 72, 49, 0.18);
+  box-shadow: 0 18px 32px rgba(26, 18, 8, 0.09);
 }
 
 .forum-thread-rail {

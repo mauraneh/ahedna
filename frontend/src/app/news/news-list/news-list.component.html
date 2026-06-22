@@ -1,23 +1,10 @@
 <ng-container *transloco="let t">
-  <div class="site-page paper-texture relative overflow-hidden news-page">
-    <div class="site-particles">
-      @for (particle of particles; track particle) {
-        <div
-          class="paper-particle"
-          [style.left.%]="particle.left"
-          [style.animation-delay.s]="particle.delay"
-          [style.width.px]="particle.size"
-          [style.height.px]="particle.size">
-        </div>
-      }
-    </div>
+  <div class="site-page news-page">
 
-    <section class="site-hero site-public-hero news-page-hero">
-      <div class="site-hero-nav">
-        <app-navbar variant="hero"></app-navbar>
-      </div>
-      <div class="site-hero-image-layer"></div>
-      <div class="site-hero-overlay"></div>
+    <app-navbar></app-navbar>
+
+    <div class="site-hero site-public-hero">
+      <div class="site-hero-nav"></div>
       <div class="site-hero-content">
         <div class="site-hero-inner">
           <div class="site-public-hero-copy site-public-hero-copy-center">
@@ -27,12 +14,12 @@
           </div>
         </div>
       </div>
-      <img src="/hero-wave-yellow.svg" alt="" class="site-hero-wave" aria-hidden="true">
-    </section>
+    </div>
 
     <div class="site-page-shell site-page-shell-after-hero">
+
       @if (authService.hasRole(['admin'])) {
-        <div class="flex justify-end mb-2">
+        <div class="news-admin-bar">
           <a routerLink="/contenu" [queryParams]="{ tab: 'news' }" class="site-button-primary">
             {{ t('content.quickAdd.news') }}
           </a>
@@ -45,35 +32,35 @@
           <p class="site-loading-copy">{{ t('news.list.loading') }}</p>
         </div>
       } @else if (newsList.length === 0) {
-        <div class="site-surface site-empty-state paper-texture">
+        <div class="site-empty-state">
           <div class="site-empty-icon">📰</div>
           <h3 class="site-empty-title">{{ t('news.list.empty.title') }}</h3>
           <p class="site-empty-copy">{{ t('news.list.empty.body') }}</p>
         </div>
       } @else {
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 news-page-grid">
+        <div class="news-grid">
           @for (news of newsList; track news.id) {
-            <article class="site-surface site-card-hover overflow-hidden paper-texture relative group news-page-card">
-              <div class="site-glow-yellow absolute top-0 right-0 w-24 h-24"></div>
-              @if (news.image_url) {
-                <img [src]="news.image_url" [alt]="news.title" class="w-full h-48 object-cover">
-              } @else {
-                <div class="w-full h-48 news-page-placeholder flex items-center justify-center paper-texture">
-                  <span class="text-6xl">📰</span>
-                </div>
-              }
-              <div class="p-6 relative z-10">
-                <h2 class="text-2xl font-vintage font-bold text-paper-900 mb-3 line-clamp-2">{{ news.title }}</h2>
-                <p class="text-paper-700 mb-4 line-clamp-3 font-serif leading-relaxed">{{ news.excerpt || news.content }}</p>
-                <div class="flex justify-between items-center text-sm text-paper-600 font-serif">
-                  <span>{{ t('common.byAuthor', { firstName: news.first_name, lastName: news.last_name }) }}</span>
-                  <span>{{ formatDate(news.created_at) }}</span>
+            <article class="news-card site-card-hover">
+              <div class="news-card-media">
+                @if (news.image_url) {
+                  <img [src]="news.image_url" [alt]="news.title" class="news-card-img" loading="lazy">
+                } @else {
+                  <div class="news-card-placeholder">📰</div>
+                }
+              </div>
+              <div class="news-card-body">
+                <h2 class="news-card-title line-clamp-2">{{ news.title }}</h2>
+                <p class="news-card-excerpt line-clamp-3">{{ news.excerpt || news.content }}</p>
+                <div class="news-card-meta">
+                  <span class="news-card-author">{{ t('common.byAuthor', { firstName: news.first_name, lastName: news.last_name }) }}</span>
+                  <time class="news-card-date">{{ formatDate(news.created_at) }}</time>
                 </div>
               </div>
             </article>
           }
         </div>
       }
+
     </div>
 
     <app-scroll-to-top></app-scroll-to-top>

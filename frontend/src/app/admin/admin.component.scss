@@ -10,6 +10,10 @@
   --tool-kicker: var(--brand-turquoise);
 }
 
+.admin-payload-link {
+  white-space: nowrap;
+}
+
 .admin-page-shell .site-surface {
   background: #fffefb;
   backdrop-filter: none;

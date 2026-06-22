@@ -23,6 +23,7 @@ node_modules/
 # Next.js
 /.next/
 /backend/.next/
+/cms/.next/
 /out/
 next-env.d.ts
 *.tsbuildinfo
@@ -71,6 +72,7 @@ yarn-error.log*
 
 # Uploaded media
 backend/uploads/
+cms/media/
 
 # Local certification work
 RNCP/

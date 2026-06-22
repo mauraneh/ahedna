@@ -93,6 +93,7 @@ export class AdminComponent implements OnInit {
   private i18nService = inject(I18nService);
   private mediaUpload = inject(MediaUploadService);
   authService = inject(AuthService);
+  cmsUrl = environment.cmsUrl;
 
   activeTab = 'users';
   tabs = [

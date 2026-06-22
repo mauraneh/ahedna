@@ -274,7 +274,7 @@
       "primaryCta": "Découvrir l'Histoire",
       "secondaryCta": "Adhérer et soutenir",
       "visual": {
-        "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Camps%20de%20Rivesaltes%2016-05%20MH-PO%206797.jpg",
+        "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Camps%20de%20Rivesaltes%2016-05%20MH-PO%206797.jpg?width=1600",
         "alt": "Camp de Rivesaltes et mémorial, lieu majeur de la mémoire harki",
         "sourceUrl": "https://commons.wikimedia.org/wiki/File:Camps_de_Rivesaltes_16-05_MH-PO_6797.jpg",
         "sourceLabel": "Camp de Rivesaltes et mémorial"
@@ -777,6 +777,7 @@
   "admin": {
     "header": {
       "title": "Espace administrateur",
+      "openPayload": "Ouvrir Payload",
       "backToSite": "Retour au site"
     },
     "stats": {

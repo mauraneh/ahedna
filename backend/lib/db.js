@@ -106,6 +106,11 @@ async function initDatabase() {
     `);
 
     await client.query(`
+      ALTER TABLE news
+      ADD COLUMN IF NOT EXISTS cms_source_id VARCHAR(64);
+    `);
+
+    await client.query(`
       CREATE TABLE IF NOT EXISTS events (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         title VARCHAR(255) NOT NULL,
@@ -121,6 +126,7 @@ async function initDatabase() {
     await client.query(`
       ALTER TABLE events
       ADD COLUMN IF NOT EXISTS image_url TEXT,
+      ADD COLUMN IF NOT EXISTS cms_source_id VARCHAR(64),
       ADD COLUMN IF NOT EXISTS gallery_enabled BOOLEAN DEFAULT false;
     `);
 
@@ -202,6 +208,11 @@ async function initDatabase() {
       );
     `);
 
+    await client.query(`
+      ALTER TABLE member_documents
+      ADD COLUMN IF NOT EXISTS cms_source_id VARCHAR(64);
+    `);
+
     // Create indexes
     await client.query('CREATE INDEX IF NOT EXISTS idx_news_published ON news(published);');
     await client.query('CREATE INDEX IF NOT EXISTS idx_events_date ON events(event_date);');
@@ -210,6 +221,9 @@ async function initDatabase() {
     await client.query('CREATE INDEX IF NOT EXISTS idx_gallery_validated ON gallery_photos(validated);');
     await client.query('CREATE INDEX IF NOT EXISTS idx_event_photos_event_validated ON event_photos(event_id, validated, created_at);');
     await client.query('CREATE INDEX IF NOT EXISTS idx_member_documents_role ON member_documents(minimum_role, is_active, sort_order);');
+    await client.query('CREATE UNIQUE INDEX IF NOT EXISTS idx_news_cms_source_id ON news(cms_source_id) WHERE cms_source_id IS NOT NULL;');
+    await client.query('CREATE UNIQUE INDEX IF NOT EXISTS idx_events_cms_source_id ON events(cms_source_id) WHERE cms_source_id IS NOT NULL;');
+    await client.query('CREATE UNIQUE INDEX IF NOT EXISTS idx_member_documents_cms_source_id ON member_documents(cms_source_id) WHERE cms_source_id IS NOT NULL;');
 
     await client.query(`
       INSERT INTO member_documents (slug, file_url, minimum_role, sort_order)

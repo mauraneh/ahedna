@@ -1,272 +1,95 @@
-<div class="site-page paper-texture relative overflow-hidden history-page">
-  <!-- Particules de papier flottantes -->
-  <div class="site-particles">
-    @for (particle of particles; track particle) {
-      <div 
-        class="paper-particle"
-        [style.left.%]="particle.left"
-        [style.animation-delay.s]="particle.delay"
-        [style.width.px]="particle.size"
-        [style.height.px]="particle.size">
-      </div>
-    }
-  </div>
+<div class="site-page history-page">
+  <app-navbar></app-navbar>
 
-  <!-- Hero Section -->
-  <section class="site-hero site-public-hero history-page-hero">
-    <div class="site-hero-nav">
-      <app-navbar variant="hero"></app-navbar>
-    </div>
-    <div class="history-page-hero-image"></div>
-    <div class="site-hero-overlay"></div>
-    <div class="site-hero-content history-page-hero-content">
-      <div class="site-hero-inner">
-        <div class="site-public-hero-copy site-public-hero-copy-center animate-fade-in">
-          <div class="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/12 border border-white/18 text-white font-vintage tracking-[0.18em] uppercase text-xs md:text-sm backdrop-blur-md">
-            <span class="w-2 h-2 rounded-full animate-pulse" style="background: var(--brand-yellow)"></span>
-          {{ content?.hero?.badge }}
-          </div>
-          <h1 class="site-public-hero-title history-page-title">
-            {{ content?.hero?.title }}
-          </h1>
-          <p class="site-public-hero-subtitle history-page-subtitle">
-            {{ content?.hero?.subtitle }}
-          </p>
-
-          <div class="site-public-hero-stats">
-            @for (highlight of content?.hero?.highlights ?? []; track highlight.label) {
-              <div class="site-public-hero-stat">
-                <div class="site-public-hero-stat-value">{{ highlight.value }}</div>
-                <div class="site-public-hero-stat-label">{{ highlight.label }}</div>
-              </div>
-            }
-          </div>
-        </div>
-      </div>
-    </div>
-    <img src="/hero-wave-red.svg" alt="" class="site-hero-wave" aria-hidden="true">
-  </section>
-
-  <!-- Timeline Navigation -->
-  <div class="max-w-7xl mx-auto px-4 py-6 sticky top-20 z-40 bg-paper-100/88 backdrop-blur-md border-b-2 border-paper-300/50">
-    <div class="flex justify-center space-x-3 overflow-x-auto pb-2 scrollbar-hide">
-      @for (chapter of chapters; track chapter.id; let i = $index) {
-        <button 
-          (click)="scrollToChapter(chapter.chapterOrder)"
-          [class.active]="activeChapter === chapter.chapterOrder"
-          class="px-5 py-2.5 rounded-lg bg-paper-200/80 border-2 border-paper-400/50 hover:border-red-600 hover:bg-paper-300/80 transition-all whitespace-nowrap font-vintage font-semibold text-sm text-paper-800 shadow-paper hover:shadow-paper-lg transform hover:scale-[1.03] active:scale-95">
-          {{ getChapterPeriod(chapter) }}
-        </button>
-      }
-    </div>
-  </div>
-
-  <!-- Timeline avec chemin animé -->
-  <section class="max-w-6xl mx-auto px-4 py-12 relative">
-    @if (loading) {
-      <div class="text-center py-20">
-        <div class="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-red-600"></div>
-        <p class="mt-4 text-paper-700 font-serif">{{ content?.loadingLabel }}</p>
-      </div>
-    } @else if (chapters.length === 0) {
-      <div class="text-center py-20 bg-paper-200/50 rounded-2xl border-2 border-paper-300 shadow-paper-lg">
-        <div class="text-6xl mb-4">📚</div>
-        <h3 class="text-3xl font-vintage font-bold text-paper-900 mb-4">{{ content?.emptyState?.title }}</h3>
-        <p class="text-paper-700 font-serif text-lg">
-          {{ content?.emptyState?.body }}
-        </p>
-        <a routerLink="/" class="inline-block mt-8 bg-paper-600 text-white px-8 py-3 rounded-lg hover:bg-paper-700 transition-colors font-vintage shadow-paper">
-          {{ content?.emptyState?.ctaLabel }}
-        </a>
-      </div>
-    } @else {
-      <!-- Ligne de timeline verticale -->
-      <div class="absolute left-8 md:left-1/2 top-0 bottom-0 w-1.5 bg-paper-300/30 hidden md:block" #timelineLine>
-        <div 
-          class="absolute top-0 left-0 w-full bg-gradient-to-b from-red-600 via-red-500 to-red-400 transition-all duration-1000 ease-out"
-          [style.height.%]="timelineProgress"
-          style="box-shadow: 0 0 15px rgba(220,38,38,0.4);">
-        </div>
+  <main class="history-shell">
+    <section class="history-hero-card">
+      <div class="history-hero-copy">
+        <p class="history-eyebrow">{{ content?.hero?.badge }}</p>
+        <h1 class="history-title">{{ content?.hero?.title }}</h1>
+        <p class="history-subtitle">{{ content?.hero?.subtitle }}</p>
       </div>
 
-      <!-- Chapters Content -->
-      <div class="space-y-32 md:space-y-40">
-        @for (chapter of chapters; track chapter.id; let i = $index) {
-          <article 
-            [id]="'chapter-' + chapter.chapterOrder"
-            class="relative scroll-mt-32 chapter-item"
-            [class.visible]="isChapterVisible(chapter.chapterOrder)"
-            [class.animate-in]="isChapterAnimated(chapter.chapterOrder)">
-            
-            <!-- Point de timeline animé -->
-            <div class="absolute left-0 md:left-1/2 top-8 transform -translate-x-1/2 z-20 hidden md:block">
-              <div 
-                class="timeline-point relative"
-                [class.active]="isChapterVisible(chapter.chapterOrder)"
-                [class.pulse-active]="activeChapter === chapter.chapterOrder">
-                <!-- Cercle extérieur animé -->
-                <div class="absolute inset-0 rounded-full bg-red-600/20 animate-ping" 
-                     [class.animate-ping]="activeChapter === chapter.chapterOrder"
-                     style="animation-duration: 2s;"></div>
-                <!-- Cercle principal -->
-                <div class="relative w-8 h-8 rounded-full border-4 border-paper-100 bg-red-600 shadow-paper-xl transition-all duration-500 transform scale-0"
-                     [class.scale-100]="isChapterVisible(chapter.chapterOrder)"
-                     [class.scale-125]="activeChapter === chapter.chapterOrder">
-                  <div class="w-full h-full rounded-full bg-red-600 flex items-center justify-center">
-                    <div class="w-3 h-3 rounded-full bg-white"></div>
-                  </div>
-                </div>
-                <!-- Numéro du chapitre -->
-                <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-red-600 font-vintage font-bold text-sm opacity-0 transition-opacity duration-500"
-                     [class.opacity-100]="isChapterVisible(chapter.chapterOrder)">
-                  {{ i + 1 }}
-                </div>
-              </div>
-              
-              @if (i < chapters.length - 1) {
-                <!-- Chemin vers le prochain point -->
-                <div class="absolute top-10 left-1/2 transform -translate-x-1/2 w-0.5 h-40 bg-paper-300/30 overflow-hidden">
-                  <div 
-                    class="w-full h-full bg-gradient-to-b from-red-600 to-red-400 transition-all duration-1000 ease-out"
-                    [style.height.%]="getPathProgress(i)"
-                    style="box-shadow: 0 0 8px rgba(220,38,38,0.3);">
-                  </div>
-                </div>
-              }
-            </div>
-
-            <!-- Conteneur flex pour texte et images côte à côte -->
-            <div 
-              class="relative flex flex-col md:flex-row gap-8 md:gap-12 items-start"
-              [class.md:flex-row-reverse]="i % 2 === 1">
-              
-              <!-- Carte de chapitre style vieux journal (texte) -->
-              <div 
-                class="relative flex-1 md:ml-24 md:mr-0 md:w-[calc(50%-3rem)]"
-                [class.md:ml-auto]="i % 2 === 0"
-                [class.md:mr-auto]="i % 2 === 1"
-                [class.md:ml-24]="i % 2 === 1"
-                [class.md:mr-24]="i % 2 === 0">
-                
-                <!-- Effet de tache d'encre -->
-                <div class="absolute -top-4 -right-4 w-32 h-32 bg-red-500/10 rounded-full blur-2xl"></div>
-                
-                <!-- Carte principale avec texte -->
-                <div class="bg-paper-50/95 rounded-2xl shadow-paper-xl border-2 border-paper-300/80 relative overflow-hidden paper-texture transform transition-all duration-700 hover:shadow-paper-xl hover:scale-[1.01] chapter-card"
-                     [class.slide-in-left]="i % 2 === 0"
-                     [class.slide-in-right]="i % 2 === 1">
-                  <!-- Bordure décorative -->
-                  <div class="absolute inset-0 border-4 border-red-400/20 rounded-2xl pointer-events-none"></div>
-                  
-                  <!-- Contenu texte -->
-                  <div class="p-8 md:p-12">
-                    <!-- Header du chapitre -->
-                    <div class="mb-6 pb-6 border-b-2 border-paper-300/50">
-                      <div class="chapter-kicker">
-                        <span class="chapter-kicker-index">{{ formatChapterNumber(i + 1) }}</span>
-                        <span class="text-sm font-vintage font-semibold text-red-600 tracking-wider uppercase">
-                          {{ content?.labels?.chapter }} {{ i + 1 }}
-                        </span>
-                      </div>
-                      <div class="text-xs font-serif text-paper-500 italic mb-3">
-                        {{ getChapterPeriod(chapter) }}
-                      </div>
-                      <h2 class="text-2xl md:text-3xl font-vintage font-bold text-paper-900 leading-tight">
-                        {{ chapter.title }}
-                      </h2>
-                    </div>
-
-                    <!-- Contenu -->
-                    <div class="prose prose-lg max-w-none">
-                      <div class="text-paper-800 leading-relaxed whitespace-pre-line font-serif text-base md:text-lg">
-                        {{ chapter.content }}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Colonne images (à côté du cadre) -->
-              <div class="relative flex-1 md:w-[calc(50%-3rem)] md:sticky md:top-32"
-                   [class.md:order-first]="i % 2 === 1">
-                @let mediaItems = getChapterMedia(chapter);
-                @if (mediaItems.length > 0) {
-                  <div class="space-y-6 media-stack">
-                    @for (media of mediaItems; track media.url; let j = $index) {
-                      <figure class="media-card group"
-                        [class.is-portrait]="media.orientation === 'portrait'"
-                        [class.media-card-offset]="j % 2 === 1">
-                        <div class="media-frame">
-                          <div class="media-glow"></div>
-                          <img 
-                            [src]="media.url" 
-                            [alt]="media.alt"
-                            class="media-image"
-                            loading="lazy">
-                          <div class="media-overlay"></div>
-                          <div class="media-caption">
-                            <div class="flex flex-wrap items-center gap-2">
-                              <span class="media-pill">{{ getHighlightLabel(media.tone) }}</span>
-                              <span class="media-focus">{{ media.focus }}</span>
-                            </div>
-                            <figcaption class="mt-3 text-sm md:text-[15px] text-white/95 font-serif leading-relaxed">
-                              {{ media.caption }}
-                            </figcaption>
-                            <div class="mt-4 flex items-center justify-between gap-4 text-[11px] uppercase tracking-[0.16em] text-white/75">
-                              <span>{{ media.credit }}</span>
-                              @if (media.sourceUrl) {
-                                <a
-                                  [href]="media.sourceUrl"
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  class="media-source-link">
-                                  {{ content?.labels?.source }}
-                                </a>
-                              }
-                            </div>
-                          </div>
-                        </div>
-                        <div class="media-subline">
-                          <span>{{ content?.labels?.visual }}</span>
-                          <span>{{ media.sourceLabel || getChapterPeriod(chapter) }}</span>
-                        </div>
-                      </figure>
-                    }
-                  </div>
-                } @else {
-                  <div class="flex items-center justify-center min-h-[300px] bg-paper-200/50 rounded-xl p-8 border-2 border-paper-300/50 shadow-paper-lg">
-                    <div class="text-center text-paper-400/40">
-                      <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                      </svg>
-                      <p class="font-serif italic text-xs">{{ content?.labels?.photoPlaceholder }}</p>
-                    </div>
-                  </div>
-                }
-              </div>
-            </div>
+      <div class="history-highlights">
+        @for (highlight of content?.hero?.highlights ?? []; track highlight.label) {
+          <article class="history-highlight">
+            <strong>{{ highlight.value }}</strong>
+            <span>{{ highlight.label }}</span>
           </article>
         }
       </div>
+    </section>
+
+    <nav class="history-period-nav" aria-label="Repères historiques">
+      @for (chapter of chapters; track chapter.id) {
+        <button
+          type="button"
+          (click)="scrollToChapter(chapter.chapterOrder)"
+          [class.is-active]="activeChapter === chapter.chapterOrder">
+          {{ getChapterPeriod(chapter) }}
+        </button>
+      }
+    </nav>
+
+    @if (loading) {
+      <div class="history-state">
+        <div class="site-loading-ring"></div>
+        <p>{{ content?.loadingLabel }}</p>
+      </div>
+    } @else if (chapters.length === 0) {
+      <section class="history-state history-empty">
+        <h2>{{ content?.emptyState?.title }}</h2>
+        <p>{{ content?.emptyState?.body }}</p>
+        <a routerLink="/" class="site-button-primary">{{ content?.emptyState?.ctaLabel }}</a>
+      </section>
+    } @else {
+      <section class="history-timeline" aria-label="Frise chronologique">
+        <div class="history-timeline-line" aria-hidden="true"></div>
+
+        @for (chapter of chapters; track chapter.id; let i = $index) {
+          <article
+            [id]="'chapter-' + chapter.chapterOrder"
+            class="history-step"
+            [class.history-step-reverse]="i % 2 === 1"
+            [class.is-visible]="isChapterVisible(chapter.chapterOrder)">
+            <div class="history-step-copy">
+              <span class="history-period-pill">{{ getChapterPeriod(chapter) }}</span>
+              <p class="history-step-label">{{ content?.labels?.chapter }} {{ formatChapterNumber(i + 1) }}</p>
+              <h2>{{ chapter.title }}</h2>
+              <p class="history-step-text">{{ chapter.content }}</p>
+            </div>
+
+            <div class="history-step-marker" aria-hidden="true">
+              <span></span>
+            </div>
+
+            <div class="history-step-media">
+              @let mediaItems = getChapterMedia(chapter);
+              @if (mediaItems.length > 0) {
+                @let media = mediaItems[0];
+                <figure class="history-image-card">
+                  <img [src]="media.url" [alt]="media.alt" loading="lazy">
+                  <figcaption>
+                    <span>{{ getHighlightLabel(media.tone) }}</span>
+                    {{ media.caption }}
+                  </figcaption>
+                </figure>
+              } @else {
+                <div class="history-image-placeholder">
+                  <span>{{ content?.labels?.photoPlaceholder }}</span>
+                </div>
+              }
+            </div>
+          </article>
+        }
+      </section>
     }
-  </section>
 
-  <!-- CTA Section -->
-  <section class="py-24 px-4 bg-gradient-to-br from-paper-600 via-paper-700 to-paper-800 text-white mt-32 relative overflow-hidden">
-    <div class="absolute inset-0 opacity-10 paper-texture"></div>
-    <div class="max-w-4xl mx-auto text-center space-y-8 relative z-10">
-      <h3 class="text-4xl md:text-5xl font-vintage font-bold">{{ content?.cta?.title }}</h3>
-      <div class="w-24 h-1 bg-white/50 mx-auto"></div>
-      <p class="text-xl text-paper-100 font-serif italic max-w-2xl mx-auto">
-        {{ content?.cta?.body }}
-      </p>
-      <a routerLink="/register" 
-        class="inline-block bg-white text-paper-800 px-10 py-4 rounded-xl text-lg font-vintage font-bold hover:bg-paper-50 transform hover:scale-105 transition-all shadow-paper-xl">
-        {{ content?.cta?.actionLabel }}
-      </a>
-    </div>
-  </section>
+    <section class="history-cta">
+      <h2>{{ content?.cta?.title }}</h2>
+      <p>{{ content?.cta?.body }}</p>
+      <a routerLink="/register" class="site-button-primary">{{ content?.cta?.actionLabel }}</a>
+    </section>
+  </main>
 
-  <!-- Bouton retour en haut -->
   <app-scroll-to-top></app-scroll-to-top>
 </div>

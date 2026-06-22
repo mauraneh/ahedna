@@ -1,0 +1,27 @@
+{
+  "name": "ahedna-cms",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev -p 4000",
+    "build": "next build",
+    "start": "next start -p 4000"
+  },
+  "engines": {
+    "node": "20.x"
+  },
+  "dependencies": {
+    "@payloadcms/db-postgres": "3.64.0",
+    "@payloadcms/next": "3.64.0",
+    "@payloadcms/richtext-lexical": "3.64.0",
+    "dotenv": "^16.6.1",
+    "graphql": "^16.11.0",
+    "next": "15.4.11",
+    "payload": "3.64.0",
+    "pg": "^8.16.3",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "sharp": "^0.34.2"
+  }
+}

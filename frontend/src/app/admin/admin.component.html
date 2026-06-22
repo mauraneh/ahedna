@@ -11,6 +11,9 @@
             <p class="site-tool-subtitle">{{ authService.currentUser()?.email }}</p>
           </div>
           <div class="site-tool-actions">
+            <a [href]="cmsUrl + '/admin'" target="_blank" rel="noreferrer" class="site-button-primary admin-payload-link">
+              {{ t('admin.header.openPayload') }}
+            </a>
             <a routerLink="/" class="site-button-secondary">
               ← {{ t('admin.header.backToSite') }}
             </a>

@@ -216,10 +216,20 @@ export class HomeComponent implements OnInit {
 
   scrollTeamCarousel(track: HTMLElement, direction: number): void {
     const cardWidth = track.querySelector<HTMLElement>('.team-polaroid')?.offsetWidth ?? 280;
+    const styles = window.getComputedStyle(track);
+    const gap = Number.parseFloat(styles.columnGap || styles.gap || '0') || 0;
+    const scrollAmount = Math.min(track.clientWidth * 0.9, cardWidth + gap);
+
     track.scrollBy({
-      left: direction * (cardWidth + 24),
+      left: direction * scrollAmount,
       behavior: 'smooth',
     });
+  }
+
+  handleMediaImageError(event: Event): void {
+    const image = event.target as HTMLImageElement | null;
+    image?.classList.add('news-img--hidden');
+    image?.parentElement?.classList.add('media-fallback');
   }
 
   private loadNews(): void {
@@ -285,7 +295,7 @@ export class HomeComponent implements OnInit {
       return {
         title: item.title,
         body: this.getNewsSummary(item),
-        imageUrl: item.image_url || fallback?.imageUrl || this.content?.hero.visual.url || '',
+        imageUrl: this.mediaUpload.resolveMediaUrl(item.image_url) || fallback?.imageUrl || this.content?.hero.visual.url || '',
         imageAlt: item.title || fallback?.imageAlt || '',
         dateLabel: this.formatDate(item.created_at),
         route: '/actualites',
