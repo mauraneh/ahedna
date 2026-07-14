@@ -106,6 +106,13 @@ async function initDatabase() {
     `);
 
     await client.query(`
+      ALTER TABLE news
+      ADD COLUMN IF NOT EXISTS source_url TEXT,
+      ADD COLUMN IF NOT EXISTS source_name VARCHAR(255),
+      ADD COLUMN IF NOT EXISTS source_published_at TIMESTAMP;
+    `);
+
+    await client.query(`
       CREATE TABLE IF NOT EXISTS events (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         title VARCHAR(255) NOT NULL,
@@ -121,7 +128,21 @@ async function initDatabase() {
     await client.query(`
       ALTER TABLE events
       ADD COLUMN IF NOT EXISTS image_url TEXT,
-      ADD COLUMN IF NOT EXISTS gallery_enabled BOOLEAN DEFAULT false;
+      ADD COLUMN IF NOT EXISTS gallery_enabled BOOLEAN DEFAULT false,
+      ADD COLUMN IF NOT EXISTS price_amount NUMERIC(10, 2) DEFAULT 0,
+      ADD COLUMN IF NOT EXISTS payment_details TEXT;
+    `);
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS event_participations (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        event_id UUID REFERENCES events(id) ON DELETE CASCADE,
+        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+        status VARCHAR(20) NOT NULL CHECK (status IN ('attending', 'declined')),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE (event_id, user_id)
+      );
     `);
 
     await client.query(`
@@ -209,7 +230,9 @@ async function initDatabase() {
     await client.query('CREATE INDEX IF NOT EXISTS idx_forum_topics_validated ON forum_topics(validated);');
     await client.query('CREATE INDEX IF NOT EXISTS idx_gallery_validated ON gallery_photos(validated);');
     await client.query('CREATE INDEX IF NOT EXISTS idx_event_photos_event_validated ON event_photos(event_id, validated, created_at);');
+    await client.query('CREATE INDEX IF NOT EXISTS idx_event_participations_event ON event_participations(event_id, status);');
     await client.query('CREATE INDEX IF NOT EXISTS idx_member_documents_role ON member_documents(minimum_role, is_active, sort_order);');
+    await client.query('CREATE UNIQUE INDEX IF NOT EXISTS idx_news_source_url ON news(source_url) WHERE source_url IS NOT NULL;');
 
     await client.query(`
       INSERT INTO member_documents (slug, file_url, minimum_role, sort_order)
@@ -236,7 +259,30 @@ async function initDatabase() {
   }
 }
 
+async function checkDatabaseHealth() {
+  const startedAt = Date.now();
+
+  try {
+    await pool.query('SELECT 1 AS ok');
+
+    return {
+      ok: true,
+      checkedAt: new Date().toISOString(),
+      latencyMs: Date.now() - startedAt,
+      message: 'Database connection successful',
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      checkedAt: new Date().toISOString(),
+      latencyMs: Date.now() - startedAt,
+      message: error.message,
+    };
+  }
+}
+
 module.exports = {
   pool,
-  initDatabase
+  initDatabase,
+  checkDatabaseHealth,
 };

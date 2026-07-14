@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { I18nService } from '../../services/i18n.service';
 
 @Component({
   selector: 'app-site-footer',
   standalone: true,
-  imports: [CommonModule, TranslocoDirective],
+  imports: [CommonModule, RouterLink, TranslocoDirective],
   template: `
     <ng-container *transloco="let t">
       <footer class="site-footer px-4 sm:px-6 lg:px-8">
@@ -24,17 +25,18 @@ import { I18nService } from '../../services/i18n.service';
                 {{ t('footer.line2') }}
               </p>
               <div class="footer-links mt-3 flex flex-wrap justify-center gap-x-4 gap-y-1 text-[0.82rem] font-serif font-bold">
-                <a href="mailto:ahedna.nouvelleaquitaine@gmail.com" class="footer-link">
+                <a routerLink="/contact" class="footer-link">
                   {{ t('footer.contact') }}
                 </a>
-                <a href="#" class="footer-link">{{ t('footer.legal') }}</a>
-                <a href="#" class="footer-link">{{ t('footer.privacy') }}</a>
+                <a routerLink="/mentions-legales" class="footer-link">{{ t('footer.legal') }}</a>
+                <a routerLink="/politique-confidentialite" class="footer-link">{{ t('footer.privacy') }}</a>
               </div>
             </div>
 
             <div class="footer-meta text-center lg:text-right">
               <div
                 class="footer-language-switch"
+                role="group"
                 [attr.aria-label]="t('footer.language.title')">
                 @for (language of languages; track language.code) {
                   <button
@@ -42,9 +44,10 @@ import { I18nService } from '../../services/i18n.service';
                     (click)="i18nService.setActiveLang(language.code)"
                     class="footer-lang-button"
                     [class.footer-lang-button-active]="i18nService.activeLang() === language.code"
-                    [attr.aria-label]="t(language.labelKey)">
-                    <span class="footer-lang-flag" aria-hidden="true">{{ language.flag }}</span>
-                    <span class="footer-lang-label">{{ t(language.labelKey) }}</span>
+                    [attr.aria-label]="t(language.labelKey)"
+                    [attr.aria-pressed]="i18nService.activeLang() === language.code"
+                    [attr.title]="t(language.labelKey)">
+                    <span class="footer-lang-code" aria-hidden="true">{{ language.shortLabel }}</span>
                   </button>
                 }
               </div>
@@ -59,14 +62,20 @@ import { I18nService } from '../../services/i18n.service';
     .site-footer {
       position: relative;
       margin-top: 0;
-      padding-top: 0;
-      padding-bottom: 0.5rem;
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
       color: var(--site-ink, #23180f);
-      background: transparent;
+      background:
+        linear-gradient(rgba(37, 29, 20, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(37, 29, 20, 0.03) 1px, transparent 1px),
+        var(--site-cream, #eadbbd);
+      background-size: 34px 34px, 34px 34px, auto;
+      border-top: 1px solid var(--site-border-strong, rgba(37, 29, 20, 0.72));
     }
 
     .site-footer-inner {
-      padding: 0.1rem 0 0.35rem;
+      padding: 0.85rem 0 0.35rem;
+      border-top: 1px solid var(--site-border-strong, rgba(37, 29, 20, 0.72));
     }
 
     .footer-layout {
@@ -93,17 +102,19 @@ import { I18nService } from '../../services/i18n.service';
     .footer-language-switch {
       display: inline-flex;
       align-items: center;
-      gap: 0.2rem;
+      gap: 0.16rem;
       padding: 0.18rem;
       border-radius: 999px;
-      background: rgba(var(--brand-yellow-rgb), 0.14);
-      border: 1px solid rgba(var(--brand-yellow-rgb), 0.18);
-      backdrop-filter: blur(8px);
+      background: #eee9dc;
+      border: 1px solid rgba(21, 25, 18, 0.18);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.64);
     }
 
     .footer-brand {
       color: var(--site-ink, #23180f);
       line-height: 1;
+      font-family: var(--site-sans-font, Arial, sans-serif);
+      text-transform: uppercase;
     }
 
     .footer-copy,
@@ -131,40 +142,34 @@ import { I18nService } from '../../services/i18n.service';
     .footer-lang-button {
       display: inline-flex;
       align-items: center;
-      gap: 0.38rem;
-      min-height: 2rem;
-      padding: 0.28rem 0.5rem;
+      justify-content: center;
+      min-width: 2.55rem;
+      min-height: 2.15rem;
+      padding: 0 0.65rem;
       border-radius: 999px;
       border: 1px solid transparent;
       background: transparent;
-      color: var(--site-ink, #23180f);
+      color: #3d4138;
+      font-family: var(--site-sans-font, Arial, sans-serif);
       transition:
         background 0.18s ease,
         color 0.18s ease,
         border-color 0.18s ease,
-        opacity 0.18s ease;
-      opacity: 0.66;
+        box-shadow 0.18s ease;
     }
 
     .footer-lang-button-active {
-      background: rgba(var(--brand-turquoise-rgb), 0.18);
-      border-color: rgba(var(--brand-turquoise-rgb), 0.22);
-      color: var(--site-ink);
-      opacity: 1;
+      background: #173d27;
+      border-color: #173d27;
+      color: #fbfaf3;
+      box-shadow: 0 8px 18px rgba(21, 25, 18, 0.16);
     }
 
-    .footer-lang-label {
+    .footer-lang-code {
       color: inherit;
-      font-family: 'Playfair Display', Georgia, serif;
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      line-height: 1;
-    }
-
-    .footer-lang-flag {
-      font-size: 0.88rem;
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
       line-height: 1;
     }
 
@@ -175,10 +180,10 @@ import { I18nService } from '../../services/i18n.service';
       width: 2.5rem;
       height: 2.5rem;
       padding: 0.28rem;
-      border-radius: 999px;
+      border-radius: 0;
       background:
-        radial-gradient(circle at center, rgba(255, 255, 255, 0.34), rgba(245, 230, 211, 0.04)),
-        rgba(255, 255, 255, 0.05);
+        rgba(234, 219, 189, 0.48);
+      border: 1px solid var(--site-border, rgba(37, 29, 20, 0.38));
     }
 
     .footer-logo {
@@ -221,13 +226,58 @@ import { I18nService } from '../../services/i18n.service';
         gap: 0.45rem;
       }
     }
+
+    .site-footer {
+      margin-top: 0;
+      padding: 1.5rem clamp(0.9rem, 2.5vw, 2rem) 2.5rem;
+      background: var(--classic-bg, #d9d7cb);
+      border-top: 0;
+      color: var(--classic-ink, #111512);
+      font-family: var(--site-sans-font, Arial, sans-serif);
+    }
+
+    .site-footer-inner {
+      max-width: 1120px;
+      padding: 1.25rem clamp(1.25rem, 4vw, 2.5rem);
+      border: 1px solid var(--classic-line, #d5d1c2);
+      border-radius: var(--classic-radius, 22px);
+      background: var(--classic-panel, #f6f5ec);
+    }
+
+    .footer-brand,
+    .footer-copy,
+    .footer-links,
+    .footer-copyright,
+    .footer-lang-code {
+      font-family: var(--site-sans-font, Arial, sans-serif);
+      font-style: normal;
+      letter-spacing: 0;
+      text-transform: none;
+      text-shadow: none;
+    }
+
+    .footer-brand,
+    .footer-link:hover {
+      color: var(--classic-green, #173d27);
+    }
+
+    .footer-language-switch,
+    .footer-logo-shell {
+      border-radius: 999px;
+      border-color: var(--classic-line, #d5d1c2);
+      backdrop-filter: none;
+    }
+
+    .footer-logo-shell {
+      background: var(--classic-panel-soft, #efede2);
+    }
   `],
 })
 export class SiteFooterComponent {
   i18nService = inject(I18nService);
 
   languages = [
-    { code: 'fr', flag: '🇫🇷', labelKey: 'footer.language.options.fr' },
-    { code: 'en', flag: '🇬🇧', labelKey: 'footer.language.options.en' },
+    { code: 'fr', shortLabel: 'FR', labelKey: 'footer.language.options.fr' },
+    { code: 'en', shortLabel: 'EN', labelKey: 'footer.language.options.en' },
   ];
 }

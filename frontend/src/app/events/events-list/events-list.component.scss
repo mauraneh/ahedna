@@ -2,36 +2,388 @@
   display: block;
 }
 
-.events-page-hero .site-hero-image-layer {
-  background-image: url('https://commons.wikimedia.org/wiki/Special:FilePath/C%C3%A9r%C3%A9monie%20d%27hommage%20aux%20Harkis%20Toulon%20IX-2006.jpg');
-  background-position: center 34%;
+.events-admin-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 2rem;
 }
 
-.events-page .site-filter-group {
-  margin-top: 2rem;
+.events-filters {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
 }
 
-.events-page-card {
+.filter-btn {
+  min-height: 2.4rem;
+  padding: 0.45rem 1.15rem;
+  border: 1.5px solid var(--classic-line-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--classic-ink);
+  font-family: var(--site-sans-font);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.filter-btn.active,
+.filter-btn:hover {
+  background: var(--brand-red);
+  border-color: var(--brand-red);
+  color: #f5ede0;
+}
+
+.events-list {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.event-card {
+  background: var(--classic-panel);
+  border: 1px solid var(--classic-line);
+  border-radius: var(--classic-card-radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.event-card:hover,
+.event-card:focus-visible {
+  border-color: rgba(var(--brand-red-rgb), 0.5);
+  box-shadow: 0 16px 36px rgba(24, 18, 13, 0.12);
+  transform: translateY(-2px);
+}
+
+.event-card:focus-visible {
+  outline: 3px solid rgba(var(--brand-turquoise-rgb), 0.45);
+  outline-offset: 4px;
+}
+
+.event-card-media {
+  aspect-ratio: 21 / 7;
   overflow: hidden;
 }
 
-.events-page-inline-image {
+.event-card-img {
   display: block;
   width: 100%;
-  height: 14rem;
-  margin-bottom: 1.2rem;
-  border-radius: 1.25rem;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.event-card:hover .event-card-img {
+  transform: scale(1.03);
+}
+
+.event-card-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  padding: 1.5rem 1.75rem;
+}
+
+.event-date-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 1rem;
+  background: var(--brand-red);
+  color: #f5ede0;
+  text-align: center;
+}
+
+.event-day {
+  font-family: var(--site-sans-font);
+  font-size: 1.75rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.event-month {
+  font-family: var(--site-sans-font);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 0.15rem;
+}
+
+.event-card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.event-card-title {
+  font-family: var(--site-sans-font);
+  font-style: italic;
+  font-weight: 800;
+  font-size: 1.35rem;
+  line-height: 1.2;
+  color: var(--classic-ink);
+}
+
+.event-card-location {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+  font-family: var(--site-sans-font);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--brand-red);
+}
+
+.event-card-location svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex-shrink: 0;
+}
+
+.event-card-desc {
+  margin-top: 0.65rem;
+  font-family: var(--site-sans-font);
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--classic-muted);
+}
+
+.event-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.75rem;
+}
+
+.event-card-meta span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.25rem 0.7rem;
+  border: 1px solid rgba(37, 29, 20, 0.18);
+  border-radius: 999px;
+  background: #fff8ea;
+  color: var(--classic-ink);
+  font-family: var(--site-sans-font);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.event-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: rgba(18, 13, 8, 0.68);
+}
+
+.event-modal {
+  position: relative;
+  width: min(62rem, 100%);
+  max-height: min(88vh, 56rem);
+  overflow: auto;
+  border: 1px solid rgba(37, 29, 20, 0.18);
+  border-radius: 0.75rem;
+  background: #fffaf0;
+  color: var(--classic-ink);
+  box-shadow: 0 24px 70px rgba(10, 7, 5, 0.34);
+}
+
+.event-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border: 1px solid rgba(37, 29, 20, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 250, 240, 0.96);
+  color: var(--classic-ink);
+  cursor: pointer;
+}
+
+.event-modal-close svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.event-modal-media {
+  aspect-ratio: 21 / 8;
+  overflow: hidden;
+}
+
+.event-modal-media img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
-.events-page-date {
-  background: linear-gradient(135deg, var(--brand-turquoise), var(--brand-green));
-  color: var(--site-ink);
+.event-modal-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.75fr);
+  gap: 1.5rem;
+  padding: 1.65rem;
 }
 
-@media (max-width: 760px) {
-  .events-page-card .flex.items-start {
+.event-modal-copy h2 {
+  margin-top: 0.2rem;
+  font-family: var(--site-sans-font);
+  font-size: clamp(1.65rem, 3vw, 2.4rem);
+  font-weight: 900;
+  line-height: 1.08;
+  color: var(--classic-ink);
+}
+
+.event-modal-facts {
+  display: grid;
+  gap: 0.65rem;
+  margin: 1.25rem 0;
+}
+
+.event-modal-facts div {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr);
+  gap: 0.85rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid rgba(37, 29, 20, 0.12);
+}
+
+.event-modal-facts dt {
+  color: #5c4938;
+  font-family: var(--site-sans-font);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.event-modal-facts dd {
+  color: var(--classic-ink);
+  font-family: var(--site-sans-font);
+  font-size: 0.98rem;
+  font-weight: 650;
+}
+
+.event-modal-description {
+  margin-bottom: 1.1rem;
+  color: var(--classic-muted);
+  font-family: var(--site-sans-font);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.event-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.event-action-active {
+  outline: 3px solid rgba(var(--brand-turquoise-rgb), 0.3);
+  outline-offset: 2px;
+}
+
+.event-modal-map {
+  position: relative;
+  display: grid;
+  grid-template-rows: minmax(14rem, 1fr) auto;
+  min-height: 18rem;
+  overflow: hidden;
+  border: 1px solid rgba(37, 29, 20, 0.16);
+  border-radius: 0.65rem;
+  background: #f6ecd9;
+}
+
+.event-map-fallback {
+  position: absolute;
+  inset: 0 0 3.7rem;
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(32deg, transparent 48%, rgba(176, 146, 98, 0.36) 49%, rgba(176, 146, 98, 0.36) 51%, transparent 52%),
+    linear-gradient(145deg, transparent 45%, rgba(23, 107, 115, 0.18) 46%, rgba(23, 107, 115, 0.18) 49%, transparent 50%),
+    linear-gradient(90deg, rgba(37, 29, 20, 0.06) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(37, 29, 20, 0.06) 1px, transparent 1px),
+    #efe3cd;
+  background-size: 100% 100%, 100% 100%, 2.2rem 2.2rem, 2.2rem 2.2rem, auto;
+}
+
+.event-map-fallback span {
+  width: 1.35rem;
+  height: 1.35rem;
+  border: 0.35rem solid var(--brand-red);
+  border-radius: 999px 999px 999px 0;
+  background: #fffaf0;
+  transform: rotate(-45deg);
+  box-shadow: 0 8px 22px rgba(37, 29, 20, 0.18);
+}
+
+.event-modal-map iframe {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 14rem;
+  border: 0;
+  background: transparent;
+  opacity: 0.82;
+}
+
+.event-map-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-top: 1px solid rgba(37, 29, 20, 0.14);
+  background: rgba(255, 250, 240, 0.96);
+  color: var(--classic-ink);
+  font-family: var(--site-sans-font);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.event-map-caption a {
+  color: var(--brand-red);
+  text-decoration: underline;
+  text-underline-offset: 0.2rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .event-card-body {
     flex-direction: column;
     gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  .event-modal-backdrop {
+    align-items: end;
+    padding: 0.75rem;
+  }
+
+  .event-modal {
+    max-height: 92vh;
+  }
+
+  .event-modal-body {
+    grid-template-columns: 1fr;
+    padding: 1.25rem;
+  }
+
+  .event-modal-facts div {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
   }
 }

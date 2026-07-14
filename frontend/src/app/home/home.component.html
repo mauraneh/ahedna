@@ -1,250 +1,291 @@
 <ng-container *transloco="let t">
   @if (content; as home) {
-    <div class="home-canvas paper-texture">
+    <div class="home-canvas">
+
+      <app-navbar variant="default"></app-navbar>
+
       <main class="home-main">
-        <div class="home-stage">
-          <section class="home-hero-section">
-            <div class="hero-showcase">
-              <div class="hero-navbar-layer">
-                <app-navbar variant="hero"></app-navbar>
+
+        <!-- ── HERO ── -->
+        <section class="home-hero">
+          <div class="hero-header">
+            <div class="hero-title-block">
+              <h1 class="hero-title">
+                <span class="hero-title-line1">{{ home.hero.titlePrimary }}</span>
+                <span class="hero-title-line2">{{ home.hero.titleSecondary }}</span>
+              </h1>
+            </div>
+            <div class="hero-meta">
+              <p class="hero-region">{{ home.hero.region }}</p>
+              <p class="hero-subtitle">{{ home.hero.subtitle }}</p>
+              <a routerLink="/histoire" class="hero-explore-link">
+                {{ home.hero.primaryCta }}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="hero-arrow">
+                  <path d="M7 17L17 7M17 7H7M17 7v10"></path>
+                </svg>
+              </a>
+              <a routerLink="/adhesion" class="hero-secondary-link">
+                {{ home.hero.secondaryCta }}
+              </a>
+            </div>
+          </div>
+          <div class="hero-image-wrap">
+            <img
+              [src]="home.hero.visual.url"
+              [alt]="home.hero.visual.alt"
+              class="hero-image"
+              loading="eager"
+              (error)="handleMediaImageError($event)">
+          </div>
+        </section>
+
+        <!-- ── SHORTCUTS ── -->
+        <nav class="home-shortcuts" aria-label="Navigation rapide">
+          <div class="shortcuts-inner">
+            @for (shortcut of home.shortcuts; track shortcut.route) {
+              <a [routerLink]="shortcut.route" class="shortcut-item">
+                <span class="shortcut-icon">
+                  @switch (shortcut.icon) {
+                    @case ('history') {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M4 19.5V6a2 2 0 0 1 2-2h11"></path>
+                        <path d="M8 4h10a2 2 0 0 1 2 2v13.5"></path>
+                        <path d="M4 19.5c0-1.1.9-2 2-2h14"></path>
+                      </svg>
+                    }
+                    @case ('news') {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M4 5.5h16"></path><path d="M4 12h16"></path><path d="M4 18.5h10"></path>
+                        <circle cx="18" cy="18" r="2.5"></circle>
+                      </svg>
+                    }
+                    @case ('events') {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M8 2v4"></path><path d="M16 2v4"></path>
+                        <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                        <path d="M3 10h18"></path>
+                      </svg>
+                    }
+                    @case ('forum') {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                      </svg>
+                    }
+                    @case ('membership') {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M12 21s-6.7-4.35-9-8.08C1.37 10.34 2.4 6.5 6.2 5.4c2.1-.61 4.13.16 5.3 1.9 1.17-1.74 3.2-2.51 5.3-1.9 3.8 1.1 4.83 4.94 3.2 7.52C18.7 16.65 12 21 12 21Z"></path>
+                      </svg>
+                    }
+                  }
+                </span>
+                <span class="shortcut-label">{{ shortcut.label }}</span>
+              </a>
+            }
+          </div>
+        </nav>
+
+        <div class="home-content">
+
+          <!-- ── ACTUALITÉS ── -->
+          <section class="home-section">
+            <div class="section-head">
+              <div class="section-head-left">
+                <p class="section-kicker">{{ home.sections.news.eyebrow }}</p>
+                <h2 class="section-title">{{ home.sections.news.title }}</h2>
+                <p class="section-desc">{{ home.sections.news.body }}</p>
               </div>
-
-              <img
-                [src]="home.hero.visual.url"
-                [alt]="home.hero.visual.alt"
-                class="hero-image"
-                loading="eager">
-              <div class="hero-overlay"></div>
-
-              <div class="hero-content">
-                <div class="hero-main">
-                  <span class="hero-region-pill">{{ home.hero.region }}</span>
-                  <h1 class="hero-title">
-                    <span class="hero-title-primary">{{ home.hero.titlePrimary }}</span>
-                    <span class="hero-title-secondary">{{ home.hero.titleSecondary }}</span>
-                  </h1>
-                  <p class="hero-subtitle">{{ home.hero.subtitle }}</p>
-
-                  <div class="hero-actions">
-                    <a routerLink="/histoire" class="hero-primary-button">
-                      {{ home.hero.primaryCta }}
-                    </a>
-                    <a routerLink="/adhesion" class="hero-secondary-button">
-                      {{ home.hero.secondaryCta }}
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              <img src="/hero-wave-turquoise.svg" alt="" class="hero-wave" aria-hidden="true">
+              <a routerLink="/actualites" class="section-cta">{{ home.sections.news.actionLabel }}</a>
             </div>
 
-            <div class="hero-shortcuts-shell">
-              <div class="shortcut-row">
-                @for (shortcut of home.shortcuts; track shortcut.route) {
-                  <a [routerLink]="shortcut.route" class="shortcut-card">
-                    <span class="shortcut-icon">
-                      @switch (shortcut.icon) {
-                        @case ('history') {
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M4 19.5V6a2 2 0 0 1 2-2h11"></path>
-                            <path d="M8 4h10a2 2 0 0 1 2 2v13.5"></path>
-                            <path d="M4 19.5c0-1.1.9-2 2-2h14"></path>
-                          </svg>
-                        }
-                        @case ('news') {
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M4 5.5h16"></path>
-                            <path d="M4 12h16"></path>
-                            <path d="M4 18.5h10"></path>
-                            <circle cx="18" cy="18" r="2.5"></circle>
-                          </svg>
-                        }
-                        @case ('events') {
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M8 2v4"></path>
-                            <path d="M16 2v4"></path>
-                            <rect x="3" y="5" width="18" height="16" rx="2"></rect>
-                            <path d="M3 10h18"></path>
-                          </svg>
-                        }
-                        @case ('forum') {
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                          </svg>
-                        }
-                        @case ('membership') {
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M12 21s-6.7-4.35-9-8.08C1.37 10.34 2.4 6.5 6.2 5.4c2.1-.61 4.13.16 5.3 1.9 1.17-1.74 3.2-2.51 5.3-1.9 3.8 1.1 4.83 4.94 3.2 7.52C18.7 16.65 12 21 12 21Z"></path>
-                          </svg>
-                        }
+            @if (authoredNewsCards.length > 0 || pressNewsCards.length > 0) {
+              <div class="news-home-rails">
+                @if (authoredNewsCards.length > 0) {
+                  <section class="news-rail news-rail-authored">
+                    <div class="news-rail-head">
+                      <div>
+                        <p class="news-rail-kicker">{{ t('news.list.tabs.created.label') }}</p>
+                        <h3>{{ t('news.list.tabs.created.description') }}</h3>
+                      </div>
+                      <a routerLink="/actualites" class="news-view-all">{{ t('news.list.viewAll') }}</a>
+                    </div>
+
+                    <div class="news-carousel-track">
+                      @for (news of authoredNewsCards; track news.title) {
+                        <article class="news-carousel-card news-carousel-card-authored">
+                          @if (news.imageUrl) {
+                            <div class="news-media">
+                              <img [src]="news.imageUrl" [alt]="news.imageAlt" class="news-img" loading="lazy" (error)="handleMediaImageError($event)">
+                            </div>
+                          }
+                          <div class="news-carousel-body">
+                            <span class="news-date">{{ news.dateLabel }}</span>
+                            <h3 class="news-carousel-title">{{ news.title }}</h3>
+                            <p class="news-carousel-copy">{{ news.body }}</p>
+                            <a [routerLink]="news.route" class="text-link">
+                              {{ home.sections.news.actionLabel }}
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M7 17L17 7M17 7H7M17 7v10"></path></svg>
+                            </a>
+                          </div>
+                        </article>
                       }
-                    </span>
-                    <span class="shortcut-label">{{ shortcut.label }}</span>
-                  </a>
+                    </div>
+                  </section>
                 }
+
+                @if (pressNewsCards.length > 0) {
+                  <section class="news-rail news-rail-press">
+                    <div class="news-rail-head">
+                      <div>
+                        <p class="news-rail-kicker">{{ t('news.list.tabs.retrieved.label') }}</p>
+                        <h3>{{ t('news.list.tabs.retrieved.description') }}</h3>
+                      </div>
+                      <a routerLink="/actualites" class="news-view-all">{{ t('news.list.viewAll') }}</a>
+                    </div>
+
+                    <div class="news-carousel-track news-press-track">
+                      @for (news of pressNewsCards; track news.title) {
+                        <article class="news-carousel-card news-carousel-card-press">
+                          <div class="news-carousel-body">
+                            <div class="press-card-topline">
+                              <span class="news-date">{{ news.dateLabel }}</span>
+                              @if (news.sourceLabel) {
+                                <span class="press-source-pill">{{ news.sourceLabel }}</span>
+                              }
+                            </div>
+                            <h3 class="news-carousel-title">{{ news.title }}</h3>
+                            <p class="news-carousel-copy">{{ news.body }}</p>
+                            <div class="press-card-actions">
+                              <a [routerLink]="news.route" class="text-link">
+                                {{ home.sections.news.actionLabel }}
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M7 17L17 7M17 7H7M17 7v10"></path></svg>
+                              </a>
+                              @if (news.sourceUrl) {
+                                <a [href]="news.sourceUrl" target="_blank" rel="noopener noreferrer" class="press-source-link">
+                                  {{ t('news.list.modal.readOriginal') }}
+                                </a>
+                              }
+                            </div>
+                          </div>
+                        </article>
+                      }
+                    </div>
+                  </section>
+                }
+              </div>
+            } @else {
+              <div class="home-empty-state">
+                <h3>{{ t('news.list.empty.title') }}</h3>
+                <p>{{ t('news.list.empty.body') }}</p>
+              </div>
+            }
+          </section>
+
+          <!-- ── ÉVÉNEMENTS ── -->
+          <section class="home-section">
+            <div class="section-head">
+              <div class="section-head-left">
+                <p class="section-kicker">{{ home.sections.events.eyebrow }}</p>
+                <h2 class="section-title">{{ home.sections.events.title }}</h2>
+                <p class="section-desc">{{ home.sections.events.body }}</p>
+              </div>
+              <a routerLink="/evenements" class="section-cta">{{ home.sections.events.actionLabel }}</a>
+            </div>
+
+            @if (eventCards.length > 0) {
+              <div class="events-grid">
+                @for (event of eventCards; track event.title) {
+                  <article class="event-card">
+                    <div class="event-card-media">
+                      <img [src]="event.imageUrl" [alt]="event.imageAlt" class="news-img" loading="lazy" (error)="handleMediaImageError($event)">
+                    </div>
+                    <div class="event-card-body">
+                      <span class="news-date">{{ event.dateLabel }}</span>
+                      <h3 class="event-card-title">{{ event.title }}</h3>
+                      <p class="event-card-location">{{ event.location }}</p>
+                      <p class="event-card-copy">{{ event.body }}</p>
+                      <a [routerLink]="event.route" class="text-link">
+                        {{ home.sections.events.actionLabel }}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M7 17L17 7M17 7H7M17 7v10"></path></svg>
+                      </a>
+                    </div>
+                  </article>
+                }
+              </div>
+            } @else {
+              <div class="home-empty-state">
+                <h3>{{ t('events.list.empty.upcoming') }}</h3>
+                <p>{{ home.sections.events.body }}</p>
+              </div>
+            }
+          </section>
+
+          <!-- ── À PROPOS / HISTOIRE ── -->
+          <section class="home-section about-section">
+            <div class="about-layout">
+              <div class="about-image-wrap">
+                <img
+                  [src]="home.about.visual.url"
+                  [alt]="home.about.visual.alt"
+                  class="about-img"
+                  loading="lazy">
+              </div>
+              <div class="about-content">
+                <p class="section-kicker">{{ home.about.eyebrow }}</p>
+                <h2 class="section-title about-title">{{ home.about.title }}</h2>
+                <p class="about-copy">{{ home.about.body1 }}</p>
+                <p class="about-copy">{{ home.about.body2 }}</p>
+                <a routerLink="/histoire" class="primary-cta">
+                  {{ home.about.cta }}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M7 17L17 7M17 7H7M17 7v10"></path></svg>
+                </a>
               </div>
             </div>
           </section>
 
-          <div class="home-content-shell">
-            <section class="home-section news-section">
-              <div class="section-heading">
-                <div>
-                  <p class="section-kicker">{{ home.sections.news.eyebrow }}</p>
-                  <h2 class="section-title">{{ home.sections.news.title }}</h2>
-                  <p class="section-summary">{{ home.sections.news.body }}</p>
-                </div>
-                <a routerLink="/actualites" class="section-button">{{ home.sections.news.actionLabel }}</a>
+          <!-- ── ÉQUIPE ── -->
+          <section class="home-section team-section">
+            <div class="team-head">
+              <div>
+                <p class="section-kicker">{{ home.team.eyebrow }}</p>
+                <h2 class="section-title">{{ home.team.title }}</h2>
+                <p class="team-desc">{{ home.team.body }}</p>
               </div>
-
-              <div class="news-layout">
-                @if (featuredNews; as featured) {
-                  <article class="news-feature-card">
-                    <div class="news-feature-media">
-                      <img [src]="featured.imageUrl" [alt]="featured.imageAlt" class="news-feature-image" loading="lazy">
-                    </div>
-                    <div class="news-feature-body">
-                      <span class="news-date-pill">{{ featured.dateLabel }}</span>
-                      <h3 class="news-feature-title">{{ featured.title }}</h3>
-                      <p class="news-feature-copy">{{ featured.body }}</p>
-                      <a [routerLink]="featured.route" class="section-link">{{ home.sections.news.actionLabel }}</a>
-                    </div>
-                  </article>
-                }
-
-                <div class="news-list">
-                  @for (news of secondaryNews; track news.title) {
-                    <article class="news-list-item">
-                      <span class="news-date-pill">{{ news.dateLabel }}</span>
-                      <h3 class="news-list-title">{{ news.title }}</h3>
-                      <p class="news-list-copy">{{ news.body }}</p>
-                      <a [routerLink]="news.route" class="section-link">{{ home.sections.news.actionLabel }}</a>
-                    </article>
-                  }
-                </div>
+              <div class="team-controls">
+                <button type="button" class="team-btn" [attr.aria-label]="home.team.previousLabel" (click)="scrollTeamCarousel(teamCarousel, -1)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+                </button>
+                <button type="button" class="team-btn" [attr.aria-label]="home.team.nextLabel" (click)="scrollTeamCarousel(teamCarousel, 1)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+                </button>
               </div>
-            </section>
+            </div>
 
-            <section class="home-section agenda-section">
-              <div class="agenda-layout">
-                <div class="agenda-intro">
-                  <p class="section-kicker">{{ home.sections.events.eyebrow }}</p>
-                  <h2 class="section-title">{{ home.sections.events.title }}</h2>
-                  <p class="agenda-copy">{{ home.sections.events.body }}</p>
-                  <a routerLink="/evenements" class="section-button">{{ home.sections.events.actionLabel }}</a>
-                </div>
-
-                <div class="agenda-grid">
-                  @for (event of eventCards; track event.title) {
-                    <article class="agenda-card">
-                      <div class="agenda-card-media">
-                        <img [src]="event.imageUrl" [alt]="event.imageAlt" class="agenda-card-image" loading="lazy">
-                        <div class="agenda-card-overlay"></div>
+            <div #teamCarousel class="team-track">
+              @for (member of home.team.members; track member.role) {
+                <article class="team-polaroid">
+                  <div class="team-photo-wrap">
+                    @if (member.photoUrl) {
+                      <img
+                        [src]="member.photoUrl"
+                        [alt]="getMemberDisplayName(member) + ' — ' + member.role"
+                        class="team-photo"
+                        loading="lazy">
+                    } @else {
+                      <div class="team-placeholder">
+                        <img src="/logo.png" alt="" class="team-placeholder-logo">
+                        <span class="team-initials" aria-hidden="true">{{ getMemberInitials(member) }}</span>
                       </div>
-                      <div class="agenda-card-body">
-                        <span class="news-date-pill">{{ event.dateLabel }}</span>
-                        <h3 class="agenda-card-title">{{ event.title }}</h3>
-                        <p class="agenda-card-location">{{ event.location }}</p>
-                        <p class="agenda-card-copy">{{ event.body }}</p>
-                        <a [routerLink]="event.route" class="section-link">{{ home.sections.events.actionLabel }}</a>
-                      </div>
-                    </article>
-                  }
-                </div>
-              </div>
-            </section>
-
-            <section class="about-showcase">
-              <img
-                [src]="home.about.visual.url"
-                [alt]="home.about.visual.alt"
-                class="about-showcase-image"
-                loading="lazy">
-              <div class="about-showcase-overlay"></div>
-
-              <div class="about-showcase-content">
-                <div class="about-showcase-copy">
-                  <p class="about-showcase-kicker">{{ home.about.eyebrow }}</p>
-                  <h2 class="about-showcase-title">{{ home.about.title }}</h2>
-                  <p class="about-showcase-text">{{ home.about.body1 }}</p>
-                  <p class="about-showcase-text about-showcase-text-secondary">{{ home.about.body2 }}</p>
-                  <a routerLink="/histoire" class="memory-button">{{ home.about.cta }}</a>
-                </div>
-              </div>
-            </section>
-
-            <section class="team-band">
-              <img src="/team-band-wave.svg" alt="" class="team-band-wave" aria-hidden="true">
-
-              <div class="team-panel">
-                <div class="team-band-inner">
-                  <div class="team-carousel-top">
-                    <div class="team-heading">
-                      <p class="team-kicker">{{ home.team.eyebrow }}</p>
-                      <h3 class="team-title">{{ home.team.title }}</h3>
-                      <p class="team-copy">{{ home.team.body }}</p>
-                    </div>
-
-                    <div class="team-carousel-controls">
-                      <button
-                        type="button"
-                        class="team-carousel-button"
-                        [attr.aria-label]="home.team.previousLabel"
-                        (click)="scrollTeamCarousel(teamCarousel, -1)">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                          <path d="m15 18-6-6 6-6"></path>
-                        </svg>
-                      </button>
-                      <button
-                        type="button"
-                        class="team-carousel-button"
-                        [attr.aria-label]="home.team.nextLabel"
-                        (click)="scrollTeamCarousel(teamCarousel, 1)">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                          <path d="m9 18 6-6-6-6"></path>
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div #teamCarousel class="team-carousel-track">
-                    @for (member of home.team.members; track member.role) {
-                      <article class="team-polaroid">
-                        <div class="team-polaroid-photo">
-                          @if (member.photoUrl) {
-                            <img
-                              [src]="member.photoUrl"
-                              [alt]="getMemberDisplayName(member) + ' - ' + member.role"
-                              class="team-photo-image"
-                              loading="lazy">
-                          } @else {
-                            <div class="team-placeholder">
-                              <img src="/logo.png" alt="" class="team-placeholder-logo">
-                              <span class="team-placeholder-initials" aria-hidden="true">
-                                {{ getMemberInitials(member) }}
-                              </span>
-                            </div>
-                          }
-                        </div>
-
-                        <div class="team-polaroid-caption">
-                          <h4 class="team-polaroid-name">{{ getMemberDisplayName(member) }}</h4>
-                          <p class="team-polaroid-role">{{ member.role }}</p>
-                        </div>
-                      </article>
                     }
                   </div>
-                </div>
-              </div>
+                  <div class="team-caption">
+                    <h4 class="team-name">{{ getMemberDisplayName(member) }}</h4>
+                    <p class="team-role">{{ member.role }}</p>
+                  </div>
+                </article>
+              }
+            </div>
+          </section>
 
-              <img
-                src="/team-band-mountains.svg"
-                alt=""
-                class="team-band-mountains"
-                aria-hidden="true">
-            </section>
-          </div>
         </div>
       </main>
 

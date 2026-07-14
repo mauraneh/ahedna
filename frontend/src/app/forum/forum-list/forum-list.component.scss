@@ -2,10 +2,6 @@
   display: block;
 }
 
-.forum-page-hero .site-hero-image-layer {
-  background-image: url('https://commons.wikimedia.org/wiki/Special:FilePath/Carte-combattant%20pour%20les%20Harkis.jpg');
-  background-position: center 42%;
-}
 
 .forum-page-shell {
   padding-bottom: 5rem;
@@ -24,7 +20,7 @@
 
 .forum-access-title {
   color: var(--site-ink);
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: clamp(2rem, 3.6vw, 2.9rem);
   font-weight: 900;
   line-height: 1.04;
@@ -34,7 +30,7 @@
   margin: 1rem auto 0;
   max-width: 36rem;
   color: var(--site-muted);
-  font-family: 'Crimson Text', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 1.08rem;
   line-height: 1.72;
 }
@@ -63,7 +59,7 @@
 .forum-page-aside-title {
   margin-top: 0.75rem;
   color: var(--site-ink);
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: clamp(2rem, 3vw, 2.75rem);
   font-weight: 900;
   line-height: 1.04;
@@ -72,7 +68,7 @@
 .forum-page-aside-copy {
   margin-top: 0.95rem;
   color: var(--site-muted);
-  font-family: 'Crimson Text', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 1.04rem;
   line-height: 1.7;
 }
@@ -93,7 +89,7 @@
 
 .forum-page-stat-value {
   color: var(--site-ink);
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 1.85rem;
   font-weight: 900;
   line-height: 1;
@@ -102,7 +98,7 @@
 .forum-page-stat-label {
   margin-top: 0.45rem;
   color: var(--site-muted);
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.15em;
@@ -135,7 +131,7 @@
 .forum-compose-title {
   margin-top: 0.7rem;
   color: var(--site-ink);
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: clamp(1.75rem, 2vw, 2.25rem);
   font-weight: 900;
   line-height: 1.05;
@@ -158,33 +154,25 @@
   grid-template-columns: 8.5rem minmax(0, 1fr);
   gap: 1.35rem;
   padding: 1.35rem 1.4rem;
-  border-radius: 1.85rem;
-  border: 1px solid rgba(95, 72, 49, 0.12);
-  background: var(--site-surface-bg);
-  box-shadow: 0 14px 28px rgba(67, 46, 31, 0.08);
-  transition:
-    transform 0.24s ease,
-    box-shadow 0.24s ease,
-    border-color 0.24s ease;
-}
-
-.forum-thread:nth-child(2n) {
-  background: var(--site-surface-bg-soft);
+  border-radius: var(--classic-card-radius);
+  border: 1px solid var(--classic-line);
+  background: var(--classic-panel);
+  box-shadow: var(--classic-shadow);
+  transition: transform 0.24s ease, box-shadow 0.24s ease;
 }
 
 .forum-thread::before {
   content: '';
   position: absolute;
   inset: 1rem auto 1rem 0.95rem;
-  width: 0.28rem;
+  width: 0.25rem;
   border-radius: 999px;
-  background: linear-gradient(180deg, var(--brand-red), var(--brand-yellow), var(--brand-turquoise));
+  background: var(--brand-red);
 }
 
 .forum-thread:hover {
   transform: translateY(-3px);
-  box-shadow: 0 18px 32px rgba(67, 46, 31, 0.1);
-  border-color: rgba(95, 72, 49, 0.18);
+  box-shadow: 0 18px 32px rgba(26, 18, 8, 0.09);
 }
 
 .forum-thread-rail {
@@ -209,7 +197,7 @@
   align-items: center;
   justify-content: center;
   color: white;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 1rem;
   font-weight: 900;
   box-shadow: none;
@@ -222,7 +210,7 @@
 
 .forum-thread-metric-value {
   color: var(--site-ink);
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 1.55rem;
   font-weight: 900;
   line-height: 1;
@@ -231,7 +219,7 @@
 .forum-thread-metric-label,
 .forum-thread-date {
   color: var(--site-muted);
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -253,7 +241,7 @@
 
 .forum-thread-title {
   color: var(--site-ink);
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: clamp(1.55rem, 2vw, 2.1rem);
   font-weight: 900;
   line-height: 1.08;
@@ -261,7 +249,7 @@
 
 .forum-thread-excerpt {
   color: var(--site-muted);
-  font-family: 'Crimson Text', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 1.06rem;
   line-height: 1.7;
 }
@@ -274,7 +262,7 @@
 
 .forum-thread-footer-link {
   color: var(--brand-red);
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.08em;

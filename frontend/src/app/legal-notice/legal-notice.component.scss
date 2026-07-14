@@ -1,0 +1,116 @@
+:host {
+  display: block;
+}
+
+.legal-page {
+  background: var(--classic-bg, #d9d7cb);
+  color: var(--classic-ink, #111512);
+}
+
+.legal-shell {
+  display: grid;
+  gap: clamp(1.25rem, 3vw, 2rem);
+  width: min(980px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: clamp(7rem, 12vw, 9rem) 0 clamp(3rem, 7vw, 5rem);
+}
+
+.legal-hero,
+.legal-content {
+  border: 1px solid var(--classic-line, #d5d1c2);
+  border-radius: var(--classic-radius, 22px);
+  background: var(--classic-panel, #f6f5ec);
+}
+
+.legal-hero {
+  display: grid;
+  gap: 0.9rem;
+  padding: clamp(1.5rem, 4vw, 3rem);
+}
+
+.legal-kicker {
+  color: var(--classic-green, #173d27);
+  font-size: 0.86rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.legal-hero h1 {
+  margin: 0;
+  color: var(--classic-ink, #111512);
+  font-size: clamp(2.3rem, 5vw, 4.6rem);
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 0.98;
+}
+
+.legal-hero p,
+.legal-content p,
+.legal-content dd {
+  margin: 0;
+  color: var(--classic-muted, #555247);
+  font-size: clamp(1.02rem, 1.6vw, 1.14rem);
+  line-height: 1.68;
+}
+
+.legal-content {
+  display: grid;
+  gap: 0;
+  overflow: hidden;
+}
+
+.legal-content article {
+  display: grid;
+  gap: 0.85rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border-top: 1px solid var(--classic-line, #d5d1c2);
+}
+
+.legal-content article:first-child {
+  border-top: 0;
+}
+
+.legal-content h2 {
+  margin: 0;
+  color: var(--classic-ink, #111512);
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
+  font-weight: 800;
+}
+
+.legal-content dl {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+}
+
+.legal-content dl div {
+  display: grid;
+  grid-template-columns: minmax(9rem, 13rem) 1fr;
+  gap: 0.8rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid rgba(17, 21, 18, 0.1);
+}
+
+.legal-content dt {
+  color: var(--classic-ink, #111512);
+  font-weight: 800;
+}
+
+.legal-content a {
+  color: var(--classic-green, #173d27);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.legal-content a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.22rem;
+}
+
+@media (max-width: 680px) {
+  .legal-content dl div {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+}

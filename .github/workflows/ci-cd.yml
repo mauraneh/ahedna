@@ -53,11 +53,11 @@ jobs:
 
       - name: Run backend tests
         working-directory: ./backend
-        run: yarn test:backend || echo "Tests à implémenter"
+        run: yarn test:backend
 
       - name: Check backend lint
         working-directory: ./backend
-        run: yarn lint:backend || echo "Lint à configurer"
+        run: yarn lint:backend
 
   # Tests Frontend
   test-frontend:
@@ -81,7 +81,7 @@ jobs:
 
       - name: Run Angular tests
         working-directory: ./frontend
-        run: yarn test --watch=false --browsers=ChromeHeadless || echo "Tests à implémenter"
+        run: yarn test:ci
 
       - name: Build Angular
         working-directory: ./frontend

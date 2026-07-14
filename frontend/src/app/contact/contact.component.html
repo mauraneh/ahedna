@@ -1,0 +1,50 @@
+<div class="site-page contact-page">
+  <app-navbar></app-navbar>
+
+  <main class="contact-shell">
+    <section class="contact-form-panel" aria-labelledby="contact-title">
+      <div class="contact-heading">
+        <p class="contact-kicker">Contact</p>
+        <h1 id="contact-title">Nous contacter</h1>
+      </div>
+
+      <form [formGroup]="contactForm" (ngSubmit)="submitContact()" class="contact-form">
+        <div class="contact-field">
+          <label for="contact-name">Nom</label>
+          <input id="contact-name" formControlName="name" type="text" autocomplete="name">
+          @if (submitted && contactForm.controls.name.invalid) {
+            <p class="contact-error">Indiquez votre nom.</p>
+          }
+        </div>
+
+        <div class="contact-field">
+          <label for="contact-email">Email</label>
+          <input id="contact-email" formControlName="email" type="email" autocomplete="email">
+          @if (submitted && contactForm.controls.email.invalid) {
+            <p class="contact-error">Indiquez une adresse email valide.</p>
+          }
+        </div>
+
+        <div class="contact-field">
+          <label for="contact-subject">Sujet</label>
+          <input id="contact-subject" formControlName="subject" type="text">
+          @if (submitted && contactForm.controls.subject.invalid) {
+            <p class="contact-error">Indiquez le sujet de votre message.</p>
+          }
+        </div>
+
+        <div class="contact-field">
+          <label for="contact-message">Message</label>
+          <textarea id="contact-message" formControlName="message" rows="8"></textarea>
+          @if (submitted && contactForm.controls.message.invalid) {
+            <p class="contact-error">Votre message doit contenir au moins 10 caractères.</p>
+          }
+        </div>
+
+        <button type="submit" class="site-button-primary contact-submit">Envoyer le message</button>
+      </form>
+    </section>
+  </main>
+
+  <app-scroll-to-top></app-scroll-to-top>
+</div>

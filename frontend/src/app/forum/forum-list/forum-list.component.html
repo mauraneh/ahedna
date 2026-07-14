@@ -1,11 +1,10 @@
 <ng-container *transloco="let t">
-  <div class="site-page paper-texture relative overflow-hidden forum-page">
-    <section class="site-hero site-public-hero forum-page-hero">
-      <div class="site-hero-nav">
-        <app-navbar variant="hero"></app-navbar>
-      </div>
-      <div class="site-hero-image-layer"></div>
-      <div class="site-hero-overlay"></div>
+  <div class="site-page forum-page">
+
+    <app-navbar></app-navbar>
+
+    <div class="site-hero site-public-hero">
+      <div class="site-hero-nav"></div>
       <div class="site-hero-content">
         <div class="site-hero-inner">
           <div class="site-public-hero-copy site-public-hero-copy-center">
@@ -15,8 +14,7 @@
           </div>
         </div>
       </div>
-      <img src="/hero-wave-red.svg" alt="" class="site-hero-wave" aria-hidden="true">
-    </section>
+    </div>
 
     <div class="site-page-shell site-page-shell-after-hero forum-page-shell">
       @if (!authService.isAuthenticated()) {

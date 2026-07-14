@@ -2,10 +2,6 @@
   display: block;
 }
 
-.gallery-page-hero .site-hero-image-layer {
-  background-image: url('https://commons.wikimedia.org/wiki/Special:FilePath/Harki-j.jpg');
-  background-position: center 24%;
-}
 
 .gallery-page-shell {
   display: grid;
@@ -41,7 +37,7 @@
 .gallery-page-section-title {
   margin-top: 0.8rem;
   color: var(--site-navy);
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: clamp(1.8rem, 3vw, 2.7rem);
   font-weight: 900;
   line-height: 1.06;
@@ -50,7 +46,7 @@
 .gallery-page-copy {
   margin-top: 0.85rem;
   color: var(--site-muted);
-  font-family: 'Crimson Text', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 1.04rem;
   line-height: 1.68;
 }
@@ -73,7 +69,7 @@
 
 .gallery-page-open-event-name {
   color: var(--site-ink);
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 0.96rem;
   font-weight: 800;
 }
@@ -84,7 +80,7 @@
 .gallery-event-summary-meta,
 .gallery-photo-meta {
   color: var(--site-muted);
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -143,7 +139,7 @@
 
 .gallery-event-summary-value {
   color: var(--site-navy);
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 2rem;
   font-weight: 900;
   line-height: 1;
@@ -195,7 +191,7 @@
 
 .gallery-photo-caption {
   color: var(--site-ink);
-  font-family: 'Crimson Text', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 1rem;
   line-height: 1.55;
 }

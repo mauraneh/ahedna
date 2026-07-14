@@ -2,16 +2,18 @@
   "name": "frontend",
   "version": "0.0.0",
   "scripts": {
-    "ng": "ng",
+    "ng": "node ./scripts/run-ng-safe.mjs",
     "generate:config": "node ./scripts/generate-app-config.mjs",
-    "start": "yarn generate:config && ng serve --proxy-config proxy.conf.json",
-    "start:docker": "yarn generate:config && ng serve --proxy-config proxy.docker.conf.json --host 0.0.0.0 --port 4200 --poll 2000",
-    "build": "yarn generate:config && ng build",
-    "watch": "yarn generate:config && ng build --watch --configuration development",
-    "test": "yarn generate:config && ng test"
+    "generate:sitemap": "node ./scripts/generate-sitemap.mjs",
+    "start": "node ./scripts/generate-app-config.mjs && node ./scripts/generate-sitemap.mjs && node ./scripts/run-ng-safe.mjs serve --proxy-config proxy.conf.json",
+    "start:docker": "node ./scripts/generate-app-config.mjs && node ./scripts/generate-sitemap.mjs && node ./scripts/run-ng-safe.mjs serve --proxy-config proxy.docker.conf.json --host 0.0.0.0 --port 4200 --poll 2000",
+    "build": "node ./scripts/generate-app-config.mjs && node ./scripts/generate-sitemap.mjs && node ./scripts/run-ng-safe.mjs build",
+    "watch": "node ./scripts/generate-app-config.mjs && node ./scripts/run-ng-safe.mjs build --watch --configuration development",
+    "test": "node ./scripts/generate-app-config.mjs && node ./scripts/run-ng-safe.mjs test",
+    "test:ci": "node ./scripts/generate-app-config.mjs && node ./scripts/run-ng-safe.mjs test --watch=false --browsers=ChromeHeadlessNoSandbox --progress=false"
   },
   "engines": {
-    "node": "20.x"
+    "node": "^20.19.0 || ^22.12.0"
   },
   "prettier": {
     "printWidth": 100,
@@ -27,26 +29,22 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/common": "^20.3.0",
-    "@angular/compiler": "^20.3.0",
-    "@angular/core": "^20.3.0",
-    "@angular/forms": "^20.3.0",
-    "@angular/platform-browser": "^20.3.0",
-    "@angular/router": "^20.3.0",
+    "@angular/common": "20.3.19",
+    "@angular/compiler": "20.3.19",
+    "@angular/core": "20.3.19",
+    "@angular/forms": "20.3.19",
+    "@angular/platform-browser": "20.3.19",
+    "@angular/router": "20.3.19",
     "@jsverse/transloco": "^8.2.1",
-    "@types/leaflet": "^1.9.21",
-    "aos": "^2.3.4",
-    "gsap": "^3.14.1",
-    "leaflet": "^1.9.4",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^20.3.13",
-    "@angular/build": "^20.3.13",
-    "@angular/cli": "^20.3.13",
-    "@angular/compiler-cli": "^20.3.0",
+    "@angular-devkit/build-angular": "20.3.24",
+    "@angular/build": "20.3.24",
+    "@angular/cli": "20.3.24",
+    "@angular/compiler-cli": "20.3.19",
     "@types/jasmine": "~5.1.0",
     "autoprefixer": "^10.4.22",
     "jasmine-core": "~5.9.0",

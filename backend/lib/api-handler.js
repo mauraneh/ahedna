@@ -12,6 +12,15 @@ const {
 
 let dbInitialized = false;
 let dbInitializationPromise = null;
+let publicNewsCache = {
+  expiresAt: 0,
+  rows: [],
+};
+
+const PUBLIC_NEWS_CACHE_TTL_MS = 15 * 60 * 1000;
+const PUBLIC_NEWS_IMAGE_FETCH_LIMIT = 30;
+const ARTICLE_IMAGE_FETCH_TIMEOUT_MS = 5000;
+const MAX_ARTICLE_IMAGE_HTML_BYTES = 750000;
 
 function jsonResponse(body, options = {}) {
   return new Response(JSON.stringify(body), {
@@ -146,6 +155,15 @@ function sanitizeBoolean(value, fallback = false) {
   return typeof value === 'boolean' ? value : fallback;
 }
 
+function sanitizeNumber(value, fallback = 0) {
+  if (value === null || value === undefined || value === '') {
+    return fallback;
+  }
+
+  const number = Number(value);
+  return Number.isFinite(number) && number >= 0 ? Math.round(number * 100) / 100 : fallback;
+}
+
 function isValidPassword(password) {
   return typeof password === 'string' && password.length >= 8;
 }
@@ -188,6 +206,689 @@ function getOptionalUser(request) {
   return token ? verifyToken(token) : null;
 }
 
+function getEventSelectFields(currentUserId, firstParamIndex = 1) {
+  const participationQuery = currentUserId
+    ? `(SELECT status FROM event_participations ep WHERE ep.event_id = e.id AND ep.user_id = $${firstParamIndex} LIMIT 1)`
+    : 'NULL::text';
+
+  return `
+    e.*,
+    (SELECT COUNT(*)::int FROM event_participations ep WHERE ep.event_id = e.id AND ep.status = 'attending') AS participant_count,
+    ${participationQuery} AS current_user_participation
+  `;
+}
+
+function getGdeltDate(value) {
+  if (!value || typeof value !== 'string') {
+    return null;
+  }
+
+  const compact = value.match(/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/);
+  if (compact) {
+    return `${compact[1]}-${compact[2]}-${compact[3]}T${compact[4]}:${compact[5]}:${compact[6]}Z`;
+  }
+
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
+}
+
+function decodeXmlEntities(value = '') {
+  return String(value)
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;|&#39;/g, "'")
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, code) =>
+      String.fromCharCode(Number.parseInt(code, 16))
+    );
+}
+
+function stripHtml(value = '') {
+  return decodeXmlEntities(value).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function getXmlTagValue(xml, tagName) {
+  const match = xml.match(
+    new RegExp(`<${tagName}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${tagName}>`, 'i')
+  );
+  return match ? stripHtml(match[1]) : null;
+}
+
+function getXmlTagRawValue(xml, tagName) {
+  const match = xml.match(
+    new RegExp(`<${tagName}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${tagName}>`, 'i')
+  );
+  return match ? decodeXmlEntities(match[1]).trim() : null;
+}
+
+function getXmlTagAttribute(xml, tagName, attributeName) {
+  const match = xml.match(
+    new RegExp(`<${tagName}[^>]*\\s${attributeName}=["']([^"']+)["'][^>]*>`, 'i')
+  );
+  return match ? decodeXmlEntities(match[1]).trim() : null;
+}
+
+function isPrivateIPv4(hostname) {
+  const parts = hostname.split('.').map(Number);
+
+  if (parts.length !== 4 || parts.some((part) => !Number.isInteger(part) || part < 0 || part > 255)) {
+    return false;
+  }
+
+  const [first, second] = parts;
+  return (
+    first === 10 ||
+    first === 127 ||
+    (first === 169 && second === 254) ||
+    (first === 172 && second >= 16 && second <= 31) ||
+    (first === 192 && second === 168)
+  );
+}
+
+function isBlockedHostname(hostname) {
+  const normalized = hostname.toLowerCase().replace(/^\[|\]$/g, '');
+
+  return (
+    normalized === 'localhost' ||
+    normalized.endsWith('.localhost') ||
+    normalized.endsWith('.local') ||
+    normalized === '::1' ||
+    normalized.startsWith('fc') ||
+    normalized.startsWith('fd') ||
+    normalized.startsWith('fe80') ||
+    isPrivateIPv4(normalized)
+  );
+}
+
+function getSafeExternalUrl(value, baseUrl = undefined) {
+  const rawUrl = normalizeString(value, 2000);
+
+  if (!rawUrl) {
+    return null;
+  }
+
+  try {
+    const parsedUrl = baseUrl ? new URL(rawUrl, baseUrl) : new URL(rawUrl);
+
+    if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+      return null;
+    }
+
+    if (parsedUrl.username || parsedUrl.password || isBlockedHostname(parsedUrl.hostname)) {
+      return null;
+    }
+
+    return parsedUrl.href;
+  } catch {
+    return null;
+  }
+}
+
+function isLegacyGeneratedNewsImage(value) {
+  const imageUrl = normalizeString(value, 2000);
+
+  if (!imageUrl) {
+    return false;
+  }
+
+  let normalizedUrl = imageUrl.toLowerCase();
+
+  try {
+    normalizedUrl = decodeURIComponent(imageUrl).toLowerCase();
+  } catch {
+    normalizedUrl = imageUrl.toLowerCase();
+  }
+
+  return (
+    normalizedUrl.includes('commons.wikimedia.org/wiki/special:filepath/') &&
+    (
+      normalizedUrl.includes('journée hommage harkis reims 1200559.jpg') ||
+      normalizedUrl.includes('journée hommage harkis reims 1200567.jpg') ||
+      normalizedUrl.includes('camps de rivesaltes 16-05 mh-po 6797.jpg') ||
+      normalizedUrl.includes('harki-j.jpg')
+    )
+  );
+}
+
+function removeGeneratedExternalImages(rows) {
+  return rows.map((row) => {
+    if (row.source_url && isLegacyGeneratedNewsImage(row.image_url)) {
+      return { ...row, image_url: null };
+    }
+
+    return row;
+  });
+}
+
+function getHtmlAttribute(tag, attributeName) {
+  const match = tag.match(
+    new RegExp(`\\s${attributeName}=["']([^"']+)["']`, 'i')
+  );
+  return match ? decodeXmlEntities(match[1]).trim() : null;
+}
+
+function getFirstImageFromHtmlFragment(fragment, baseUrl) {
+  if (!fragment) {
+    return null;
+  }
+
+  const imageTag = fragment.match(/<img\b[^>]*\ssrc=["']([^"']+)["'][^>]*>/i);
+  return imageTag ? getSafeExternalUrl(imageTag[1], baseUrl) : null;
+}
+
+function getFirstLinkFromHtmlFragment(fragment, baseUrl) {
+  if (!fragment) {
+    return null;
+  }
+
+  const linkTag = fragment.match(/<a\b[^>]*\shref=["']([^"']+)["'][^>]*>/i);
+  return linkTag ? getSafeExternalUrl(linkTag[1], baseUrl) : null;
+}
+
+function isNewsAggregatorUrl(value) {
+  const safeUrl = getSafeExternalUrl(value);
+
+  if (!safeUrl) {
+    return false;
+  }
+
+  try {
+    const hostname = new URL(safeUrl).hostname.replace(/^www\./, '').toLowerCase();
+    return hostname === 'news.google.com' || hostname === 'bing.com';
+  } catch {
+    return false;
+  }
+}
+
+function extractArticleImageUrl(html, baseUrl) {
+  const metaTags = html.match(/<meta\b[^>]*>/gi) || [];
+  const imageMetaNames = new Set([
+    'og:image',
+    'og:image:secure_url',
+    'twitter:image',
+    'twitter:image:src',
+    'image',
+  ]);
+
+  for (const tag of metaTags) {
+    const name = (
+      getHtmlAttribute(tag, 'property') ||
+      getHtmlAttribute(tag, 'name') ||
+      getHtmlAttribute(tag, 'itemprop') ||
+      ''
+    ).toLowerCase();
+
+    if (imageMetaNames.has(name)) {
+      const imageUrl = getSafeExternalUrl(getHtmlAttribute(tag, 'content'), baseUrl);
+
+      if (imageUrl) {
+        return imageUrl;
+      }
+    }
+  }
+
+  const imageSrcLink = (html.match(/<link\b[^>]*>/gi) || []).find((tag) =>
+    /\srel=["'][^"']*\bimage_src\b[^"']*["']/i.test(tag)
+  );
+
+  if (imageSrcLink) {
+    const imageUrl = getSafeExternalUrl(getHtmlAttribute(imageSrcLink, 'href'), baseUrl);
+
+    if (imageUrl) {
+      return imageUrl;
+    }
+  }
+
+  return getFirstImageFromHtmlFragment(html, baseUrl);
+}
+
+async function fetchArticleImageUrl(sourceUrl) {
+  const safeUrl = getSafeExternalUrl(sourceUrl);
+
+  if (!safeUrl) {
+    return null;
+  }
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), ARTICLE_IMAGE_FETCH_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(safeUrl, {
+      headers: {
+        accept: 'text/html,application/xhtml+xml',
+        'user-agent': 'AHEDNA/1.0 article-image-preview',
+      },
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const contentLength = Number(response.headers.get('content-length') || 0);
+    const contentType = response.headers.get('content-type') || '';
+
+    if (contentLength > MAX_ARTICLE_IMAGE_HTML_BYTES || !/text\/html|application\/xhtml\+xml/i.test(contentType)) {
+      return null;
+    }
+
+    const html = (await response.text()).slice(0, MAX_ARTICLE_IMAGE_HTML_BYTES);
+    return extractArticleImageUrl(html, response.url || safeUrl);
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function withExternalArticleImage(article, shouldFetchSourceImage = true) {
+  const normalizedImageUrl = getSafeExternalUrl(article.imageUrl, article.sourceUrl);
+
+  if (normalizedImageUrl) {
+    return {
+      ...article,
+      imageUrl: normalizedImageUrl,
+    };
+  }
+
+  if (shouldFetchSourceImage) {
+    const sourceImageUrl = await fetchArticleImageUrl(article.sourceUrl);
+
+    if (sourceImageUrl) {
+      return {
+        ...article,
+        imageUrl: sourceImageUrl,
+      };
+    }
+  }
+
+  return {
+    ...article,
+    imageUrl: null,
+  };
+}
+
+async function enrichArticlesWithImages(articles) {
+  return Promise.all(
+    articles.map((article, index) =>
+      withExternalArticleImage(article, index < PUBLIC_NEWS_IMAGE_FETCH_LIMIT)
+    )
+  );
+}
+
+function isHarkiRelatedArticle(article) {
+  const searchableText = [
+    article.title,
+    article.excerpt,
+    article.content,
+    article.sourceName,
+  ].filter(Boolean).join(' ');
+
+  return /\bharkis?\b/i.test(searchableText) || /enfants?\s+de\s+harkis?/i.test(searchableText);
+}
+
+function getExternalArticleContent({ excerpt, publishedAt, sourceName, sourceUrl }) {
+  const sourceDate = publishedAt
+    ? new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long' }).format(new Date(publishedAt))
+    : null;
+
+  return [
+    excerpt,
+    sourceDate ? `Date de publication detectee : ${sourceDate}.` : null,
+    'Consultez la source originale pour lire l’article complet.',
+    sourceUrl,
+    sourceName ? `Source : ${sourceName}.` : null,
+  ].filter(Boolean).join('\n\n');
+}
+
+function normalizeExternalArticle(article) {
+  const sourceUrl = normalizeString(article.url || article.url_mobile, 2000);
+  const title = normalizeString(article.title, 255);
+
+  if (!sourceUrl || !title) {
+    return null;
+  }
+
+  const sourceName =
+    normalizeString(article.domain || article.sourceCollection || article.sourcecountry, 255) ||
+    'Source externe';
+  const publishedAt = getGdeltDate(article.seendate);
+  const imageUrl = getSafeExternalUrl(article.socialimage, sourceUrl);
+  const excerpt = `Article repere par la veille publique AHEDNA depuis ${sourceName}.`;
+  const content = getExternalArticleContent({ excerpt, publishedAt, sourceName, sourceUrl });
+
+  return {
+    title,
+    excerpt,
+    content,
+    imageUrl,
+    sourceName,
+    sourceUrl,
+    publishedAt,
+  };
+}
+
+function normalizeRssArticle(item, providerName) {
+  const sourceName =
+    normalizeString(getXmlTagValue(item, 'source'), 255) ||
+    normalizeString(providerName, 255) ||
+    'Source externe';
+  const rawLink =
+    normalizeString(getXmlTagValue(item, 'link'), 2000) ||
+    normalizeString(getXmlTagAttribute(item, 'source', 'url'), 2000);
+  const rawDescription = getXmlTagRawValue(item, 'description');
+  const directArticleUrl = getFirstLinkFromHtmlFragment(rawDescription, rawLink);
+  const sourceUrl =
+    isNewsAggregatorUrl(rawLink) && directArticleUrl ? directArticleUrl : rawLink;
+  const rawTitle = normalizeString(getXmlTagValue(item, 'title'), 255);
+
+  if (!sourceUrl || !rawTitle) {
+    return null;
+  }
+
+  const cleanedTitle = rawTitle
+    .replace(new RegExp(`\\s+-\\s+${escapeRegExp(sourceName)}$`, 'i'), '')
+    .trim();
+  const title = normalizeString(cleanedTitle || rawTitle, 255);
+  const description = normalizeString(stripHtml(rawDescription || ''), 500);
+  const publishedAt = getGdeltDate(getXmlTagValue(item, 'pubDate'));
+  const imageUrl =
+    getSafeExternalUrl(getXmlTagAttribute(item, 'media:content', 'url'), sourceUrl) ||
+    getSafeExternalUrl(getXmlTagAttribute(item, 'media:thumbnail', 'url'), sourceUrl) ||
+    getSafeExternalUrl(getXmlTagAttribute(item, 'enclosure', 'url'), sourceUrl) ||
+    getFirstImageFromHtmlFragment(rawDescription, sourceUrl);
+  const excerpt =
+    description ||
+    `Article repere par la veille publique AHEDNA depuis ${sourceName}.`;
+  const content = getExternalArticleContent({ excerpt, publishedAt, sourceName, sourceUrl });
+
+  return {
+    title,
+    excerpt,
+    content,
+    imageUrl,
+    sourceName,
+    sourceUrl,
+    publishedAt,
+  };
+}
+
+function parseRssArticles(xml, providerName) {
+  const items = xml.match(/<item\b[\s\S]*?<\/item>/gi) || [];
+  return items.map((item) => normalizeRssArticle(item, providerName)).filter(Boolean);
+}
+
+async function fetchText(url, providerName) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 9000);
+
+  try {
+    const response = await fetch(url, {
+      headers: {
+        accept: 'application/rss+xml, application/xml, text/xml, application/json',
+        'user-agent': 'AHEDNA/1.0 public-news-import',
+      },
+      signal: controller.signal,
+    });
+
+    const text = await response.text();
+
+    if (!response.ok) {
+      throw new Error(`${providerName} returned ${response.status}`);
+    }
+
+    return text;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function fetchGoogleNewsArticles(maxRecords) {
+  const url = new URL('https://news.google.com/rss/search');
+  url.searchParams.set('q', 'harkis OR harki OR "enfants de harkis" OR "anciens harkis"');
+  url.searchParams.set('hl', 'fr');
+  url.searchParams.set('gl', 'FR');
+  url.searchParams.set('ceid', 'FR:fr');
+
+  const xml = await fetchText(url, 'Google Actualites');
+  return parseRssArticles(xml, 'Google Actualites').slice(0, maxRecords);
+}
+
+async function fetchBingNewsArticles(maxRecords) {
+  const url = new URL('https://www.bing.com/news/search');
+  url.searchParams.set('q', 'harkis OR harki OR "enfants de harkis" OR "anciens harkis"');
+  url.searchParams.set('format', 'rss');
+  url.searchParams.set('mkt', 'fr-FR');
+
+  const xml = await fetchText(url, 'Bing Actualites');
+  return parseRssArticles(xml, 'Bing Actualites').slice(0, maxRecords);
+}
+
+async function fetchGdeltArticles(maxRecords) {
+  const query = '(harkis OR harki OR "anciens harkis" OR "enfants de harkis") sourcelang:french';
+  const url = new URL('https://api.gdeltproject.org/api/v2/doc/doc');
+
+  url.searchParams.set('query', query);
+  url.searchParams.set('mode', 'artlist');
+  url.searchParams.set('format', 'json');
+  url.searchParams.set('maxrecords', String(Math.min(Math.max(maxRecords, 1), 30)));
+  url.searchParams.set('timespan', '1year');
+  url.searchParams.set('sort', 'datedesc');
+
+  const text = await fetchText(url, 'GDELT');
+
+  if (/please limit requests/i.test(text)) {
+    throw new Error('GDELT rate limited the request');
+  }
+
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error('GDELT returned a non-JSON response');
+  }
+
+  return Array.isArray(data.articles)
+    ? data.articles.map(normalizeExternalArticle).filter(Boolean)
+    : [];
+}
+
+async function fetchPublicHarkiArticles(maxRecords = 12) {
+  const limit = Math.min(Math.max(Number(maxRecords) || 12, 1), 30);
+  const providers = [fetchGoogleNewsArticles, fetchBingNewsArticles, fetchGdeltArticles];
+  const articles = [];
+  const seenUrls = new Set();
+  const seenTitles = new Set();
+  const errors = [];
+
+  for (const provider of providers) {
+    try {
+      const providerArticles = await provider(limit);
+
+      for (const article of providerArticles) {
+        if (!isHarkiRelatedArticle(article)) {
+          continue;
+        }
+
+        const urlKey = article.sourceUrl.toLowerCase();
+        const titleKey = article.title.toLowerCase().replace(/\s+/g, ' ');
+
+        if (seenUrls.has(urlKey) || seenTitles.has(titleKey)) {
+          continue;
+        }
+
+        seenUrls.add(urlKey);
+        seenTitles.add(titleKey);
+        articles.push(article);
+
+        if (articles.length >= limit) {
+          break;
+        }
+      }
+    } catch (error) {
+      errors.push(error.message);
+    }
+
+    if (articles.length >= limit) {
+      break;
+    }
+  }
+
+  articles.sort((first, second) => {
+    const firstDate = first.publishedAt ? new Date(first.publishedAt).getTime() : 0;
+    const secondDate = second.publishedAt ? new Date(second.publishedAt).getTime() : 0;
+    return secondDate - firstDate;
+  });
+
+  if (articles.length === 0 && errors.length === providers.length) {
+    throw new Error(errors.join(' | '));
+  }
+
+  return enrichArticlesWithImages(articles.slice(0, limit));
+}
+
+function getStableExternalNewsId(sourceUrl, title) {
+  const source = sourceUrl || title;
+  return `external-${Buffer.from(source).toString('base64url').slice(0, 32)}`;
+}
+
+function toPublicNewsRow(article) {
+  const date = article.publishedAt || new Date().toISOString();
+
+  return {
+    id: getStableExternalNewsId(article.sourceUrl, article.title),
+    title: article.title,
+    content: article.content,
+    excerpt: article.excerpt,
+    image_url: article.imageUrl,
+    published: true,
+    author_id: null,
+    first_name: null,
+    last_name: null,
+    author_email: null,
+    source_url: article.sourceUrl,
+    source_name: article.sourceName,
+    source_published_at: article.publishedAt,
+    created_at: date,
+    updated_at: date,
+  };
+}
+
+async function getCachedPublicNewsRows(maxRecords = 12) {
+  const limit = Math.min(Math.max(Number(maxRecords) || 12, 1), 30);
+  const now = Date.now();
+
+  if (publicNewsCache.expiresAt > now && publicNewsCache.rows.length >= limit) {
+    return publicNewsCache.rows.slice(0, limit);
+  }
+
+  let rows;
+  try {
+    rows = (await fetchPublicHarkiArticles(Math.max(limit, 12))).map(toPublicNewsRow);
+    publicNewsCache = {
+      expiresAt: now + PUBLIC_NEWS_CACHE_TTL_MS,
+      rows,
+    };
+  } catch (error) {
+    if (publicNewsCache.rows.length > 0) {
+      return publicNewsCache.rows.slice(0, limit);
+    }
+
+    throw error;
+  }
+
+  return rows;
+}
+
+function getNewsRowTimestamp(row) {
+  const date = row.source_published_at || row.created_at;
+  const timestamp = date ? new Date(date).getTime() : 0;
+  return Number.isFinite(timestamp) ? timestamp : 0;
+}
+
+function getDateFilterValue(value, endOfDay = false) {
+  const normalized = normalizeString(value, 30);
+  if (!normalized) {
+    return null;
+  }
+
+  const parsed = new Date(endOfDay ? `${normalized}T23:59:59.999Z` : `${normalized}T00:00:00.000Z`);
+  return Number.isNaN(parsed.getTime()) ? null : parsed.getTime();
+}
+
+function getNewsFilters(searchParams) {
+  return {
+    keyword: normalizeString(searchParams.get('q') || searchParams.get('keyword'), 120)?.toLowerCase() || '',
+    dateFrom: getDateFilterValue(searchParams.get('date_from') || searchParams.get('from')),
+    dateTo: getDateFilterValue(searchParams.get('date_to') || searchParams.get('to'), true),
+  };
+}
+
+function filterNewsRows(rows, filters) {
+  return rows.filter((row) => {
+    const timestamp = getNewsRowTimestamp(row);
+
+    if (filters.dateFrom && timestamp < filters.dateFrom) {
+      return false;
+    }
+
+    if (filters.dateTo && timestamp > filters.dateTo) {
+      return false;
+    }
+
+    if (!filters.keyword) {
+      return true;
+    }
+
+    const searchableText = [
+      row.title,
+      row.excerpt,
+      row.content,
+      row.source_name,
+      row.first_name,
+      row.last_name,
+    ].filter(Boolean).join(' ').toLowerCase();
+
+    return searchableText.includes(filters.keyword);
+  });
+}
+
+function mergeNewsRows(primaryRows, externalRows, limit = 12) {
+  const rows = [];
+  const seenUrls = new Set();
+  const seenTitles = new Set();
+
+  for (const row of [...primaryRows, ...externalRows]) {
+    const sourceUrl = row.source_url?.toLowerCase();
+    const title = row.title?.toLowerCase().replace(/\s+/g, ' ').trim();
+
+    if ((sourceUrl && seenUrls.has(sourceUrl)) || (title && seenTitles.has(title))) {
+      continue;
+    }
+
+    if (sourceUrl) {
+      seenUrls.add(sourceUrl);
+    }
+
+    if (title) {
+      seenTitles.add(title);
+    }
+
+    rows.push(row);
+  }
+
+  return rows
+    .sort((first, second) => getNewsRowTimestamp(second) - getNewsRowTimestamp(first))
+    .slice(0, limit);
+}
+
 async function deleteUserAccount(userId) {
   const client = await pool.connect();
 
@@ -207,6 +908,7 @@ async function deleteUserAccount(userId) {
     await client.query('DELETE FROM forum_messages WHERE author_id = $1', [userId]);
     await client.query('DELETE FROM forum_topics WHERE author_id = $1', [userId]);
     await client.query('DELETE FROM event_photos WHERE uploaded_by = $1', [userId]);
+    await client.query('DELETE FROM event_participations WHERE user_id = $1', [userId]);
     await client.query('DELETE FROM gallery_photos WHERE uploaded_by = $1', [userId]);
     await client.query('DELETE FROM news WHERE author_id = $1', [userId]);
     await client.query('DELETE FROM memberships WHERE user_id = $1', [userId]);
@@ -337,12 +1039,21 @@ async function handleGet(request) {
     if (path === 'news') {
       const { searchParams } = new URL(request.url);
       const published = searchParams.get('published');
+      const filters = getNewsFilters(searchParams);
       const authUser = getOptionalUser(request);
 
       let query;
       let params = [];
 
-      if (authUser?.role === 'admin') {
+      if (published === 'true') {
+        query = `
+          SELECT n.*, u.first_name, u.last_name, u.email as author_email
+          FROM news n
+          LEFT JOIN users u ON n.author_id = u.id
+          WHERE n.published = true
+          ORDER BY n.created_at DESC
+        `;
+      } else if (authUser?.role === 'admin') {
         query = `
           SELECT n.*, u.first_name, u.last_name, u.email as author_email
           FROM news n
@@ -368,8 +1079,44 @@ async function handleGet(request) {
         `;
       }
 
-      const result = await pool.query(query, params);
-      return jsonResponse({ news: result.rows }, { headers: corsHeaders });
+      const shouldCompleteWithPublicNews = published === 'true';
+      let rows;
+
+      try {
+        const result = await pool.query(query, params);
+        rows = filterNewsRows(result.rows, filters);
+      } catch (error) {
+        if (shouldCompleteWithPublicNews) {
+          try {
+            const publicRows = removeGeneratedExternalImages(
+              filterNewsRows(await getCachedPublicNewsRows(30), filters)
+            );
+            return jsonResponse({ news: publicRows }, { headers: corsHeaders });
+          } catch {
+            throw error;
+          }
+        }
+
+        throw error;
+      }
+
+      if (shouldCompleteWithPublicNews) {
+        rows = removeGeneratedExternalImages(rows);
+
+        try {
+          const publicRows = removeGeneratedExternalImages(
+            filterNewsRows(await getCachedPublicNewsRows(30), filters)
+          );
+          return jsonResponse(
+            { news: mergeNewsRows(rows, publicRows, 30) },
+            { headers: corsHeaders }
+          );
+        } catch (error) {
+          console.error('Public news fallback failed:', error);
+        }
+      }
+
+      return jsonResponse({ news: rows }, { headers: corsHeaders });
     }
 
     if (path.startsWith('news/') && path.split('/').length === 2) {
@@ -403,12 +1150,19 @@ async function handleGet(request) {
     if (path === 'events') {
       const { searchParams } = new URL(request.url);
       const type = searchParams.get('type');
-      let query = 'SELECT * FROM events ORDER BY event_date DESC';
-      let params = [];
+      const authUser = getOptionalUser(request);
+      const params = authUser ? [authUser.id] : [];
+      const eventFields = getEventSelectFields(authUser?.id, 1);
+      let query = `SELECT ${eventFields} FROM events e ORDER BY e.event_date DESC`;
 
       if (type) {
-        query = 'SELECT * FROM events WHERE type = $1 ORDER BY event_date DESC';
-        params = [type];
+        params.push(type);
+        query = `
+          SELECT ${eventFields}
+          FROM events e
+          WHERE e.type = $${params.length}
+          ORDER BY ${type === 'upcoming' ? 'e.event_date ASC' : 'e.event_date DESC'}
+        `;
       }
 
       const result = await pool.query(query, params);
@@ -417,7 +1171,14 @@ async function handleGet(request) {
 
     if (path.startsWith('events/') && path.split('/').length === 2) {
       const id = path.split('/')[1];
-      const eventResult = await pool.query('SELECT * FROM events WHERE id = $1', [id]);
+      const authUser = getOptionalUser(request);
+      const params = authUser ? [authUser.id, id] : [id];
+      const eventResult = await pool.query(
+        `SELECT ${getEventSelectFields(authUser?.id, 1)}
+         FROM events e
+         WHERE e.id = $${params.length}`,
+        params
+      );
 
       if (eventResult.rows.length === 0) {
         return jsonResponse({ error: 'Event not found' }, { status: 404, headers: corsHeaders });
@@ -443,7 +1204,7 @@ async function handleGet(request) {
 
     if (path === 'gallery/events') {
       const eventsResult = await pool.query(
-        `SELECT id, title, description, event_date, location, type, image_url, gallery_enabled
+        `SELECT id, title, description, event_date, location, type, image_url, gallery_enabled, price_amount, payment_details
          FROM events
          WHERE gallery_enabled = true
          ORDER BY event_date DESC`
@@ -822,6 +1583,80 @@ async function handlePost(request) {
       );
     }
 
+    if (path === 'news/import-public') {
+      const authResult = await requireAuth(request);
+      if (authResult.error) {
+        return jsonResponse(
+          { error: authResult.error },
+          { status: authResult.status, headers: corsHeaders }
+        );
+      }
+
+      const roleCheck = requireRole(authResult.user, ['admin']);
+      if (roleCheck) {
+        return jsonResponse(
+          { error: roleCheck.error },
+          { status: roleCheck.status, headers: corsHeaders }
+        );
+      }
+
+      let articles;
+      try {
+        articles = await fetchPublicHarkiArticles(Number(body.max_records) || 12);
+      } catch (error) {
+        return jsonResponse(
+          { error: `Impossible de recuperer les articles publics: ${error.message}` },
+          { status: 502, headers: corsHeaders }
+        );
+      }
+
+      const published = sanitizeBoolean(body.published, true);
+      const imported = [];
+      let skipped = 0;
+
+      for (const article of articles) {
+        const existing = await pool.query('SELECT id FROM news WHERE source_url = $1', [
+          article.sourceUrl,
+        ]);
+
+        if (existing.rows.length > 0) {
+          skipped += 1;
+          continue;
+        }
+
+        const result = await pool.query(
+          `INSERT INTO news (
+             title, content, excerpt, author_id, published, image_url,
+             source_url, source_name, source_published_at, created_at, updated_at
+           )
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, COALESCE($9, CURRENT_TIMESTAMP), CURRENT_TIMESTAMP)
+           RETURNING *`,
+          [
+            article.title,
+            article.content,
+            article.excerpt,
+            authResult.user.id,
+            published,
+            article.imageUrl,
+            article.sourceUrl,
+            article.sourceName,
+            article.publishedAt,
+          ]
+        );
+
+        imported.push(result.rows[0]);
+      }
+
+      return jsonResponse(
+        {
+          message: `${imported.length} article(s) importe(s), ${skipped} doublon(s) ignore(s).`,
+          imported,
+          skipped,
+        },
+        { headers: corsHeaders }
+      );
+    }
+
     if (path === 'news') {
       const authResult = await requireAuth(request);
       if (authResult.error) {
@@ -890,6 +1725,8 @@ async function handlePost(request) {
       const image_url = normalizeString(body.image_url, 2000);
       const type = body.type;
       const gallery_enabled = sanitizeBoolean(body.gallery_enabled);
+      const price_amount = sanitizeNumber(body.price_amount, 0);
+      const payment_details = normalizeString(body.payment_details, 1000);
 
       if (!title || !event_date) {
         return jsonResponse(
@@ -899,14 +1736,71 @@ async function handlePost(request) {
       }
 
       const result = await pool.query(
-        'INSERT INTO events (title, description, event_date, location, image_url, type, gallery_enabled) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-        [title, description || null, event_date, location || null, image_url || null, type || 'upcoming', gallery_enabled]
+        `INSERT INTO events (
+          title, description, event_date, location, image_url, type,
+          gallery_enabled, price_amount, payment_details
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        RETURNING *`,
+        [
+          title,
+          description || null,
+          event_date,
+          location || null,
+          image_url || null,
+          type || 'upcoming',
+          gallery_enabled,
+          price_amount,
+          payment_details || null,
+        ]
       );
 
       return jsonResponse(
         {
           message: 'Event created successfully',
           event: result.rows[0],
+        },
+        { headers: corsHeaders }
+      );
+    }
+
+    if (path.startsWith('events/') && path.endsWith('/participation')) {
+      const authResult = await requireAuth(request);
+      if (authResult.error) {
+        return jsonResponse(
+          { error: authResult.error },
+          { status: authResult.status, headers: corsHeaders }
+        );
+      }
+
+      const [, eventId] = path.split('/');
+      const status = normalizeString(body.status, 20);
+
+      if (!['attending', 'declined'].includes(status)) {
+        return jsonResponse(
+          { error: 'Invalid participation status' },
+          { status: 400, headers: corsHeaders }
+        );
+      }
+
+      const eventResult = await pool.query('SELECT id FROM events WHERE id = $1', [eventId]);
+      if (eventResult.rows.length === 0) {
+        return jsonResponse({ error: 'Event not found' }, { status: 404, headers: corsHeaders });
+      }
+
+      const result = await pool.query(
+        `INSERT INTO event_participations (event_id, user_id, status)
+         VALUES ($1, $2, $3)
+         ON CONFLICT (event_id, user_id)
+         DO UPDATE SET status = EXCLUDED.status, updated_at = CURRENT_TIMESTAMP
+         RETURNING *`,
+        [eventId, authResult.user.id, status]
+      );
+
+      return jsonResponse(
+        {
+          message: 'Participation updated successfully',
+          participation: result.rows[0],
         },
         { headers: corsHeaders }
       );
@@ -1335,9 +2229,34 @@ async function handlePut(request) {
       const image_url = normalizeString(body.image_url, 2000);
       const type = body.type;
       const gallery_enabled = sanitizeBoolean(body.gallery_enabled);
+      const price_amount = sanitizeNumber(body.price_amount, 0);
+      const payment_details = normalizeString(body.payment_details, 1000);
       const result = await pool.query(
-        'UPDATE events SET title = $1, description = $2, event_date = $3, location = $4, image_url = $5, type = $6, gallery_enabled = $7, updated_at = CURRENT_TIMESTAMP WHERE id = $8 RETURNING *',
-        [title, description, event_date, location, image_url, type, gallery_enabled, id]
+        `UPDATE events
+         SET title = $1,
+             description = $2,
+             event_date = $3,
+             location = $4,
+             image_url = $5,
+             type = $6,
+             gallery_enabled = $7,
+             price_amount = $8,
+             payment_details = $9,
+             updated_at = CURRENT_TIMESTAMP
+         WHERE id = $10
+         RETURNING *`,
+        [
+          title,
+          description,
+          event_date,
+          location,
+          image_url,
+          type,
+          gallery_enabled,
+          price_amount,
+          payment_details,
+          id,
+        ]
       );
 
       if (result.rows.length === 0) {

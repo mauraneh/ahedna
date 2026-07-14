@@ -57,6 +57,41 @@
   box-shadow: 0 14px 30px rgba(12, 24, 40, 0.06);
 }
 
+.profile-address-suggestions {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.65rem;
+}
+
+.profile-address-suggestion {
+  display: grid;
+  width: 100%;
+  gap: 0.15rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid rgba(var(--brand-turquoise-rgb), 0.24);
+  border-radius: 0.65rem;
+  background: #f3fbf8;
+  color: #1b140d;
+  text-align: left;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.profile-address-suggestion:hover {
+  border-color: rgba(var(--brand-turquoise-rgb), 0.5);
+  background: #e4f2ef;
+}
+
+.profile-address-suggestion span {
+  font-weight: 700;
+}
+
+.profile-address-suggestion small {
+  color: #4c5a50;
+  font-size: 0.84rem;
+}
+
 @media (max-width: 767px) {
   .profile-page-hero::after {
     position: relative;

@@ -7,9 +7,11 @@ import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { environment } from '../../environments/environment';
 import { NavbarComponent } from '../core/components/navbar/navbar.component';
 import { ScrollToTopComponent } from '../core/components/scroll-to-top/scroll-to-top.component';
+import { AddressAutocompleteService, AddressSuggestion } from '../core/services/address-autocomplete.service';
 import { AuthService } from '../core/services/auth.service';
 import { I18nService } from '../core/services/i18n.service';
 import { MediaUploadService } from '../core/services/media-upload.service';
+import { formatEuroPrice, toDateTimeInputValue } from '../core/utils/date-time';
 
 interface AdminStats {
   users: number;
@@ -39,6 +41,8 @@ interface NewsItem {
   excerpt?: string;
   content?: string;
   image_url?: string | null;
+  source_url?: string | null;
+  source_name?: string | null;
   published: boolean;
   first_name?: string;
   last_name?: string;
@@ -54,6 +58,8 @@ interface EventItem {
   image_url?: string | null;
   type: 'upcoming' | 'past';
   gallery_enabled?: boolean;
+  price_amount?: number | string | null;
+  payment_details?: string | null;
 }
 
 interface GalleryAlbum {
@@ -66,6 +72,8 @@ interface GalleryAlbum {
   type: 'upcoming' | 'past';
   gallery_enabled: boolean;
   photo_count: number;
+  price_amount?: number | string | null;
+  payment_details?: string | null;
 }
 
 interface PendingPhoto {
@@ -91,6 +99,7 @@ export class AdminComponent implements OnInit {
   private fb = inject(FormBuilder);
   private transloco = inject(TranslocoService);
   private i18nService = inject(I18nService);
+  private addressAutocomplete = inject(AddressAutocompleteService);
   private mediaUpload = inject(MediaUploadService);
   authService = inject(AuthService);
 
@@ -126,10 +135,13 @@ export class AdminComponent implements OnInit {
   newsItems: NewsItem[] = [];
   loadingNews = true;
   savingNews = false;
+  importingPublicNews = false;
   editingNewsId: string | null = null;
   deletingNewsId: string | null = null;
   newsFeedback = '';
   newsError = '';
+  uploadingNewsImage = false;
+  newsImagePreview = '';
 
   pendingTopics: any[] = [];
   loadingTopics = true;
@@ -157,6 +169,12 @@ export class AdminComponent implements OnInit {
   eventFeedback = '';
   eventError = '';
   eventImagePreview = '';
+  eventLocationSuggestions: AddressSuggestion[] = [];
+  galleryEventLocationSuggestions: AddressSuggestion[] = [];
+  private eventLocationConfirmed = true;
+  private galleryEventLocationConfirmed = true;
+  private eventLocationRequestId = 0;
+  private galleryEventLocationRequestId = 0;
 
   newsForm = this.fb.group({
     title: ['', [Validators.required]],
@@ -174,6 +192,8 @@ export class AdminComponent implements OnInit {
     image_url: [''],
     type: ['upcoming', [Validators.required]],
     gallery_enabled: [false],
+    price_amount: [0],
+    payment_details: [''],
   });
 
   galleryEventForm = this.fb.group({
@@ -183,6 +203,8 @@ export class AdminComponent implements OnInit {
     location: [''],
     image_url: [''],
     type: ['upcoming', [Validators.required]],
+    price_amount: [0],
+    payment_details: [''],
   });
 
   galleryPhotoForm = this.fb.group({
@@ -368,6 +390,28 @@ export class AdminComponent implements OnInit {
     });
   }
 
+  importPublicNews(): void {
+    this.importingPublicNews = true;
+    this.newsFeedback = '';
+    this.newsError = '';
+
+    this.http.post<{ message: string }>(`${environment.apiUrl}/news/import-public`, {
+      max_records: 12,
+      published: true,
+    }).subscribe({
+      next: (response) => {
+        this.newsFeedback = response.message;
+        this.loadNews();
+        this.loadOverview();
+        this.importingPublicNews = false;
+      },
+      error: (error) => {
+        this.newsError = error.error?.error || this.transloco.translate('content.messages.importNewsError');
+        this.importingPublicNews = false;
+      }
+    });
+  }
+
   editNews(item: NewsItem): void {
     this.activeTab = 'news';
     this.editingNewsId = item.id;
@@ -380,6 +424,7 @@ export class AdminComponent implements OnInit {
       image_url: item.image_url || '',
       published: item.published,
     });
+    this.newsImagePreview = this.resolveMediaUrl(item.image_url);
   }
 
   deleteNews(item: NewsItem): void {
@@ -415,9 +460,14 @@ export class AdminComponent implements OnInit {
       image_url: '',
       published: false,
     });
+    this.newsImagePreview = '';
   }
 
   saveGalleryEvent(): void {
+    if (!this.ensureGalleryEventLocationIsConfirmed()) {
+      return;
+    }
+
     if (this.galleryEventForm.invalid) {
       this.galleryEventForm.markAllAsTouched();
       return;
@@ -455,8 +505,12 @@ export class AdminComponent implements OnInit {
       location: '',
       image_url: '',
       type: 'upcoming',
+      price_amount: 0,
+      payment_details: '',
     });
     this.galleryEventImagePreview = '';
+    this.galleryEventLocationConfirmed = true;
+    this.galleryEventLocationSuggestions = [];
   }
 
   uploadGalleryPhoto(): void {
@@ -506,6 +560,8 @@ export class AdminComponent implements OnInit {
       image_url: item.image_url || undefined,
       type: item.type,
       gallery_enabled: item.gallery_enabled,
+      price_amount: item.price_amount,
+      payment_details: item.payment_details,
     });
   }
 
@@ -536,6 +592,10 @@ export class AdminComponent implements OnInit {
   }
 
   saveEvent(): void {
+    if (!this.ensureEventLocationIsConfirmed()) {
+      return;
+    }
+
     if (this.eventForm.invalid) {
       this.eventForm.markAllAsTouched();
       return;
@@ -578,8 +638,12 @@ export class AdminComponent implements OnInit {
       image_url: item.image_url || '',
       type: item.type,
       gallery_enabled: !!item.gallery_enabled,
+      price_amount: Number(item.price_amount || 0),
+      payment_details: item.payment_details || '',
     });
     this.eventImagePreview = this.resolveMediaUrl(item.image_url);
+    this.eventLocationConfirmed = true;
+    this.eventLocationSuggestions = [];
   }
 
   deleteEvent(item: EventItem): void {
@@ -617,8 +681,12 @@ export class AdminComponent implements OnInit {
       image_url: '',
       type: 'upcoming',
       gallery_enabled: false,
+      price_amount: 0,
+      payment_details: '',
     });
     this.eventImagePreview = '';
+    this.eventLocationConfirmed = true;
+    this.eventLocationSuggestions = [];
   }
 
   validateTopic(topicId: string, validated: boolean): void {
@@ -687,12 +755,51 @@ export class AdminComponent implements OnInit {
     return new Date(date).toLocaleString(this.i18nService.getDateLocale());
   }
 
+  formatPrice(value?: number | string | null): string {
+    return formatEuroPrice(
+      value,
+      this.i18nService.getDateLocale(),
+      this.transloco.translate('events.modal.free')
+    );
+  }
+
   isCurrentUser(userId: string): boolean {
     return this.authService.currentUser()?.id === userId;
   }
 
   resolveMediaUrl(url?: string | null): string {
     return this.mediaUpload.resolveMediaUrl(url);
+  }
+
+  onNewsImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    this.uploadingNewsImage = true;
+    this.newsError = '';
+
+    this.mediaUpload.uploadImage(file).subscribe({
+      next: ({ url }) => {
+        this.newsForm.patchValue({ image_url: url });
+        this.newsImagePreview = this.resolveMediaUrl(url);
+        this.uploadingNewsImage = false;
+        input.value = '';
+      },
+      error: (error) => {
+        this.newsError = error?.message || error?.error?.error || this.transloco.translate('admin.messages.uploadImageError');
+        this.uploadingNewsImage = false;
+        input.value = '';
+      }
+    });
+  }
+
+  clearNewsImage(): void {
+    this.newsForm.patchValue({ image_url: '' });
+    this.newsImagePreview = '';
   }
 
   onEventImageSelected(event: Event): void {
@@ -721,13 +828,121 @@ export class AdminComponent implements OnInit {
     });
   }
 
+  onEventLocationInput(): void {
+    const location = this.eventForm.value.location || '';
+    this.eventLocationConfirmed = false;
+    this.fetchLocationSuggestions(location, 'event');
+  }
+
+  onGalleryEventLocationInput(): void {
+    const location = this.galleryEventForm.value.location || '';
+    this.galleryEventLocationConfirmed = false;
+    this.fetchLocationSuggestions(location, 'galleryEvent');
+  }
+
+  selectEventLocation(suggestion: AddressSuggestion): void {
+    this.eventForm.patchValue({ location: this.addressAutocomplete.formatLocation(suggestion) });
+    this.eventLocationConfirmed = true;
+    this.eventLocationSuggestions = [];
+  }
+
+  selectGalleryEventLocation(suggestion: AddressSuggestion): void {
+    this.galleryEventForm.patchValue({ location: this.addressAutocomplete.formatLocation(suggestion) });
+    this.galleryEventLocationConfirmed = true;
+    this.galleryEventLocationSuggestions = [];
+  }
+
   private formatDateTimeInput(date: string): string {
-    const parsed = new Date(date);
-    const year = parsed.getFullYear();
-    const month = `${parsed.getMonth() + 1}`.padStart(2, '0');
-    const day = `${parsed.getDate()}`.padStart(2, '0');
-    const hours = `${parsed.getHours()}`.padStart(2, '0');
-    const minutes = `${parsed.getMinutes()}`.padStart(2, '0');
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
+    return toDateTimeInputValue(date);
+  }
+
+  private fetchLocationSuggestions(value: string, target: 'event' | 'galleryEvent'): void {
+    const query = value.trim();
+    const requestId = target === 'event'
+      ? ++this.eventLocationRequestId
+      : ++this.galleryEventLocationRequestId;
+
+    if (!query) {
+      this.setLocationSuggestions(target, []);
+      this.setLocationConfirmed(target, true);
+      return;
+    }
+
+    if (query.length < 3) {
+      this.setLocationSuggestions(target, []);
+      return;
+    }
+
+    const lookup = /^\d{5}$/.test(query)
+      ? this.addressAutocomplete.searchByPostalCode(query)
+      : this.addressAutocomplete.search(query);
+
+    lookup.subscribe((suggestions) => {
+      if (!this.isLatestLocationRequest(target, requestId)) {
+        return;
+      }
+
+      if (/^\d{5}$/.test(query) && suggestions[0]) {
+        this.patchLocationFromSuggestion(target, suggestions[0]);
+        return;
+      }
+
+      this.setLocationSuggestions(target, suggestions);
+    });
+  }
+
+  private patchLocationFromSuggestion(target: 'event' | 'galleryEvent', suggestion: AddressSuggestion): void {
+    if (target === 'event') {
+      this.selectEventLocation(suggestion);
+      return;
+    }
+
+    this.selectGalleryEventLocation(suggestion);
+  }
+
+  private setLocationSuggestions(target: 'event' | 'galleryEvent', suggestions: AddressSuggestion[]): void {
+    if (target === 'event') {
+      this.eventLocationSuggestions = suggestions;
+      return;
+    }
+
+    this.galleryEventLocationSuggestions = suggestions;
+  }
+
+  private setLocationConfirmed(target: 'event' | 'galleryEvent', confirmed: boolean): void {
+    if (target === 'event') {
+      this.eventLocationConfirmed = confirmed;
+      return;
+    }
+
+    this.galleryEventLocationConfirmed = confirmed;
+  }
+
+  private isLatestLocationRequest(target: 'event' | 'galleryEvent', requestId: number): boolean {
+    return target === 'event'
+      ? requestId === this.eventLocationRequestId
+      : requestId === this.galleryEventLocationRequestId;
+  }
+
+  private ensureEventLocationIsConfirmed(): boolean {
+    const location = (this.eventForm.value.location || '').trim();
+
+    if (!location || this.eventLocationConfirmed) {
+      return true;
+    }
+
+    this.eventError = this.transloco.translate('content.messages.locationSuggestionRequired');
+    return false;
+  }
+
+  private ensureGalleryEventLocationIsConfirmed(): boolean {
+    const location = (this.galleryEventForm.value.location || '').trim();
+
+    if (!location || this.galleryEventLocationConfirmed) {
+      return true;
+    }
+
+    this.galleryEventError = this.transloco.translate('content.messages.locationSuggestionRequired');
+    return false;
   }
 }
