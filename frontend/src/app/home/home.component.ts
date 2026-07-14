@@ -46,23 +46,6 @@ interface HomeAboutSection {
   visual: HomeVisual;
 }
 
-interface HomeNewsFallback {
-  title: string;
-  body: string;
-  imageUrl: string;
-  imageAlt: string;
-  dateLabel: string;
-}
-
-interface HomeEventFallback {
-  title: string;
-  body: string;
-  dateLabel: string;
-  location: string;
-  imageUrl: string;
-  imageAlt: string;
-}
-
 interface HomeMemoryStat {
   value: string;
   label: string;
@@ -108,8 +91,6 @@ interface HomeContent {
     news: HomeSectionCopy;
     events: HomeSectionCopy;
   };
-  fallbackNews: HomeNewsFallback[];
-  fallbackEvents: HomeEventFallback[];
   team: HomeTeamSection;
   memory: HomeMemorySection;
 }
@@ -119,7 +100,10 @@ interface ApiNews {
   title: string;
   content: string;
   excerpt: string;
-  image_url: string;
+  image_url?: string | null;
+  source_url?: string | null;
+  source_name?: string | null;
+  source_published_at?: string | null;
   created_at: string;
 }
 
@@ -139,6 +123,8 @@ interface HomeNewsCard {
   imageAlt: string;
   dateLabel: string;
   route: string;
+  sourceLabel?: string;
+  sourceUrl?: string;
 }
 
 interface HomeEventCard {
@@ -166,19 +152,12 @@ export class HomeComponent implements OnInit {
   private mediaUpload = inject(MediaUploadService);
 
   content: HomeContent | null = null;
-  newsCards: HomeNewsCard[] = [];
+  authoredNewsCards: HomeNewsCard[] = [];
+  pressNewsCards: HomeNewsCard[] = [];
   eventCards: HomeEventCard[] = [];
 
   private apiNews: ApiNews[] = [];
   private apiEvents: ApiEvent[] = [];
-
-  get featuredNews(): HomeNewsCard | null {
-    return this.newsCards[0] ?? null;
-  }
-
-  get secondaryNews(): HomeNewsCard[] {
-    return this.newsCards.slice(1, 4);
-  }
 
   ngOnInit(): void {
     this.transloco
@@ -269,38 +248,44 @@ export class HomeComponent implements OnInit {
       return;
     }
 
-    this.newsCards = this.buildNewsCards();
+    this.authoredNewsCards = this.buildAuthoredNewsCards();
+    this.pressNewsCards = this.buildPressNewsCards();
     this.eventCards = this.buildEventCards();
   }
 
-  private buildNewsCards(): HomeNewsCard[] {
+  private buildAuthoredNewsCards(): HomeNewsCard[] {
     if (!this.content) {
       return [];
     }
 
-    const fallbackNews = this.content.fallbackNews ?? [];
-    if (this.apiNews.length === 0) {
-      return fallbackNews.slice(0, 4).map((item) => ({
-        title: item.title,
-        body: item.body,
-        imageUrl: item.imageUrl,
-        imageAlt: item.imageAlt,
-        dateLabel: item.dateLabel,
-        route: '/actualites',
-      }));
+    return this.apiNews
+      .filter((item) => !this.isExternalNews(item))
+      .slice(0, 3)
+      .map((item) => this.buildNewsCard(item));
+  }
+
+  private buildPressNewsCards(): HomeNewsCard[] {
+    if (!this.content) {
+      return [];
     }
 
-    return this.apiNews.slice(0, 4).map((item, index) => {
-      const fallback = fallbackNews[index % Math.max(fallbackNews.length, 1)];
-      return {
-        title: item.title,
-        body: this.getNewsSummary(item),
-        imageUrl: this.mediaUpload.resolveMediaUrl(item.image_url) || fallback?.imageUrl || this.content?.hero.visual.url || '',
-        imageAlt: item.title || fallback?.imageAlt || '',
-        dateLabel: this.formatDate(item.created_at),
-        route: '/actualites',
-      };
-    });
+    return this.apiNews
+      .filter((item) => this.isExternalNews(item))
+      .slice(0, 3)
+      .map((item) => this.buildNewsCard(item));
+  }
+
+  private buildNewsCard(item: ApiNews): HomeNewsCard {
+    return {
+      title: item.title,
+      body: this.getNewsSummary(item),
+      imageUrl: this.mediaUpload.resolveMediaUrl(item.image_url) || '',
+      imageAlt: item.title,
+      dateLabel: this.formatDate(item.source_published_at || item.created_at),
+      route: '/actualites',
+      sourceLabel: this.getNewsSourceLabel(item),
+      sourceUrl: item.source_url || undefined,
+    };
   }
 
   private buildEventCards(): HomeEventCard[] {
@@ -308,36 +293,44 @@ export class HomeComponent implements OnInit {
       return [];
     }
 
-    const fallbackEvents = this.content.fallbackEvents ?? [];
     if (this.apiEvents.length === 0) {
-      return fallbackEvents.slice(0, 3).map((item) => ({
-        title: item.title,
-        body: item.body,
-        imageUrl: item.imageUrl,
-        imageAlt: item.imageAlt,
-        dateLabel: item.dateLabel,
-        location: item.location,
-        route: '/evenements',
-      }));
+      return [];
     }
 
-    return this.apiEvents.slice(0, 3).map((item, index) => {
-      const fallback = fallbackEvents[index % Math.max(fallbackEvents.length, 1)];
-      return {
-        title: item.title,
-        body: this.truncateText(item.description, 140),
-        imageUrl: this.mediaUpload.resolveMediaUrl(item.image_url) || fallback?.imageUrl || this.content?.memory.visual.url || '',
-        imageAlt: fallback?.imageAlt || item.title,
-        dateLabel: this.formatDate(item.event_date),
-        location: item.location,
-        route: '/evenements',
-      };
-    });
+    return this.apiEvents.slice(0, 3).map((item) => ({
+      title: item.title,
+      body: this.truncateText(item.description, 140),
+      imageUrl: this.mediaUpload.resolveMediaUrl(item.image_url) || this.content?.memory.visual.url || '',
+      imageAlt: item.title,
+      dateLabel: this.formatDate(item.event_date),
+      location: item.location,
+      route: '/evenements',
+    }));
   }
 
   private getNewsSummary(item: ApiNews): string {
     const summary = item.excerpt || item.content || '';
     return this.truncateText(summary.replace(/<[^>]+>/g, ' '), 180);
+  }
+
+  private getNewsSourceLabel(item: ApiNews): string | undefined {
+    if (item.source_name?.trim()) {
+      return item.source_name.trim();
+    }
+
+    if (!item.source_url) {
+      return undefined;
+    }
+
+    try {
+      return new URL(item.source_url).hostname.replace(/^www\./, '');
+    } catch {
+      return item.source_url;
+    }
+  }
+
+  private isExternalNews(item: ApiNews): boolean {
+    return Boolean(item.source_url || item.source_name);
   }
 
   private truncateText(value: string, maxLength: number): string {

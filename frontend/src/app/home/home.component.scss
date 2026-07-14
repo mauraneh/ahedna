@@ -34,7 +34,7 @@
 .hero-title {
   display: grid;
   gap: 0.15em;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-style: italic;
   font-weight: 900;
   line-height: 0.96;
@@ -63,7 +63,7 @@
 }
 
 .hero-region {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.18em;
@@ -72,7 +72,7 @@
 }
 
 .hero-subtitle {
-  font-family: 'Crimson Text', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 1.08rem;
   line-height: 1.65;
   color: #4a3a28;
@@ -83,7 +83,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -111,7 +111,7 @@
   padding: 0.6rem 1.5rem;
   background: var(--brand-red);
   color: #f5ede0;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -197,7 +197,7 @@
 }
 
 .shortcut-label {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -234,7 +234,7 @@
 }
 
 .section-kicker {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.2em;
@@ -257,7 +257,7 @@
 
 .section-title {
   margin-top: 0.55rem;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-style: italic;
   font-weight: 900;
   font-size: clamp(2rem, 4vw, 3.6rem);
@@ -269,7 +269,7 @@
 .section-desc {
   margin-top: 0.85rem;
   max-width: 38rem;
-  font-family: 'Crimson Text', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 1.05rem;
   line-height: 1.7;
   color: #5a4a38;
@@ -284,7 +284,7 @@
   border-radius: 999px;
   background: transparent;
   color: #1a1208;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -305,7 +305,7 @@
   align-items: center;
   gap: 0.4rem;
   margin-top: 0.85rem;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -361,7 +361,7 @@
 .news-date {
   display: inline-flex;
   align-items: center;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -378,9 +378,193 @@
   background: currentColor;
 }
 
+.news-source-inline {
+  display: inline-flex;
+  width: fit-content;
+  color: var(--classic-green);
+  font-family: var(--site-sans-font);
+  font-size: 0.76rem;
+  font-weight: 750;
+  line-height: 1.25;
+  text-decoration: none;
+}
+
+a.news-source-inline {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18rem;
+}
+
+a.news-source-inline:hover {
+  color: var(--brand-red);
+}
+
+.news-home-rails {
+  display: grid;
+  gap: 1.35rem;
+}
+
+.news-rail {
+  display: grid;
+  gap: 0.85rem;
+  overflow: hidden;
+}
+
+.news-rail-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.news-rail-kicker {
+  color: var(--brand-red);
+  font-family: var(--site-sans-font);
+  font-size: 0.78rem;
+  font-weight: 850;
+  line-height: 1.25;
+}
+
+.news-rail-head h3 {
+  margin-top: 0.2rem;
+  color: var(--classic-ink);
+  font-family: var(--site-sans-font);
+  font-size: clamp(1rem, 1.4vw, 1.22rem);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.news-view-all {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.45rem;
+  padding: 0.55rem 0.95rem;
+  border: 1px solid var(--classic-line);
+  border-radius: 999px;
+  background: var(--classic-panel);
+  color: var(--classic-green);
+  font-family: var(--site-sans-font);
+  font-size: 0.82rem;
+  font-weight: 850;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.news-view-all:hover {
+  border-color: var(--classic-green);
+  background: var(--classic-green);
+  color: #fbfaf3;
+}
+
+.news-carousel-track {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(0.9rem, 2vw, 1.2rem);
+}
+
+.news-carousel-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--classic-line);
+  border-radius: 0.65rem;
+  background: var(--classic-panel);
+}
+
+.news-carousel-card-press {
+  border-left: 4px solid var(--brand-turquoise);
+  background:
+    linear-gradient(180deg, rgba(23, 111, 120, 0.08), transparent 42%),
+    var(--classic-panel);
+}
+
+.news-carousel-card .news-media {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  min-height: 0;
+  max-height: none;
+  border: 0;
+  border-radius: 0;
+}
+
+.news-carousel-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 1rem;
+}
+
+.news-carousel-title {
+  color: var(--classic-ink);
+  font-family: var(--site-sans-font);
+  font-size: clamp(1rem, 1.35vw, 1.18rem);
+  font-weight: 800;
+  line-height: 1.18;
+}
+
+.news-carousel-copy {
+  display: -webkit-box;
+  flex: 1;
+  overflow: hidden;
+  color: var(--classic-muted);
+  font-family: var(--site-sans-font);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+.press-card-topline {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.press-source-pill {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 1.55rem;
+  align-items: center;
+  padding: 0.25rem 0.55rem;
+  border: 1px solid rgba(23, 111, 120, 0.22);
+  border-radius: 999px;
+  background: rgba(23, 111, 120, 0.08);
+  color: var(--classic-green);
+  font-family: var(--site-sans-font);
+  font-size: 0.74rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.press-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.85rem;
+  margin-top: auto;
+}
+
+.press-source-link {
+  color: var(--brand-turquoise);
+  font-family: var(--site-sans-font);
+  font-size: 0.76rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18rem;
+}
+
+.press-source-link:hover {
+  color: var(--brand-red);
+}
+
 .news-feature-title {
   margin-top: 0.7rem;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-weight: 800;
   font-size: clamp(1.35rem, 2vw, 1.75rem);
   line-height: 1.15;
@@ -389,7 +573,7 @@
 
 .news-feature-copy {
   margin-top: 0.65rem;
-  font-family: 'Crimson Text', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 1.05rem;
   line-height: 1.68;
   color: #5a4a38;
@@ -417,7 +601,7 @@
 
 .news-item-title {
   margin-top: 0.6rem;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-weight: 800;
   font-size: 1.18rem;
   line-height: 1.2;
@@ -426,9 +610,33 @@
 
 .news-item-copy {
   margin-top: 0.4rem;
-  font-family: 'Crimson Text', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 0.98rem;
   line-height: 1.65;
+  color: #5a4a38;
+}
+
+.home-empty-state {
+  display: grid;
+  gap: 0.55rem;
+  padding: 2rem;
+  border: 1px solid rgba(26, 18, 8, 0.12);
+  border-radius: 0.75rem;
+  background: rgba(255, 250, 240, 0.78);
+}
+
+.home-empty-state h3 {
+  font-family: var(--site-sans-font);
+  font-size: 1.22rem;
+  font-weight: 850;
+  color: #1a1208;
+}
+
+.home-empty-state p {
+  max-width: 42rem;
+  font-family: var(--site-sans-font);
+  font-size: 1rem;
+  line-height: 1.6;
   color: #5a4a38;
 }
 
@@ -465,7 +673,7 @@
 
 .event-card-title {
   margin-top: 0.6rem;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-weight: 800;
   font-size: 1.12rem;
   line-height: 1.2;
@@ -474,7 +682,7 @@
 
 .event-card-location {
   margin-top: 0.45rem;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -484,7 +692,7 @@
 
 .event-card-copy {
   margin-top: 0.45rem;
-  font-family: 'Crimson Text', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 0.95rem;
   line-height: 1.6;
   color: #5a4a38;
@@ -524,7 +732,7 @@
 
 .about-copy {
   margin-top: 1rem;
-  font-family: 'Crimson Text', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 1.08rem;
   line-height: 1.72;
   color: #4a3a28;
@@ -540,7 +748,7 @@
   background: #1a1208;
   color: #f5ede0;
   border-radius: 999px;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -577,7 +785,7 @@
 .team-desc {
   margin-top: 0.75rem;
   max-width: 36rem;
-  font-family: 'Crimson Text', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 1.05rem;
   line-height: 1.7;
   color: #5a4a38;
@@ -666,7 +874,7 @@
 .team-initials {
   margin-top: 0.65rem;
   color: var(--brand-red);
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 1.1rem;
   font-weight: 900;
 }
@@ -676,16 +884,17 @@
 }
 
 .team-name {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-weight: 800;
-  font-size: 1rem;
+  font-size: 0.74rem;
   color: #1a1208;
-  line-height: 1.2;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
 }
 
 .team-role {
   margin-top: 0.35rem;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--site-sans-font);
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -697,6 +906,10 @@
    RESPONSIVE
 ───────────────────────────────────────── */
 @media (max-width: 1024px) {
+  .news-carousel-track {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .news-layout {
     grid-template-columns: 1fr;
   }
@@ -725,6 +938,15 @@
 }
 
 @media (max-width: 768px) {
+  .news-rail-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .news-carousel-track {
+    grid-template-columns: 1fr;
+  }
+
   .hero-header {
     grid-template-columns: 1fr;
     gap: 1.5rem;
@@ -1169,7 +1391,13 @@
 }
 
 .team-caption {
-  min-height: 5.15rem;
+  min-height: 4.55rem;
+}
+
+.team-name {
+  font-size: 0.66rem;
+  font-weight: 700;
+  line-height: 1.22;
 }
 
 @media (max-width: 860px) {

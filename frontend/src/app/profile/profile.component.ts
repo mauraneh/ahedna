@@ -7,6 +7,7 @@ import { forkJoin } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { NavbarComponent } from '../core/components/navbar/navbar.component';
 import { ScrollToTopComponent } from '../core/components/scroll-to-top/scroll-to-top.component';
+import { AddressAutocompleteService, AddressSuggestion } from '../core/services/address-autocomplete.service';
 import { AuthService, User } from '../core/services/auth.service';
 import { I18nService } from '../core/services/i18n.service';
 
@@ -39,6 +40,7 @@ export class ProfileComponent implements OnInit {
   private http = inject(HttpClient);
   private fb = inject(FormBuilder);
   private transloco = inject(TranslocoService);
+  private addressAutocomplete = inject(AddressAutocompleteService);
   authService = inject(AuthService);
   i18nService = inject(I18nService);
 
@@ -56,6 +58,10 @@ export class ProfileComponent implements OnInit {
   passwordMessage = '';
   passwordError = '';
   accountError = '';
+  addressSuggestions: AddressSuggestion[] = [];
+  citySuggestions: AddressSuggestion[] = [];
+  private addressRequestId = 0;
+  private cityRequestId = 0;
 
   profileForm = this.fb.group({
     first_name: [''],
@@ -144,6 +150,87 @@ export class ProfileComponent implements OnInit {
         this.savingProfile = false;
       }
     });
+  }
+
+  onAddressInput(): void {
+    const address = (this.profileForm.value.address_line1 || '').trim();
+
+    if (address.length < 3) {
+      this.addressSuggestions = [];
+      return;
+    }
+
+    const requestId = ++this.addressRequestId;
+    const postalCode = this.profileForm.value.postal_code || undefined;
+
+    this.addressAutocomplete.search(address, postalCode).subscribe((suggestions) => {
+      if (requestId === this.addressRequestId) {
+        this.addressSuggestions = suggestions;
+      }
+    });
+  }
+
+  onPostalCodeInput(): void {
+    const postalCode = (this.profileForm.value.postal_code || '').trim();
+
+    if (!/^\d{5}$/.test(postalCode)) {
+      this.citySuggestions = [];
+      return;
+    }
+
+    const requestId = ++this.cityRequestId;
+
+    this.addressAutocomplete.searchByPostalCode(postalCode).subscribe((suggestions) => {
+      if (requestId !== this.cityRequestId) {
+        return;
+      }
+
+      this.citySuggestions = suggestions;
+
+      if (suggestions[0]) {
+        this.profileForm.patchValue({
+          city: suggestions[0].city,
+          country: this.profileForm.value.country || 'France',
+        });
+      }
+    });
+  }
+
+  onCityInput(): void {
+    const city = (this.profileForm.value.city || '').trim();
+
+    if (city.length < 3) {
+      this.citySuggestions = [];
+      return;
+    }
+
+    const requestId = ++this.cityRequestId;
+
+    this.addressAutocomplete.search(city).subscribe((suggestions) => {
+      if (requestId === this.cityRequestId) {
+        this.citySuggestions = suggestions.filter((suggestion) => suggestion.kind === 'municipality');
+      }
+    });
+  }
+
+  selectAddressSuggestion(suggestion: AddressSuggestion): void {
+    this.profileForm.patchValue({
+      address_line1: suggestion.kind === 'municipality' ? '' : suggestion.label.split(',')[0]?.trim() || suggestion.label,
+      postal_code: suggestion.postalCode,
+      city: suggestion.city,
+      country: this.profileForm.value.country || 'France',
+    });
+    this.addressSuggestions = [];
+    this.citySuggestions = [];
+  }
+
+  selectCitySuggestion(suggestion: AddressSuggestion): void {
+    this.profileForm.patchValue({
+      postal_code: suggestion.postalCode,
+      city: suggestion.city,
+      country: this.profileForm.value.country || 'France',
+    });
+    this.citySuggestions = [];
   }
 
   updatePassword(): void {

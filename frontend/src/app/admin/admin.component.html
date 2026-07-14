@@ -11,8 +11,8 @@
             <p class="site-tool-subtitle">{{ authService.currentUser()?.email }}</p>
           </div>
           <div class="site-tool-actions">
-            <a [href]="cmsUrl + '/admin'" target="_blank" rel="noreferrer" class="site-button-primary admin-payload-link">
-              {{ t('admin.header.openPayload') }}
+            <a routerLink="/contenu" class="site-button-primary admin-content-link">
+              {{ t('admin.header.manageContent') }}
             </a>
             <a routerLink="/" class="site-button-secondary">
               ← {{ t('admin.header.backToSite') }}
@@ -23,36 +23,32 @@
 
       <div class="space-y-8">
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        <div class="site-surface site-tool-panel-solid p-6 paper-texture">
-          <div class="text-4xl mb-3">👥</div>
-          <div class="text-3xl font-vintage font-bold text-paper-900">{{ stats.users }}</div>
-          <div class="text-sm text-paper-600 font-serif">{{ t('admin.stats.users') }}</div>
-          <div class="mt-3 text-xs text-paper-500 font-serif">
+        <article class="admin-stat-card admin-stat-card-users">
+          <p class="admin-stat-label">{{ t('admin.stats.users') }}</p>
+          <strong class="admin-stat-value">{{ stats.users }}</strong>
+          <div class="admin-stat-detail">
             {{ t('admin.stats.activeMemberships') }}: {{ stats.active_memberships }}<br>
             {{ t('admin.stats.pendingMemberships') }}: {{ stats.pending_memberships }}
           </div>
-        </div>
-        <div class="site-surface site-tool-panel-solid p-6 paper-texture">
-          <div class="text-4xl mb-3">📰</div>
-          <div class="text-3xl font-vintage font-bold text-paper-900">{{ stats.news }}</div>
-          <div class="text-sm text-paper-600 font-serif">{{ t('admin.stats.news') }}</div>
-          <div class="mt-3 text-xs text-paper-500 font-serif">{{ t('admin.stats.publishedNews') }}: {{ stats.published_news }}</div>
-        </div>
-        <div class="site-surface site-tool-panel-solid p-6 paper-texture">
-          <div class="text-4xl mb-3">📅</div>
-          <div class="text-3xl font-vintage font-bold text-paper-900">{{ stats.events }}</div>
-          <div class="text-sm text-paper-600 font-serif">{{ t('admin.stats.events') }}</div>
-          <div class="mt-3 text-xs text-paper-500 font-serif">{{ t('admin.stats.upcomingEvents') }}: {{ stats.upcoming_events }}</div>
-        </div>
-        <div class="site-surface site-tool-panel-solid p-6 paper-texture">
-          <div class="text-4xl mb-3">🛡️</div>
-          <div class="text-3xl font-vintage font-bold text-paper-900">{{ stats.pending_topics + stats.pending_photos }}</div>
-          <div class="text-sm text-paper-600 font-serif">{{ t('admin.stats.pendingModeration') }}</div>
-          <div class="mt-3 text-xs text-paper-500 font-serif">
+        </article>
+        <article class="admin-stat-card admin-stat-card-news">
+          <p class="admin-stat-label">{{ t('admin.stats.news') }}</p>
+          <strong class="admin-stat-value">{{ stats.news }}</strong>
+          <div class="admin-stat-detail">{{ t('admin.stats.publishedNews') }}: {{ stats.published_news }}</div>
+        </article>
+        <article class="admin-stat-card admin-stat-card-events">
+          <p class="admin-stat-label">{{ t('admin.stats.events') }}</p>
+          <strong class="admin-stat-value">{{ stats.events }}</strong>
+          <div class="admin-stat-detail">{{ t('admin.stats.upcomingEvents') }}: {{ stats.upcoming_events }}</div>
+        </article>
+        <article class="admin-stat-card admin-stat-card-moderation">
+          <p class="admin-stat-label">{{ t('admin.stats.pendingModeration') }}</p>
+          <strong class="admin-stat-value">{{ stats.pending_topics + stats.pending_photos }}</strong>
+          <div class="admin-stat-detail">
             {{ t('admin.stats.topics') }}: {{ stats.pending_topics }}<br>
             {{ t('admin.stats.photos') }}: {{ stats.pending_photos }}
           </div>
-        </div>
+        </article>
       </div>
 
       <div class="grid xl:grid-cols-3 gap-6">
@@ -137,15 +133,15 @@
       </div>
 
       <div class="site-surface site-tool-panel-solid overflow-hidden paper-texture">
-        <div class="flex flex-wrap border-b-2 border-paper-300/60">
+        <div class="admin-tabs" role="tablist">
           @for (tab of tabs; track tab.id) {
             <button
+              type="button"
               (click)="activeTab = tab.id"
-              [class.bg-green-600]="activeTab === tab.id"
-              [class.text-white]="activeTab === tab.id"
-              [class.text-paper-700]="activeTab !== tab.id"
-              [class.bg-paper-100]="activeTab !== tab.id"
-              class="px-6 py-4 font-vintage font-bold hover:bg-paper-200 transition-colors">
+              class="admin-tab"
+              [class.admin-tab-active]="activeTab === tab.id"
+              [attr.aria-selected]="activeTab === tab.id"
+              role="tab">
               {{ t(tab.labelKey) }}
             </button>
           }
@@ -213,10 +209,17 @@
           @if (activeTab === 'news') {
             <div class="grid xl:grid-cols-[0.95fr_1.05fr] gap-8">
               <section class="bg-paper-100/80 rounded-2xl border border-paper-300/70 p-6">
-                <h2 class="text-2xl font-vintage font-bold text-paper-900">
-                  {{ editingNewsId ? t('admin.news.editTitle') : t('admin.news.createTitle') }}
-                </h2>
-                <p class="text-paper-700 font-serif mt-2 mb-6">{{ t('admin.news.subtitle') }}</p>
+                <div class="admin-section-head">
+                  <div>
+                    <h2 class="text-2xl font-vintage font-bold text-paper-900">
+                      {{ editingNewsId ? t('admin.news.editTitle') : t('admin.news.createTitle') }}
+                    </h2>
+                    <p class="text-paper-700 font-serif mt-2">{{ t('admin.news.subtitle') }}</p>
+                  </div>
+                  <button type="button" (click)="importPublicNews()" [disabled]="importingPublicNews" class="site-button-secondary admin-compact-action">
+                    {{ importingPublicNews ? t('content.actions.importingPublicNews') : t('content.actions.importPublicNews') }}
+                  </button>
+                </div>
 
                 @if (newsError) {
                   <div class="mb-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-red-800 font-serif">{{ newsError }}</div>
@@ -239,8 +242,18 @@
                     <textarea formControlName="content" rows="8" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-yellow-500"></textarea>
                   </div>
                   <div>
-                    <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('admin.news.fields.imageUrl') }}</label>
-                    <input formControlName="image_url" type="url" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                    <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('content.fields.imageFile') }}</label>
+                    <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-yellow-500" (change)="onNewsImageSelected($event)">
+                    <p class="admin-field-help">{{ t('content.fields.imageHelp') }}</p>
+                    @if (uploadingNewsImage) {
+                      <p class="mt-2 text-sm text-paper-600 font-serif">{{ t('content.messages.uploadingImage') }}</p>
+                    }
+                    @if (newsImagePreview) {
+                      <img [src]="newsImagePreview" [alt]="newsForm.value.title || t('admin.news.fields.title')" class="admin-event-image-preview">
+                      <button type="button" (click)="clearNewsImage()" class="admin-inline-action">
+                        {{ t('content.actions.removeImage') }}
+                      </button>
+                    }
                   </div>
                   <label class="flex items-center gap-3 text-paper-800 font-serif">
                     <input formControlName="published" type="checkbox" class="h-4 w-4 rounded border-paper-300 text-yellow-600 focus:ring-yellow-500">
@@ -376,12 +389,29 @@
                       </div>
                       <div>
                         <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('admin.events.fields.location') }}</label>
-                        <input formControlName="location" type="text" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <input
+                          formControlName="location"
+                          type="text"
+                          class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500"
+                          autocomplete="off"
+                          [placeholder]="t('content.fields.locationPlaceholder')"
+                          (input)="onGalleryEventLocationInput()">
+                        <p class="admin-field-help">{{ t('content.fields.locationHelp') }}</p>
+                        @if (galleryEventLocationSuggestions.length > 0) {
+                          <div class="admin-location-suggestions">
+                            @for (suggestion of galleryEventLocationSuggestions; track suggestion.label) {
+                              <button type="button" class="admin-location-suggestion" (click)="selectGalleryEventLocation(suggestion)">
+                                <span>{{ suggestion.label }}</span>
+                                <small>{{ suggestion.postalCode }} {{ suggestion.city }}</small>
+                              </button>
+                            }
+                          </div>
+                        }
                       </div>
                     </div>
                     <div>
                       <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('content.fields.imageFile') }}</label>
-                      <input type="file" accept="image/*" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500" (change)="onGalleryEventImageSelected($event)">
+                      <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500" (change)="onGalleryEventImageSelected($event)">
                       @if (uploadingGalleryEventImage) {
                         <p class="mt-2 text-sm text-paper-600 font-serif">{{ t('content.messages.uploadingImage') }}</p>
                       }
@@ -395,6 +425,16 @@
                         <option value="upcoming">{{ t('admin.events.types.upcoming') }}</option>
                         <option value="past">{{ t('admin.events.types.past') }}</option>
                       </select>
+                    </div>
+                    <div class="grid md:grid-cols-[0.45fr_0.55fr] gap-4">
+                      <div>
+                        <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('admin.events.fields.price') }}</label>
+                        <input formControlName="price_amount" type="number" min="0" step="0.01" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500">
+                      </div>
+                      <div>
+                        <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('admin.events.fields.paymentDetails') }}</label>
+                        <input formControlName="payment_details" type="text" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500">
+                      </div>
                     </div>
 
                     <div class="flex flex-wrap gap-3 pt-2">
@@ -578,11 +618,28 @@
                   </div>
                   <div>
                     <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('admin.events.fields.location') }}</label>
-                    <input formControlName="location" type="text" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <input
+                      formControlName="location"
+                      type="text"
+                      class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      autocomplete="off"
+                      [placeholder]="t('content.fields.locationPlaceholder')"
+                      (input)="onEventLocationInput()">
+                    <p class="admin-field-help">{{ t('content.fields.locationHelp') }}</p>
+                    @if (eventLocationSuggestions.length > 0) {
+                      <div class="admin-location-suggestions">
+                        @for (suggestion of eventLocationSuggestions; track suggestion.label) {
+                          <button type="button" class="admin-location-suggestion" (click)="selectEventLocation(suggestion)">
+                            <span>{{ suggestion.label }}</span>
+                            <small>{{ suggestion.postalCode }} {{ suggestion.city }}</small>
+                          </button>
+                        }
+                      </div>
+                    }
                   </div>
                   <div>
                     <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('content.fields.imageFile') }}</label>
-                    <input type="file" accept="image/*" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500" (change)="onEventImageSelected($event)">
+                    <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500" (change)="onEventImageSelected($event)">
                     @if (uploadingEventImage) {
                       <p class="mt-2 text-sm text-paper-600 font-serif">{{ t('content.messages.uploadingImage') }}</p>
                     }
@@ -596,6 +653,16 @@
                       <option value="upcoming">{{ t('admin.events.types.upcoming') }}</option>
                       <option value="past">{{ t('admin.events.types.past') }}</option>
                     </select>
+                  </div>
+                  <div class="grid md:grid-cols-[0.45fr_0.55fr] gap-4">
+                    <div>
+                      <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('admin.events.fields.price') }}</label>
+                      <input formControlName="price_amount" type="number" min="0" step="0.01" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div>
+                      <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('admin.events.fields.paymentDetails') }}</label>
+                      <input formControlName="payment_details" type="text" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
                   </div>
                   <label class="flex items-center gap-3 text-paper-800 font-serif">
                     <input formControlName="gallery_enabled" type="checkbox" class="h-4 w-4 rounded border-paper-300 text-green-600 focus:ring-green-500">
@@ -646,6 +713,12 @@
                             }
                             <p class="mt-2 text-paper-700 font-serif">{{ event.description }}</p>
                             <p class="mt-3 text-sm text-paper-500 font-serif">{{ formatDateTime(event.event_date) }} · {{ event.location || t('admin.events.noLocation') }}</p>
+                            <p class="mt-2 text-sm text-paper-700 font-serif">
+                              {{ t('admin.events.fields.price') }} : {{ formatPrice(event.price_amount) }}
+                              @if (event.payment_details) {
+                                · {{ t('admin.events.fields.paymentDetails') }} : {{ event.payment_details }}
+                              }
+                            </p>
                           </div>
                           <div class="flex flex-col gap-2">
                             <button (click)="editEvent(event)" class="bg-paper-700 text-white px-4 py-2 rounded-lg text-sm font-vintage font-bold hover:bg-paper-800 transition-all">

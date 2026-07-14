@@ -59,3 +59,15 @@ test('saveBase64Image rejects unsupported files and resolveUploadPath blocks tra
 
   assert.equal(resolveUploadPath('../secrets.txt'), null);
 });
+
+test('saveBase64Image rejects an image whose bytes do not match its MIME type', () => {
+  assert.throws(
+    () =>
+      saveBase64Image({
+        fileName: 'fake.png',
+        mimeType: 'image/png',
+        dataBase64: Buffer.from('<script>alert(1)</script>').toString('base64'),
+      }),
+    /Image content does not match the declared format/
+  );
+});

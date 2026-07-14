@@ -213,6 +213,7 @@ function buildServer() {
     }
 
     reply.header('Cache-Control', 'public, max-age=31536000, immutable');
+    reply.header('X-Content-Type-Options', 'nosniff');
     return reply.type(getMimeType(uploadPath)).send(fs.createReadStream(uploadPath));
   });
 

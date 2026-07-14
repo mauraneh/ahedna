@@ -390,62 +390,6 @@
         }
       ]
     },
-    "fallbackNews": [
-      {
-        "title": "Préserver la mémoire, transmettre les parcours",
-        "body": "L'association poursuit son travail de collecte, de valorisation et de transmission autour de l'histoire des harkis et de leurs familles.",
-        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Harki-j.jpg",
-        "imageAlt": "Jeune harki photographié en Algérie pendant la guerre d'Algérie",
-        "dateLabel": "Mémoire vivante"
-      },
-      {
-        "title": "Commémorations et présence publique",
-        "body": "Les cérémonies et prises de parole publiques permettent d'ancrer cette histoire dans l'espace collectif et républicain.",
-        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/C%C3%A9r%C3%A9monie%20d%27hommage%20aux%20Harkis%20Toulon%20IX-2006.jpg",
-        "imageAlt": "Cérémonie d'hommage aux harkis à Toulon",
-        "dateLabel": "Reconnaissance"
-      },
-      {
-        "title": "Archives, témoignages et médiation",
-        "body": "Témoignages familiaux, documents, conférences et expositions nourrissent une transmission plus juste et plus visible.",
-        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Carte-combattant%20pour%20les%20Harkis.jpg",
-        "imageAlt": "Carte du combattant pour les harkis",
-        "dateLabel": "Transmission"
-      },
-      {
-        "title": "Une mémoire locale et nationale",
-        "body": "Entre ancrage régional et histoire nationale, l'AHEDNA relie les générations autour d'une mémoire partagée.",
-        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Journ%C3%A9e%20hommage%20harkis%20Reims%201200567.jpg",
-        "imageAlt": "Journée d'hommage aux harkis à Reims",
-        "dateLabel": "Association"
-      }
-    ],
-    "fallbackEvents": [
-      {
-        "title": "Temps de mémoire et de transmission",
-        "body": "Un rendez-vous pour transmettre l'histoire, partager les récits et faire vivre une mémoire commune.",
-        "dateLabel": "Prochainement",
-        "location": "Dordogne et Nouvelle-Aquitaine",
-        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Journ%C3%A9e%20hommage%20harkis%20Reims%201200567.jpg",
-        "imageAlt": "Journée nationale d'hommage aux harkis à Reims"
-      },
-      {
-        "title": "Rencontre autour des témoignages",
-        "body": "Une rencontre associative pour écouter, documenter et transmettre les mémoires familiales.",
-        "dateLabel": "À venir",
-        "location": "Réseau associatif AHEDNA",
-        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Hameau%20de%20forestage%20montmeyan.jpg",
-        "imageAlt": "Ancien hameau de forestage de Montmeyan"
-      },
-      {
-        "title": "Commémoration et présence publique",
-        "body": "Une séquence d'hommage pour rappeler le parcours des harkis et l'importance de leur reconnaissance.",
-        "dateLabel": "Agenda associatif",
-        "location": "Lieu de mémoire",
-        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Rivesaltes%20Camp%20Memorial%20-%20Temporary%20exhibition%20-%20Treize%20Chibanis%20harkis%20-%20Serge%20Vollin%20-%20Fatima%20Besnaci-Lancou%20-%20Poster.jpg",
-        "imageAlt": "Affiche d'exposition au mémorial de Rivesaltes"
-      }
-    ],
     "gallery": [
       {
         "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Harki-j.jpg",
@@ -602,9 +546,43 @@
       "title": "Actualités",
       "subtitle": "Prises de parole, hommages et vie associative autour de la mémoire harki.",
       "loading": "Chargement des actualités...",
+      "externalSource": "Article externe",
+      "source": "Source",
+      "tabs": {
+        "label": "Types d'actualités",
+        "retrieved": {
+          "label": "Revue de presse",
+          "description": "Sélection d'articles issus de sources publiques."
+        },
+        "created": {
+          "label": "Actualités AHEDNA",
+          "description": "Publications rédigées par un auteur AHEDNA."
+        }
+      },
+      "modal": {
+        "close": "Fermer l'article",
+        "readOriginal": "Lire l'article original"
+      },
+      "viewAll": "Voir tout",
+      "filters": {
+        "title": "Rechercher dans les actualités",
+        "subtitle": "Les résultats incluent les actualités AHEDNA et les articles publics récupérés via les API.",
+        "keyword": "Mot-clé",
+        "keywordPlaceholder": "Ex. indemnisation, Rivesaltes, hommage...",
+        "dateFrom": "À partir du",
+        "dateTo": "Jusqu'au",
+        "search": "Rechercher",
+        "reset": "Réinitialiser"
+      },
       "empty": {
         "title": "Aucune actualité pour le moment",
-        "body": "Revenez bientôt pour découvrir nos dernières nouvelles."
+        "body": "Revenez bientôt pour découvrir nos dernières nouvelles.",
+        "retrievedTitle": "Aucun article",
+        "retrievedBody": "La revue de presse se mettra à jour dès qu'une source publique disponible publiera un article pertinent.",
+        "createdTitle": "Aucune actualité AHEDNA",
+        "createdBody": "Les actualités créées dans l'espace admin apparaîtront ici une fois publiées.",
+        "filteredTitle": "Aucun résultat",
+        "filteredBody": "Essayez avec un autre mot-clé ou une autre période."
       }
     }
   },
@@ -621,6 +599,24 @@
         "upcoming": "Aucun événement à venir",
         "past": "Aucun événement passé"
       }
+    },
+    "modal": {
+      "close": "Fermer l'événement",
+      "date": "Date",
+      "location": "Lieu",
+      "price": "Prix",
+      "payment": "Règlement",
+      "participantsLabel": "Participants",
+      "participants": "participant(s)",
+      "participate": "Je participe",
+      "decline": "Je ne participe pas",
+      "loginToParticipate": "Se connecter pour participer",
+      "loginRequired": "Connectez-vous pour valider votre participation.",
+      "participationSaved": "Votre choix de participation est enregistré.",
+      "participationError": "Impossible d'enregistrer votre participation pour le moment.",
+      "free": "Gratuit",
+      "noPaymentDetails": "Règlement à préciser",
+      "openMap": "Ouvrir dans Maps"
     }
   },
   "forum": {
@@ -777,7 +773,7 @@
   "admin": {
     "header": {
       "title": "Espace administrateur",
-      "openPayload": "Ouvrir Payload",
+      "manageContent": "Gérer les contenus",
       "backToSite": "Retour au site"
     },
     "stats": {
@@ -911,6 +907,8 @@
         "description": "Description",
         "date": "Date et heure",
         "location": "Lieu",
+        "price": "Prix",
+        "paymentDetails": "À qui régler",
         "type": "Type",
         "galleryEnabled": "Ouvrir une galerie photo pour cet événement"
       },
@@ -1064,6 +1062,9 @@
       "content": "Contenu",
       "imageUrl": "Image de couverture",
       "imageFile": "Image depuis l'appareil",
+      "imageHelp": "Formats acceptés : JPG, PNG, WebP ou GIF. Taille maximale : 5 Mo.",
+      "locationPlaceholder": "Adresse, ville ou code postal",
+      "locationHelp": "Saisissez une adresse ou un code postal, puis choisissez une suggestion officielle.",
       "published": "Publier immédiatement"
     },
     "list": {
@@ -1080,6 +1081,8 @@
       "newArticle": "Nouvel article",
       "newEvent": "Nouvel événement",
       "newGalleryAlbum": "Nouvel album galerie",
+      "importPublicNews": "Importer des articles publics",
+      "importingPublicNews": "Import en cours...",
       "create": "Créer",
       "update": "Mettre à jour",
       "saving": "Enregistrement...",
@@ -1087,6 +1090,7 @@
       "addPhoto": "Ajouter la photo",
       "edit": "Modifier",
       "delete": "Supprimer",
+      "removeImage": "Retirer l'image",
       "deletePhoto": "Supprimer la photo",
       "deleting": "Suppression...",
       "confirmDelete": "Voulez-vous vraiment supprimer cette actualité ?",
@@ -1143,8 +1147,10 @@
       "saveGalleryError": "Impossible d'enregistrer cet album galerie.",
       "saveGalleryPhotoError": "Impossible d'ajouter cette photo.",
       "deleteGalleryPhotoError": "Impossible de supprimer cette photo.",
+      "importNewsError": "Impossible d'importer les articles publics pour le moment.",
       "uploadingImage": "Téléversement de l'image...",
-      "uploadImageError": "Impossible de téléverser cette image."
+      "uploadImageError": "Impossible de téléverser cette image.",
+      "locationSuggestionRequired": "Sélectionnez un lieu proposé dans la liste officielle avant d'enregistrer."
     }
   }
 }

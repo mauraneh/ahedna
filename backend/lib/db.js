@@ -107,7 +107,9 @@ async function initDatabase() {
 
     await client.query(`
       ALTER TABLE news
-      ADD COLUMN IF NOT EXISTS cms_source_id VARCHAR(64);
+      ADD COLUMN IF NOT EXISTS source_url TEXT,
+      ADD COLUMN IF NOT EXISTS source_name VARCHAR(255),
+      ADD COLUMN IF NOT EXISTS source_published_at TIMESTAMP;
     `);
 
     await client.query(`
@@ -126,8 +128,21 @@ async function initDatabase() {
     await client.query(`
       ALTER TABLE events
       ADD COLUMN IF NOT EXISTS image_url TEXT,
-      ADD COLUMN IF NOT EXISTS cms_source_id VARCHAR(64),
-      ADD COLUMN IF NOT EXISTS gallery_enabled BOOLEAN DEFAULT false;
+      ADD COLUMN IF NOT EXISTS gallery_enabled BOOLEAN DEFAULT false,
+      ADD COLUMN IF NOT EXISTS price_amount NUMERIC(10, 2) DEFAULT 0,
+      ADD COLUMN IF NOT EXISTS payment_details TEXT;
+    `);
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS event_participations (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        event_id UUID REFERENCES events(id) ON DELETE CASCADE,
+        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+        status VARCHAR(20) NOT NULL CHECK (status IN ('attending', 'declined')),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE (event_id, user_id)
+      );
     `);
 
     await client.query(`
@@ -208,11 +223,6 @@ async function initDatabase() {
       );
     `);
 
-    await client.query(`
-      ALTER TABLE member_documents
-      ADD COLUMN IF NOT EXISTS cms_source_id VARCHAR(64);
-    `);
-
     // Create indexes
     await client.query('CREATE INDEX IF NOT EXISTS idx_news_published ON news(published);');
     await client.query('CREATE INDEX IF NOT EXISTS idx_events_date ON events(event_date);');
@@ -220,10 +230,9 @@ async function initDatabase() {
     await client.query('CREATE INDEX IF NOT EXISTS idx_forum_topics_validated ON forum_topics(validated);');
     await client.query('CREATE INDEX IF NOT EXISTS idx_gallery_validated ON gallery_photos(validated);');
     await client.query('CREATE INDEX IF NOT EXISTS idx_event_photos_event_validated ON event_photos(event_id, validated, created_at);');
+    await client.query('CREATE INDEX IF NOT EXISTS idx_event_participations_event ON event_participations(event_id, status);');
     await client.query('CREATE INDEX IF NOT EXISTS idx_member_documents_role ON member_documents(minimum_role, is_active, sort_order);');
-    await client.query('CREATE UNIQUE INDEX IF NOT EXISTS idx_news_cms_source_id ON news(cms_source_id) WHERE cms_source_id IS NOT NULL;');
-    await client.query('CREATE UNIQUE INDEX IF NOT EXISTS idx_events_cms_source_id ON events(cms_source_id) WHERE cms_source_id IS NOT NULL;');
-    await client.query('CREATE UNIQUE INDEX IF NOT EXISTS idx_member_documents_cms_source_id ON member_documents(cms_source_id) WHERE cms_source_id IS NOT NULL;');
+    await client.query('CREATE UNIQUE INDEX IF NOT EXISTS idx_news_source_url ON news(source_url) WHERE source_url IS NOT NULL;');
 
     await client.query(`
       INSERT INTO member_documents (slug, file_url, minimum_role, sort_order)

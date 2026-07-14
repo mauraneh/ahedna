@@ -390,62 +390,6 @@
         }
       ]
     },
-    "fallbackNews": [
-      {
-        "title": "Preserving memory, passing on journeys",
-        "body": "The association continues its work of collecting, sharing, and transmitting the history of the Harkis and their families.",
-        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Harki-j.jpg",
-        "imageAlt": "Young Harki photographed in Algeria during the Algerian War",
-        "dateLabel": "Living memory"
-      },
-      {
-        "title": "Commemorations and public presence",
-        "body": "Ceremonies and public speaking moments help anchor this history in collective and civic space.",
-        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/C%C3%A9r%C3%A9monie%20d%27hommage%20aux%20Harkis%20Toulon%20IX-2006.jpg",
-        "imageAlt": "Homage ceremony for the Harkis in Toulon",
-        "dateLabel": "Recognition"
-      },
-      {
-        "title": "Archives, testimonies, and mediation",
-        "body": "Family testimonies, documents, conferences, and exhibitions support a clearer and more visible transmission of memory.",
-        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Carte-combattant%20pour%20les%20Harkis.jpg",
-        "imageAlt": "Combatant card for the Harkis",
-        "dateLabel": "Transmission"
-      },
-      {
-        "title": "A local and national memory",
-        "body": "Between regional roots and national history, AHEDNA connects generations around a shared memory.",
-        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Journ%C3%A9e%20hommage%20harkis%20Reims%201200567.jpg",
-        "imageAlt": "Harkis tribute day in Reims",
-        "dateLabel": "Association"
-      }
-    ],
-    "fallbackEvents": [
-      {
-        "title": "Moments of memory and transmission",
-        "body": "A gathering to pass on history, share stories, and keep a common memory alive.",
-        "dateLabel": "Coming soon",
-        "location": "Dordogne and New Aquitaine",
-        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Journ%C3%A9e%20hommage%20harkis%20Reims%201200567.jpg",
-        "imageAlt": "National Harkis tribute day in Reims"
-      },
-      {
-        "title": "Meeting around testimonies",
-        "body": "An association gathering to listen, document, and pass on family memories.",
-        "dateLabel": "Upcoming",
-        "location": "AHEDNA association network",
-        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Hameau%20de%20forestage%20montmeyan.jpg",
-        "imageAlt": "Former dwelling in the Montmeyan forestry hamlet"
-      },
-      {
-        "title": "Commemoration and public presence",
-        "body": "A tribute sequence to recall the Harkis' journey and the importance of recognition.",
-        "dateLabel": "Association agenda",
-        "location": "Memory site",
-        "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Rivesaltes%20Camp%20Memorial%20-%20Temporary%20exhibition%20-%20Treize%20Chibanis%20harkis%20-%20Serge%20Vollin%20-%20Fatima%20Besnaci-Lancou%20-%20Poster.jpg",
-        "imageAlt": "Exhibition poster at the Rivesaltes memorial"
-      }
-    ],
     "gallery": [
       {
         "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Harki-j.jpg",
@@ -602,9 +546,43 @@
       "title": "News",
       "subtitle": "Statements, tributes, and community life around Harki memory.",
       "loading": "Loading news...",
+      "externalSource": "External article",
+      "source": "Source",
+      "tabs": {
+        "label": "News types",
+        "retrieved": {
+          "label": "Press review",
+          "description": "Selected articles from public sources."
+        },
+        "created": {
+          "label": "AHEDNA news",
+          "description": "Posts written by an AHEDNA author."
+        }
+      },
+      "modal": {
+        "close": "Close article",
+        "readOriginal": "Read original article"
+      },
+      "viewAll": "View all",
+      "filters": {
+        "title": "Search news",
+        "subtitle": "Results include AHEDNA updates and public articles retrieved through APIs.",
+        "keyword": "Keyword",
+        "keywordPlaceholder": "E.g. compensation, Rivesaltes, tribute...",
+        "dateFrom": "From",
+        "dateTo": "To",
+        "search": "Search",
+        "reset": "Reset"
+      },
       "empty": {
         "title": "No news for now",
-        "body": "Come back soon to discover our latest updates."
+        "body": "Come back soon to discover our latest updates.",
+        "retrievedTitle": "No article",
+        "retrievedBody": "The press review will update as soon as an available public source publishes a relevant article.",
+        "createdTitle": "No AHEDNA news",
+        "createdBody": "News created in the admin area will appear here once published.",
+        "filteredTitle": "No result",
+        "filteredBody": "Try another keyword or date range."
       }
     }
   },
@@ -621,6 +599,24 @@
         "upcoming": "No upcoming events",
         "past": "No past events"
       }
+    },
+    "modal": {
+      "close": "Close event",
+      "date": "Date",
+      "location": "Location",
+      "price": "Price",
+      "payment": "Payment",
+      "participantsLabel": "Participants",
+      "participants": "participant(s)",
+      "participate": "I will attend",
+      "decline": "I will not attend",
+      "loginToParticipate": "Log in to participate",
+      "loginRequired": "Log in to confirm your participation.",
+      "participationSaved": "Your participation choice has been saved.",
+      "participationError": "Unable to save your participation right now.",
+      "free": "Free",
+      "noPaymentDetails": "Payment details to be confirmed",
+      "openMap": "Open in Maps"
     }
   },
   "forum": {
@@ -777,7 +773,7 @@
   "admin": {
     "header": {
       "title": "Admin area",
-      "openPayload": "Open Payload",
+      "manageContent": "Manage content",
       "backToSite": "Back to site"
     },
     "stats": {
@@ -911,6 +907,8 @@
         "description": "Description",
         "date": "Date and time",
         "location": "Location",
+        "price": "Price",
+        "paymentDetails": "Payable to",
         "type": "Type",
         "galleryEnabled": "Open a photo gallery for this event"
       },
@@ -1064,6 +1062,9 @@
       "content": "Content",
       "imageUrl": "Cover image",
       "imageFile": "Image from device",
+      "imageHelp": "Accepted formats: JPG, PNG, WebP or GIF. Maximum size: 5 MB.",
+      "locationPlaceholder": "Address, city or postal code",
+      "locationHelp": "Enter an address or postal code, then choose an official suggestion.",
       "published": "Publish immediately"
     },
     "list": {
@@ -1080,6 +1081,8 @@
       "newArticle": "New article",
       "newEvent": "New event",
       "newGalleryAlbum": "New gallery album",
+      "importPublicNews": "Import public articles",
+      "importingPublicNews": "Importing...",
       "create": "Create",
       "update": "Update",
       "saving": "Saving...",
@@ -1087,6 +1090,7 @@
       "addPhoto": "Add photo",
       "edit": "Edit",
       "delete": "Delete",
+      "removeImage": "Remove image",
       "deletePhoto": "Delete photo",
       "deleting": "Deleting...",
       "confirmDelete": "Do you really want to delete this article?",
@@ -1143,8 +1147,10 @@
       "saveGalleryError": "Unable to save this gallery album.",
       "saveGalleryPhotoError": "Unable to add this photo.",
       "deleteGalleryPhotoError": "Unable to delete this photo.",
+      "importNewsError": "Unable to import public articles right now.",
       "uploadingImage": "Uploading image...",
-      "uploadImageError": "Unable to upload this image."
+      "uploadImageError": "Unable to upload this image.",
+      "locationSuggestionRequired": "Select a location from the official suggestion list before saving."
     }
   }
 }

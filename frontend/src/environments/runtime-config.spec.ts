@@ -21,7 +21,7 @@ describe('getRuntimeConfig', () => {
     });
   });
 
-  it('falls back to /api when the runtime value is empty', () => {
+  it('falls back to the default API URL when the runtime value is empty', () => {
     window.__AHEDNA_CONFIG__ = {
       apiUrl: '   ',
     };

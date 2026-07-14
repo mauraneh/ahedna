@@ -56,7 +56,13 @@
       } @else {
         <div class="events-list">
           @for (event of events; track event.id) {
-            <article class="event-card site-card-hover">
+            <article
+              class="event-card site-card-hover"
+              role="button"
+              tabindex="0"
+              (click)="openEvent(event)"
+              (keydown.enter)="openEvent(event)"
+              (keydown.space)="$event.preventDefault(); openEvent(event)">
               @if (event.image_url) {
                 <div class="event-card-media">
                   <img [src]="getEventImageUrl(event.image_url)" [alt]="event.title" class="event-card-img" loading="lazy">
@@ -75,6 +81,10 @@
                       {{ event.location }}
                     </p>
                   }
+                  <div class="event-card-meta">
+                    <span>{{ formatPrice(event.price_amount) }}</span>
+                    <span>{{ getParticipantCount(event) }} {{ t('events.modal.participants') }}</span>
+                  </div>
                   <p class="event-card-desc">{{ event.description }}</p>
                 </div>
               </div>
@@ -84,6 +94,106 @@
       }
 
     </div>
+
+    @if (selectedEvent; as event) {
+      <div class="event-modal-backdrop" (click)="closeEvent()">
+        <section class="event-modal" role="dialog" aria-modal="true" [attr.aria-label]="event.title" (click)="$event.stopPropagation()">
+          <button type="button" class="event-modal-close" [attr.aria-label]="t('events.modal.close')" (click)="closeEvent()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+
+          @if (event.image_url) {
+            <div class="event-modal-media">
+              <img [src]="getEventImageUrl(event.image_url)" [alt]="event.title" loading="lazy">
+            </div>
+          }
+
+          <div class="event-modal-body">
+            <div class="event-modal-copy">
+              <p class="site-hero-kicker">{{ event.type === 'upcoming' ? t('events.list.filters.upcoming') : t('events.list.filters.past') }}</p>
+              <h2>{{ event.title }}</h2>
+
+              <dl class="event-modal-facts">
+                <div>
+                  <dt>{{ t('events.modal.date') }}</dt>
+                  <dd>{{ formatDateTime(event.event_date) }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('events.modal.location') }}</dt>
+                  <dd>{{ event.location || t('admin.events.noLocation') }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('events.modal.price') }}</dt>
+                  <dd>{{ formatPrice(event.price_amount) }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('events.modal.payment') }}</dt>
+                  <dd>{{ event.payment_details || t('events.modal.noPaymentDetails') }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('events.modal.participantsLabel') }}</dt>
+                  <dd>{{ getParticipantCount(event) }} {{ t('events.modal.participants') }}</dd>
+                </div>
+              </dl>
+
+              @if (event.description) {
+                <p class="event-modal-description">{{ event.description }}</p>
+              }
+
+              @if (participationError) {
+                <div class="site-state-box site-state-box-error">{{ t(participationError) }}</div>
+              }
+              @if (participationMessage) {
+                <div class="site-state-box site-state-box-success">{{ t(participationMessage) }}</div>
+              }
+
+              <div class="event-modal-actions">
+                @if (!authService.isAuthenticated()) {
+                  <a routerLink="/login" class="site-button-primary">{{ t('events.modal.loginToParticipate') }}</a>
+                } @else {
+                  <button
+                    type="button"
+                    class="site-button-primary"
+                    [class.event-action-active]="event.current_user_participation === 'attending'"
+                    [disabled]="participationSaving"
+                    (click)="setParticipation('attending')">
+                    {{ t('events.modal.participate') }}
+                  </button>
+                  <button
+                    type="button"
+                    class="site-button-secondary"
+                    [class.event-action-active]="event.current_user_participation === 'declined'"
+                    [disabled]="participationSaving"
+                    (click)="setParticipation('declined')">
+                    {{ t('events.modal.decline') }}
+                  </button>
+                }
+              </div>
+            </div>
+
+            @if (getMapEmbedUrl(event.location); as mapUrl) {
+              <div class="event-modal-map">
+                <div class="event-map-fallback" aria-hidden="true">
+                  <span></span>
+                </div>
+                <iframe
+                  [src]="mapUrl"
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"
+                  [title]="event.location || event.title">
+                </iframe>
+                <div class="event-map-caption">
+                  <span>{{ event.location }}</span>
+                  <a [href]="getMapLink(event.location)" target="_blank" rel="noopener">
+                    {{ t('events.modal.openMap') }}
+                  </a>
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+      </div>
+    }
 
     <app-scroll-to-top></app-scroll-to-top>
   </div>

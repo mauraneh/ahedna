@@ -15,8 +15,9 @@ export class MembershipComponent {
   donationAmounts = [10, 25, 50, 100, 250, 500];
   customAmount = '';
 
-  helloAssoAdhesionUrl = 'https://www.helloasso.com/associations/ahedna/adhesions/adhesion-annuelle';
-  helloAssoDonUrl = 'https://www.helloasso.com/associations/ahedna/formulaires/1';
+  helloAssoAdhesionUrl =
+    'https://www.helloasso.com/associations/association-harkis-et-leurs-enfants-de-dordogne-et-nouvelle-aquitaine/adhesions/ahedna';
+  helloAssoDonUrl = this.helloAssoAdhesionUrl;
 
   stripeEnabled = false;
 
@@ -33,12 +34,11 @@ export class MembershipComponent {
       return;
     }
 
-    const url = `${this.helloAssoDonUrl}?amount=${this.customAmount}`;
-    window.open(url, '_blank');
+    window.open(this.helloAssoDonUrl, '_blank', 'noopener');
   }
 
   handleAdhesion(): void {
-    window.open(this.helloAssoAdhesionUrl, '_blank');
+    window.open(this.helloAssoAdhesionUrl, '_blank', 'noopener');
   }
 
   isValidAmount(): boolean {

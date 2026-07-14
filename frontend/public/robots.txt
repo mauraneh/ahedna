@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /contenu
+Disallow: /login
+Disallow: /register
+Disallow: /profil
+Sitemap: https://ahedna.fr/sitemap.xml

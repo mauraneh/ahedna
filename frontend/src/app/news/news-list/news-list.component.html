@@ -26,34 +26,121 @@
         </div>
       }
 
+      <form class="news-filter-panel" (ngSubmit)="applyFilters()">
+        <div class="news-filter-head">
+          <h2>{{ t('news.list.filters.title') }}</h2>
+          <p>{{ t('news.list.filters.subtitle') }}</p>
+        </div>
+
+        <div class="news-filter-grid">
+          <label class="news-filter-field">
+            <span>{{ t('news.list.filters.keyword') }}</span>
+            <input
+              type="search"
+              name="keyword"
+              [(ngModel)]="keyword"
+              [placeholder]="t('news.list.filters.keywordPlaceholder')">
+          </label>
+
+          <label class="news-filter-field">
+            <span>{{ t('news.list.filters.dateFrom') }}</span>
+            <input type="date" name="dateFrom" [(ngModel)]="dateFrom">
+          </label>
+
+          <label class="news-filter-field">
+            <span>{{ t('news.list.filters.dateTo') }}</span>
+            <input type="date" name="dateTo" [(ngModel)]="dateTo">
+          </label>
+        </div>
+
+        <div class="news-filter-actions">
+          <button type="submit" class="site-button-primary">
+            {{ t('news.list.filters.search') }}
+          </button>
+          <button type="button" class="site-button-secondary" (click)="resetFilters()" [disabled]="!hasActiveFilters()">
+            {{ t('news.list.filters.reset') }}
+          </button>
+        </div>
+      </form>
+
+      <div class="news-tabs" role="tablist" [attr.aria-label]="t('news.list.tabs.label')">
+        @for (tab of newsTabs; track tab) {
+          <button
+            type="button"
+            class="news-tab"
+            role="tab"
+            [class.news-tab-active]="activeTab === tab"
+            [attr.aria-selected]="activeTab === tab"
+            (click)="setActiveTab(tab)">
+            <span class="news-tab-copy">
+              <span class="news-tab-label">{{ t('news.list.tabs.' + tab + '.label') }}</span>
+              <span class="news-tab-description">{{ t('news.list.tabs.' + tab + '.description') }}</span>
+            </span>
+            <span class="news-tab-count">{{ getTabCount(tab) }}</span>
+          </button>
+        }
+      </div>
+
       @if (loading) {
         <div class="site-loading-state">
           <div class="site-loading-ring"></div>
           <p class="site-loading-copy">{{ t('news.list.loading') }}</p>
         </div>
-      } @else if (newsList.length === 0) {
+      } @else if (visibleNews.length === 0) {
         <div class="site-empty-state">
           <div class="site-empty-icon">📰</div>
-          <h3 class="site-empty-title">{{ t('news.list.empty.title') }}</h3>
-          <p class="site-empty-copy">{{ t('news.list.empty.body') }}</p>
+          <h3 class="site-empty-title">{{ t(getEmptyTitleKey()) }}</h3>
+          <p class="site-empty-copy">{{ t(getEmptyBodyKey()) }}</p>
         </div>
       } @else {
         <div class="news-grid">
-          @for (news of newsList; track news.id) {
-            <article class="news-card site-card-hover">
-              <div class="news-card-media">
-                @if (news.image_url) {
-                  <img [src]="news.image_url" [alt]="news.title" class="news-card-img" loading="lazy">
-                } @else {
-                  <div class="news-card-placeholder">📰</div>
-                }
-              </div>
+          @for (news of visibleNews; track news.id) {
+            <article
+              class="news-card site-card-hover"
+              role="button"
+              tabindex="0"
+              (click)="openNewsModal(news)"
+              (keydown.enter)="openNewsModal(news)"
+              (keydown.space)="$event.preventDefault(); openNewsModal(news)">
+              @if (hasNewsImage(news)) {
+                <div class="news-card-media">
+                  <img
+                    [src]="getNewsImageUrl(news)"
+                    [alt]="news.title"
+                    class="news-card-img"
+                    loading="lazy"
+                    (error)="handleNewsImageError($event)">
+                </div>
+              }
               <div class="news-card-body">
+                @if (isExternalNews(news)) {
+                  <div class="news-source-strip">
+                    <span class="news-source-badge">{{ t('news.list.externalSource') }}</span>
+                    @if (news.source_url) {
+                      <a
+                        [href]="news.source_url"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="news-source-link"
+                        (click)="$event.stopPropagation()">
+                        {{ t('news.list.source') }} : {{ getNewsSourceLabel(news) }}
+                      </a>
+                    } @else {
+                      <span class="news-source-text">
+                        {{ t('news.list.source') }} : {{ getNewsSourceLabel(news) }}
+                      </span>
+                    }
+                  </div>
+                }
                 <h2 class="news-card-title line-clamp-2">{{ news.title }}</h2>
                 <p class="news-card-excerpt line-clamp-3">{{ news.excerpt || news.content }}</p>
                 <div class="news-card-meta">
-                  <span class="news-card-author">{{ t('common.byAuthor', { firstName: news.first_name, lastName: news.last_name }) }}</span>
-                  <time class="news-card-date">{{ formatDate(news.created_at) }}</time>
+                  @if (isExternalNews(news)) {
+                    <span class="news-card-author">{{ getNewsSourceLabel(news) }}</span>
+                  } @else {
+                    <span class="news-card-author">{{ t('common.byAuthor', { firstName: news.first_name, lastName: news.last_name }) }}</span>
+                  }
+                  <time class="news-card-date">{{ formatDate(getNewsDisplayDate(news)) }}</time>
                 </div>
               </div>
             </article>
@@ -62,6 +149,58 @@
       }
 
     </div>
+
+    @if (selectedNews; as news) {
+      <div class="news-modal-backdrop" (click)="closeNewsModal()">
+        <section class="news-modal" role="dialog" aria-modal="true" [attr.aria-label]="news.title" (click)="$event.stopPropagation()">
+          <button type="button" class="news-modal-close" [attr.aria-label]="t('news.list.modal.close')" (click)="closeNewsModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+
+          @if (hasNewsImage(news)) {
+            <div class="news-modal-media">
+              <img
+                [src]="getNewsImageUrl(news)"
+                [alt]="news.title"
+                loading="lazy"
+                (error)="handleNewsImageError($event)">
+            </div>
+          }
+
+          <div class="news-modal-body">
+            <div class="news-modal-heading">
+              <p class="news-modal-kicker">{{ t(getNewsModalTypeKey(news)) }}</p>
+              <h2>{{ news.title }}</h2>
+              <div class="news-modal-meta">
+                @if (isExternalNews(news)) {
+                  <span>{{ getNewsSourceLabel(news) }}</span>
+                } @else {
+                  <span>{{ t('common.byAuthor', { firstName: news.first_name, lastName: news.last_name }) }}</span>
+                }
+                <time>{{ formatDate(getNewsDisplayDate(news)) }}</time>
+              </div>
+            </div>
+
+            @if (isExternalNews(news)) {
+              <div class="news-modal-source">
+                <span class="news-source-badge">{{ t('news.list.externalSource') }}</span>
+                @if (news.source_url) {
+                  <a [href]="news.source_url" target="_blank" rel="noopener noreferrer">
+                    {{ t('news.list.modal.readOriginal') }}
+                  </a>
+                }
+              </div>
+            }
+
+            <div class="news-modal-content">
+              @for (paragraph of getNewsParagraphs(news); track $index) {
+                <p>{{ paragraph }}</p>
+              }
+            </div>
+          </div>
+        </section>
+      </div>
+    }
 
     <app-scroll-to-top></app-scroll-to-top>
   </div>

@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'AHEDNA Payload',
-  description: 'Back-office Payload pour AHEDNA',
+  title: 'Gestion AHEDNA',
+  description: 'Espace de gestion des contenus AHEDNA',
 };
 
 export default function RootLayout({ children }) {

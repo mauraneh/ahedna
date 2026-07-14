@@ -288,7 +288,7 @@ import { AuthService } from '../../services/auth.service';
 
     .nav-brand-title {
       color: #1a1208;
-      font-family: 'Playfair Display', Georgia, serif;
+      font-family: var(--site-sans-font);
       font-size: 0.92rem;
       font-weight: 800;
       letter-spacing: -0.01em;
@@ -297,7 +297,7 @@ import { AuthService } from '../../services/auth.service';
     .nav-brand-subtitle {
       display: none;
       color: #6a5444;
-      font-family: 'Crimson Text', Georgia, serif;
+      font-family: var(--site-sans-font);
       font-style: italic;
       font-size: 0.7rem;
       white-space: nowrap;
@@ -345,7 +345,7 @@ import { AuthService } from '../../services/auth.service';
       background: transparent;
       color: #3a2a14;
       cursor: pointer;
-      font-family: 'Playfair Display', Georgia, serif;
+      font-family: var(--site-sans-font);
       font-size: 0.72rem;
       font-weight: 700;
       letter-spacing: 0.04em;
@@ -452,7 +452,7 @@ import { AuthService } from '../../services/auth.service';
 
     .nav-account-name {
       color: #1a1208;
-      font-family: 'Playfair Display', Georgia, serif;
+      font-family: var(--site-sans-font);
       font-size: 0.88rem;
       font-weight: 800;
     }
@@ -460,7 +460,7 @@ import { AuthService } from '../../services/auth.service';
     .nav-account-email {
       margin-top: 0.2rem;
       color: #6a5444;
-      font-family: 'Crimson Text', Georgia, serif;
+      font-family: var(--site-sans-font);
       font-size: 0.78rem;
       word-break: break-word;
     }
@@ -483,7 +483,7 @@ import { AuthService } from '../../services/auth.service';
       color: #3a2a14;
       cursor: pointer;
       text-decoration: none;
-      font-family: 'Playfair Display', Georgia, serif;
+      font-family: var(--site-sans-font);
       font-size: 0.8rem;
       font-weight: 700;
       transition: background 0.2s ease, color 0.2s ease;
@@ -654,7 +654,7 @@ import { AuthService } from '../../services/auth.service';
       padding: 0.35rem 0.65rem;
       color: var(--classic-ink, #111512);
       font-family: var(--site-sans-font, Arial, sans-serif);
-      font-size: 0.62rem;
+      font-size: 0.58rem;
       font-weight: 500;
       letter-spacing: 0;
       text-transform: none;

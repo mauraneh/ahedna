@@ -82,7 +82,22 @@
                   </div>
                   <div class="md:col-span-2">
                     <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('profile.fields.addressLine1') }}</label>
-                    <input formControlName="address_line1" type="text" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <input
+                      formControlName="address_line1"
+                      type="text"
+                      class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      autocomplete="off"
+                      (input)="onAddressInput()">
+                    @if (addressSuggestions.length > 0) {
+                      <div class="profile-address-suggestions">
+                        @for (suggestion of addressSuggestions; track suggestion.label) {
+                          <button type="button" class="profile-address-suggestion" (click)="selectAddressSuggestion(suggestion)">
+                            <span>{{ suggestion.label }}</span>
+                            <small>{{ suggestion.postalCode }} {{ suggestion.city }}</small>
+                          </button>
+                        }
+                      </div>
+                    }
                   </div>
                   <div class="md:col-span-2">
                     <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('profile.fields.addressLine2') }}</label>
@@ -90,11 +105,31 @@
                   </div>
                   <div>
                     <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('profile.fields.postalCode') }}</label>
-                    <input formControlName="postal_code" type="text" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <input
+                      formControlName="postal_code"
+                      type="text"
+                      inputmode="numeric"
+                      class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      (input)="onPostalCodeInput()">
                   </div>
                   <div>
                     <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('profile.fields.city') }}</label>
-                    <input formControlName="city" type="text" class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <input
+                      formControlName="city"
+                      type="text"
+                      class="w-full rounded-xl border border-paper-300 bg-paper-50 px-4 py-3 font-serif text-paper-900 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      autocomplete="off"
+                      (input)="onCityInput()">
+                    @if (citySuggestions.length > 0) {
+                      <div class="profile-address-suggestions">
+                        @for (suggestion of citySuggestions; track suggestion.label) {
+                          <button type="button" class="profile-address-suggestion" (click)="selectCitySuggestion(suggestion)">
+                            <span>{{ suggestion.city }}</span>
+                            <small>{{ suggestion.postalCode }}</small>
+                          </button>
+                        }
+                      </div>
+                    }
                   </div>
                   <div>
                     <label class="block text-sm font-vintage font-medium text-paper-700 mb-2">{{ t('profile.fields.country') }}</label>
