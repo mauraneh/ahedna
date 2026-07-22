@@ -2,6 +2,8 @@
   <div class="site-page login-page auth-page">
     <app-navbar></app-navbar>
 
+    <main id="main-content">
+
     <section class="site-tool-shell site-tool-shell-narrow site-tool-stack">
       <div class="site-masthead-card site-tool-masthead-solid auth-page-masthead">
         <div class="site-tool-masthead site-tool-masthead-center">
@@ -45,7 +47,7 @@
           </div>
 
           @if (error) {
-            <div class="site-state-box site-state-box-error">
+            <div class="site-state-box site-state-box-error" role="alert">
               <p class="text-sm">{{ error }}</p>
             </div>
           }
@@ -75,6 +77,8 @@
         </div>
       </div>
     </section>
+
+    </main>
 
     <app-scroll-to-top></app-scroll-to-top>
   </div>

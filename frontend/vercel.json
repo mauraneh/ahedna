@@ -1,4 +1,7 @@
 {
+  "installCommand": "yarn install --frozen-lockfile",
+  "buildCommand": "yarn build",
+  "outputDirectory": "dist/frontend/browser",
   "rewrites": [
     {
       "source": "/((?!api/.*).*)",

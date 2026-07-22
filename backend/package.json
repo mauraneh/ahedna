@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "node server.js",
     "test:backend": "node --test tests/*.test.js",
-    "lint:backend": "node --check server.js && node --check lib/api-handler.js && node --check lib/auth.js && node --check lib/db.js && node --check lib/monitoring.js && node --check lib/uploads.js && node --check tests/auth.test.js && node --check tests/monitoring.test.js && node --check tests/uploads.test.js",
+    "lint:backend": "node --check server.js && node --check lib/api-handler.js && node --check lib/auth.js && node --check lib/db.js && node --check lib/monitoring.js && node --check lib/uploads.js && node --check tests/helpers/api-client.js && node --check tests/auth.test.js && node --check tests/db.test.js && node --check tests/monitoring.test.js && node --check tests/uploads.test.js && node --check tests/api-handler.test.js && node --check tests/security-helpers.test.js && node --check tests/news-aggregation.test.js",
+    "test:backend:coverage": "node --test --experimental-test-coverage tests/*.test.js",
     "build": "node -e \"console.log('No build step required for Fastify backend')\"",
     "start": "NODE_ENV=production node server.js"
   },

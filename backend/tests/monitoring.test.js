@@ -53,3 +53,37 @@ test('monitoring metrics expose Prometheus-compatible gauges and counters', () =
   assert.match(metrics, /ahedna_database_up 1/);
   assert.match(metrics, /ahedna_database_latency_ms 12/);
 });
+
+test('monitoring state falls back to default name, version and clock when none are given', () => {
+  const monitoring = createMonitoringState();
+  const snapshot = monitoring.getSnapshot();
+
+  assert.equal(snapshot.service, 'AHEDNA API');
+  assert.equal(snapshot.version, '0.0.0');
+  assert.equal(snapshot.status, 'degraded');
+  assert.equal(snapshot.database.message, 'Database status unavailable');
+  assert.equal(snapshot.counters.errorRate, 0);
+});
+
+test('monitoring computes a non-zero error rate once requests have been observed', () => {
+  const monitoring = createMonitoringState({ now: () => 1000 });
+
+  monitoring.onRequestStart();
+  monitoring.onRequestComplete({ statusCode: 200 });
+  monitoring.onRequestStart();
+  monitoring.onRequestComplete({ statusCode: 500 });
+
+  const snapshot = monitoring.getSnapshot({ database: { ok: true } });
+  assert.equal(snapshot.counters.errorRate, 0.5);
+});
+
+test('monitoring metrics default the database latency to 0 when unavailable', () => {
+  const monitoring = createMonitoringState({ now: () => 1000 });
+
+  const metrics = monitoring.getMetrics({
+    database: { ok: false, latencyMs: null, message: 'down' },
+  });
+
+  assert.match(metrics, /ahedna_database_up 0/);
+  assert.match(metrics, /ahedna_database_latency_ms 0/);
+});

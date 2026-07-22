@@ -3,6 +3,8 @@
 
     <app-navbar></app-navbar>
 
+    <main id="main-content">
+
     <div class="site-hero site-public-hero">
       <div class="site-hero-nav"></div>
       <div class="site-hero-content">
@@ -89,10 +91,10 @@
                       [placeholder]="t('forum.list.fields.content.placeholder')"></textarea>
                   </div>
                   @if (createError) {
-                    <div class="site-state-box site-state-box-error">{{ createError }}</div>
+                    <div class="site-state-box site-state-box-error" role="alert">{{ createError }}</div>
                   }
                   @if (createSuccess) {
-                    <div class="site-state-box site-state-box-success">{{ createSuccess }}</div>
+                    <div class="site-state-box site-state-box-success" role="status">{{ createSuccess }}</div>
                   }
                   <div class="forum-compose-actions">
                     <button
@@ -165,6 +167,8 @@
         </div>
       }
     </div>
+
+    </main>
 
     <app-scroll-to-top></app-scroll-to-top>
   </div>

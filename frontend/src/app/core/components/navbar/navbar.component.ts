@@ -10,6 +10,7 @@ import { AuthService } from '../../services/auth.service';
   imports: [CommonModule, RouterLink, RouterLinkActive, TranslocoDirective],
   template: `
     <ng-container *transloco="let t">
+      <a href="#main-content" class="skip-link">{{ t('navbar.skipToContent') }}</a>
       <div
         class="nav-frame"
         [class.nav-frame-default]="variant() === 'default'"
@@ -222,6 +223,24 @@ import { AuthService } from '../../services/auth.service';
   styles: [`
     :host {
       display: block;
+    }
+
+    .skip-link {
+      position: fixed;
+      top: -3rem;
+      left: 0.5rem;
+      z-index: 100;
+      padding: 0.65rem 1.25rem;
+      border-radius: 999px;
+      background: var(--classic-green, #173d27);
+      color: #fbfaf3;
+      font-weight: 700;
+      text-decoration: none;
+      transition: top 0.15s ease;
+    }
+
+    .skip-link:focus {
+      top: 0.5rem;
     }
 
     .nav-frame {

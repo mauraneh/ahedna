@@ -30,17 +30,25 @@ export class ContactComponent {
       return;
     }
 
-    const value = this.contactForm.getRawValue();
-    const subject = encodeURIComponent(`[Contact AHEDNA] ${value.subject}`);
+    window.location.href = this.buildMailtoUrl(this.contactForm.getRawValue());
+  }
+
+  buildMailtoUrl(value: {
+    name?: string | null;
+    email?: string | null;
+    subject?: string | null;
+    message?: string | null;
+  }): string {
+    const subject = encodeURIComponent(`[Contact AHEDNA] ${value.subject ?? ''}`);
     const body = encodeURIComponent(
       [
-        `Nom : ${value.name}`,
-        `Email : ${value.email}`,
+        `Nom : ${value.name ?? ''}`,
+        `Email : ${value.email ?? ''}`,
         '',
-        value.message,
+        value.message ?? '',
       ].join('\n')
     );
 
-    window.location.href = `mailto:${this.contactEmail}?subject=${subject}&body=${body}`;
+    return `mailto:${this.contactEmail}?subject=${subject}&body=${body}`;
   }
 }

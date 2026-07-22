@@ -8,9 +8,9 @@ export const routes: Routes = [
     loadComponent: () => import('./home/home.component').then((m) => m.HomeComponent),
     data: {
       seo: {
-        title: 'AHEDNA - Memoire, entraide et transmission harki',
+        title: 'AHEDNA - Mémoire, entraide et transmission harki',
         description:
-          "Association harki en Dordogne et Nouvelle-Aquitaine : histoire, entraide, actualites, evenements, forum et adhesion.",
+          "Association harki en Dordogne et Nouvelle-Aquitaine : histoire, entraide, actualités, événements, forum et adhésion.",
       },
     },
   },
@@ -20,7 +20,7 @@ export const routes: Routes = [
     data: {
       seo: {
         title: 'Connexion - AHEDNA',
-        description: "Connexion a l'espace membre AHEDNA.",
+        description: "Connexion à l'espace membre AHEDNA.",
         robots: 'noindex, nofollow',
       },
     },
@@ -31,7 +31,7 @@ export const routes: Routes = [
     data: {
       seo: {
         title: 'Inscription - AHEDNA',
-        description: "Creation d'un compte membre AHEDNA.",
+        description: "Création d'un compte membre AHEDNA.",
         robots: 'noindex, nofollow',
       },
     },
@@ -43,7 +43,7 @@ export const routes: Routes = [
       seo: {
         title: 'Histoire des harkis - AHEDNA',
         description:
-          "Comprendre l'histoire des harkis, la transmission familiale et le travail de memoire porte par AHEDNA.",
+          "Comprendre l'histoire des harkis, la transmission familiale et le travail de mémoire porté par AHEDNA.",
       },
     },
   },
@@ -70,7 +70,7 @@ export const routes: Routes = [
       roles: ['auteur', 'admin'],
       seo: {
         title: 'Gestion des contenus - AHEDNA',
-        description: "Interface de gestion des actualites, evenements et albums AHEDNA.",
+        description: "Interface de gestion des actualités, événements et albums AHEDNA.",
         robots: 'noindex, nofollow',
       },
     },
@@ -80,9 +80,9 @@ export const routes: Routes = [
     loadComponent: () => import('./news/news-list/news-list.component').then((m) => m.NewsListComponent),
     data: {
       seo: {
-        title: 'Actualites - AHEDNA',
+        title: 'Actualités - AHEDNA',
         description:
-          "Actualites de l'association AHEDNA, actions de memoire, informations membres et vie associative.",
+          "Actualités de l'association AHEDNA, actions de mémoire, informations membres et vie associative.",
       },
     },
   },
@@ -92,9 +92,9 @@ export const routes: Routes = [
       import('./events/events-list/events-list.component').then((m) => m.EventsListComponent),
     data: {
       seo: {
-        title: 'Evenements - AHEDNA',
+        title: 'Événements - AHEDNA',
         description:
-          "Agenda des commemorations, rencontres, ateliers et temps forts organises par AHEDNA.",
+          "Agenda des commémorations, rencontres, ateliers et temps forts organisés par AHEDNA.",
       },
     },
   },
@@ -105,7 +105,7 @@ export const routes: Routes = [
       seo: {
         title: 'Forum - AHEDNA',
         description:
-          "Forum AHEDNA pour partager temoignages, questions et echanges autour de l'histoire harki.",
+          "Forum AHEDNA pour partager témoignages, questions et échanges autour de l'histoire harki.",
       },
     },
   },
@@ -116,7 +116,7 @@ export const routes: Routes = [
       seo: {
         title: 'Galerie - AHEDNA',
         description:
-          "Photos des evenements AHEDNA et albums valides par l'association.",
+          "Photos des événements AHEDNA et albums validés par l'association.",
       },
     },
   },
@@ -125,9 +125,9 @@ export const routes: Routes = [
     loadComponent: () => import('./membership/membership.component').then((m) => m.MembershipComponent),
     data: {
       seo: {
-        title: 'Adhesion - AHEDNA',
+        title: 'Adhésion - AHEDNA',
         description:
-          "Adherer a AHEDNA via HelloAsso pour soutenir la memoire, l'entraide et les actions de l'association.",
+          "Adhérer à AHEDNA via HelloAsso pour soutenir la mémoire, l'entraide et les actions de l'association.",
       },
     },
   },
@@ -138,7 +138,7 @@ export const routes: Routes = [
       seo: {
         title: 'Contact - AHEDNA',
         description:
-          "Contacter AHEDNA pour une question, un temoignage, une adhesion ou une action autour de la memoire harki.",
+          "Contacter AHEDNA pour une question, un témoignage, une adhésion ou une action autour de la mémoire harki.",
       },
     },
   },
@@ -147,9 +147,9 @@ export const routes: Routes = [
     loadComponent: () => import('./legal-notice/legal-notice.component').then((m) => m.LegalNoticeComponent),
     data: {
       seo: {
-        title: 'Mentions legales - AHEDNA',
+        title: 'Mentions légales - AHEDNA',
         description:
-          "Mentions legales du site AHEDNA : editeur, publication, hebergement, propriete intellectuelle et signalement.",
+          "Mentions légales du site AHEDNA : éditeur, publication, hébergement, propriété intellectuelle et signalement.",
       },
     },
   },
@@ -159,9 +159,9 @@ export const routes: Routes = [
       import('./privacy-policy/privacy-policy.component').then((m) => m.PrivacyPolicyComponent),
     data: {
       seo: {
-        title: 'Politique de confidentialite - AHEDNA',
+        title: 'Politique de confidentialité - AHEDNA',
         description:
-          "Politique de confidentialite AHEDNA : donnees personnelles, finalites, securite, conservation et droits RGPD.",
+          "Politique de confidentialité AHEDNA : données personnelles, finalités, sécurité, conservation et droits RGPD.",
       },
     },
   },
@@ -178,5 +178,15 @@ export const routes: Routes = [
       },
     },
   },
-  { path: '**', redirectTo: '' },
+  {
+    path: '**',
+    loadComponent: () => import('./not-found/not-found.component').then((m) => m.NotFoundComponent),
+    data: {
+      seo: {
+        title: 'Page introuvable - AHEDNA',
+        description: "La page demandée n'existe pas ou plus sur le site AHEDNA.",
+        robots: 'noindex, nofollow',
+      },
+    },
+  },
 ];

@@ -10,7 +10,8 @@
     "build": "node ./scripts/generate-app-config.mjs && node ./scripts/generate-sitemap.mjs && node ./scripts/run-ng-safe.mjs build",
     "watch": "node ./scripts/generate-app-config.mjs && node ./scripts/run-ng-safe.mjs build --watch --configuration development",
     "test": "node ./scripts/generate-app-config.mjs && node ./scripts/run-ng-safe.mjs test",
-    "test:ci": "node ./scripts/generate-app-config.mjs && node ./scripts/run-ng-safe.mjs test --watch=false --browsers=ChromeHeadlessNoSandbox --progress=false"
+    "test:ci": "node ./scripts/generate-app-config.mjs && node ./scripts/run-ng-safe.mjs test --watch=false --browsers=ChromeHeadlessNoSandbox --progress=false",
+    "test:coverage": "node ./scripts/generate-app-config.mjs && node ./scripts/run-ng-safe.mjs test --watch=false --browsers=ChromeHeadlessNoSandbox --progress=false --code-coverage"
   },
   "engines": {
     "node": "^20.19.0 || ^22.12.0"
