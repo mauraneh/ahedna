@@ -1,4 +1,7 @@
 {
+  "installCommand": "cd frontend && yarn install --frozen-lockfile --ignore-engines",
+  "buildCommand": "cd frontend && yarn --ignore-engines build",
+  "outputDirectory": "frontend/dist/frontend/browser",
   "rewrites": [
     {
       "source": "/((?!api/.*).*)",

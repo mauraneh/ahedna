@@ -75,3 +75,4 @@ cms/media/
 # Local certification work
 RNCP/
 .env*.local
+.env*
