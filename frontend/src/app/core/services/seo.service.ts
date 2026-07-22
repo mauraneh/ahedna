@@ -8,6 +8,7 @@ type SeoData = {
   title: string;
   description: string;
   robots?: string;
+  image?: string;
 };
 
 const DEFAULT_SEO: SeoData = {
@@ -15,6 +16,7 @@ const DEFAULT_SEO: SeoData = {
   description:
     "AHEDNA accompagne les familles harkies, transmet leur histoire et anime une communauté en Dordogne et Nouvelle-Aquitaine.",
   robots: 'index, follow',
+  image: '/logo.png',
 };
 
 @Injectable({ providedIn: 'root' })
@@ -33,9 +35,18 @@ export class SeoService {
       .subscribe(() => this.applySeo());
   }
 
+  // Lasts until the next navigation, at which point the route's own SEO data takes over again.
+  override(partial: Partial<SeoData>): void {
+    this.applySeoData({ ...this.currentSeo(), ...partial });
+  }
+
   private applySeo(): void {
-    const seo = this.currentSeo();
+    this.applySeoData(this.currentSeo());
+  }
+
+  private applySeoData(seo: SeoData): void {
     const canonicalUrl = this.absoluteUrl(this.router.url);
+    const imageUrl = this.absoluteUrl(seo.image || DEFAULT_SEO.image || '/logo.png');
 
     this.title.setTitle(seo.title);
     this.setCanonical(canonicalUrl);
@@ -47,9 +58,11 @@ export class SeoService {
     this.meta.updateTag({ property: 'og:title', content: seo.title });
     this.meta.updateTag({ property: 'og:description', content: seo.description });
     this.meta.updateTag({ property: 'og:url', content: canonicalUrl });
+    this.meta.updateTag({ property: 'og:image', content: imageUrl });
     this.meta.updateTag({ name: 'twitter:card', content: 'summary' });
     this.meta.updateTag({ name: 'twitter:title', content: seo.title });
     this.meta.updateTag({ name: 'twitter:description', content: seo.description });
+    this.meta.updateTag({ name: 'twitter:image', content: imageUrl });
   }
 
   private currentSeo(): SeoData {

@@ -3,6 +3,8 @@
 
     <app-navbar></app-navbar>
 
+    <main id="main-content">
+
     <div class="site-hero site-public-hero">
       <div class="site-hero-nav"></div>
       <div class="site-hero-content">
@@ -93,11 +95,11 @@
                 </div>
 
                 @if (uploadError) {
-                  <div class="site-state-box site-state-box-error">{{ uploadError }}</div>
+                  <div class="site-state-box site-state-box-error" role="alert">{{ uploadError }}</div>
                 }
 
                 @if (uploadMessage) {
-                  <div class="site-state-box site-state-box-success">{{ uploadMessage }}</div>
+                  <div class="site-state-box site-state-box-success" role="status">{{ uploadMessage }}</div>
                 }
 
                 <button type="submit" [disabled]="uploading || uploadForm.invalid" class="site-button-primary w-full disabled:opacity-50 disabled:cursor-not-allowed">
@@ -154,6 +156,8 @@
         </div>
       }
     </div>
+
+    </main>
 
     <app-scroll-to-top></app-scroll-to-top>
   </div>

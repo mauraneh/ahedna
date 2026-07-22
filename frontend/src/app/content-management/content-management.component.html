@@ -2,6 +2,8 @@
   <div class="site-page paper-texture relative overflow-hidden content-page">
     <app-navbar></app-navbar>
 
+    <main id="main-content">
+
     <section class="site-tool-shell site-tool-stack">
       <div class="site-masthead-card site-tool-masthead-solid content-page-header">
         <div class="site-tool-masthead site-tool-masthead-split">
@@ -74,10 +76,10 @@
             </div>
 
             @if (newsFeedbackError) {
-              <div class="mb-4 site-state-box site-state-box-error">{{ newsFeedbackError }}</div>
+              <div class="mb-4 site-state-box site-state-box-error" role="alert">{{ newsFeedbackError }}</div>
             }
             @if (newsFeedbackMessage) {
-              <div class="mb-4 site-state-box site-state-box-success">{{ newsFeedbackMessage }}</div>
+              <div class="mb-4 site-state-box site-state-box-success" role="status">{{ newsFeedbackMessage }}</div>
             }
 
             <form [formGroup]="newsForm" (ngSubmit)="saveNews()" class="space-y-4">
@@ -184,10 +186,10 @@
             <p class="text-paper-700 font-serif mt-2 mb-6">{{ t('content.events.form.subtitle') }}</p>
 
             @if (eventFeedbackError) {
-              <div class="mb-4 site-state-box site-state-box-error">{{ eventFeedbackError }}</div>
+              <div class="mb-4 site-state-box site-state-box-error" role="alert">{{ eventFeedbackError }}</div>
             }
             @if (eventFeedbackMessage) {
-              <div class="mb-4 site-state-box site-state-box-success">{{ eventFeedbackMessage }}</div>
+              <div class="mb-4 site-state-box site-state-box-success" role="status">{{ eventFeedbackMessage }}</div>
             }
 
             <form [formGroup]="eventForm" (ngSubmit)="saveEvent()" class="space-y-4">
@@ -341,10 +343,10 @@
               <p class="text-paper-700 font-serif mt-2 mb-6">{{ t('content.gallery.albumForm.subtitle') }}</p>
 
               @if (galleryFeedbackError) {
-                <div class="mb-4 site-state-box site-state-box-error">{{ galleryFeedbackError }}</div>
+                <div class="mb-4 site-state-box site-state-box-error" role="alert">{{ galleryFeedbackError }}</div>
               }
               @if (galleryFeedbackMessage) {
-                <div class="mb-4 site-state-box site-state-box-success">{{ galleryFeedbackMessage }}</div>
+                <div class="mb-4 site-state-box site-state-box-success" role="status">{{ galleryFeedbackMessage }}</div>
               }
 
               <form [formGroup]="galleryAlbumForm" (ngSubmit)="saveGalleryAlbum()" class="space-y-4">
@@ -531,6 +533,8 @@
         </div>
       }
     </section>
+
+    </main>
 
     <app-scroll-to-top></app-scroll-to-top>
   </div>

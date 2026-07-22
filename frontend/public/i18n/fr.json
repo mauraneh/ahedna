@@ -1,5 +1,6 @@
 {
   "navbar": {
+    "skipToContent": "Aller au contenu principal",
     "brand": {
       "name": "AHEDNA",
       "region": "Dordogne & Nouvelle-Aquitaine",
@@ -359,33 +360,43 @@
       "nextLabel": "Voir les membres suivants",
       "members": [
         {
-          "name": "Nom à renseigner",
-          "role": "Présidence",
+          "name": "Hugues Robert",
+          "role": "Président",
+          "photoUrl": "/members/robert-hugues.jpg"
+        },
+        {
+          "name": "Kathyba Hanou",
+          "role": "Vice-présidente",
+          "photoUrl": "/members/hanou-kathyba.jpg"
+        },
+        {
+          "name": "Hocine Bouzidi",
+          "role": "Vice-Président",
+          "photoUrl": "/members/bouzidi-hocine.jpg"
+        },
+        {
+          "name": "Martine Villate",
+          "role": "Secrétaire",
+          "photoUrl": "/members/villate-martine.jpg"
+        },
+        {
+          "name": "Louiza Bouzidi",
+          "role": "Trésorière",
+          "photoUrl": "/members/bouzidi-louiza.jpg"
+        },
+        {
+          "name": "Nadia Boukhelifa",
+          "role": "Administratrice",
           "photoUrl": ""
         },
         {
-          "name": "Nom à renseigner",
-          "role": "Vice-présidence",
+          "name": "Michel Bouchet",
+          "role": "Administrateur",
           "photoUrl": ""
         },
         {
-          "name": "Nom à renseigner",
-          "role": "Secrétariat",
-          "photoUrl": ""
-        },
-        {
-          "name": "Nom à renseigner",
-          "role": "Trésorerie",
-          "photoUrl": ""
-        },
-        {
-          "name": "Nom à renseigner",
-          "role": "Communication",
-          "photoUrl": ""
-        },
-        {
-          "name": "Nom à renseigner",
-          "role": "Mémoire et transmission",
+          "name": "Didier Robert",
+          "role": "Administrateur",
           "photoUrl": ""
         }
       ]

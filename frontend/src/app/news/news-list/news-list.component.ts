@@ -1,15 +1,17 @@
-import { Component, HostListener, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, HostListener, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { NavbarComponent } from '../../core/components/navbar/navbar.component';
 import { ScrollToTopComponent } from '../../core/components/scroll-to-top/scroll-to-top.component';
 import { AuthService } from '../../core/services/auth.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { MediaUploadService } from '../../core/services/media-upload.service';
+import { SeoService } from '../../core/services/seo.service';
 
 interface News {
   id: string;
@@ -39,8 +41,12 @@ export class NewsListComponent implements OnInit {
   private http = inject(HttpClient);
   private i18nService = inject(I18nService);
   private mediaUpload = inject(MediaUploadService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private seoService = inject(SeoService);
+  private destroyRef = inject(DestroyRef);
   authService = inject(AuthService);
-  
+
   newsList: News[] = [];
   loading = true;
   activeTab: NewsTab = 'retrieved';
@@ -59,6 +65,18 @@ export class NewsListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadNews();
+
+    this.route.queryParamMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((params) => {
+        const id = params.get('id');
+
+        if (id) {
+          this.openNewsById(id);
+        } else {
+          this.selectedNews = null;
+        }
+      });
   }
 
   @HostListener('document:keydown.escape')
@@ -119,11 +137,55 @@ export class NewsListComponent implements OnInit {
   }
 
   openNewsModal(news: News): void {
-    this.selectedNews = news;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { id: news.id },
+      queryParamsHandling: 'merge',
+    });
   }
 
   closeNewsModal(): void {
-    this.selectedNews = null;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { id: null },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  private openNewsById(id: string): void {
+    const existing = this.newsList.find((item) => item.id === id);
+
+    if (existing) {
+      this.applyNewsSelection(existing);
+      return;
+    }
+
+    this.http.get<{ news: News }>(`${environment.apiUrl}/news/${id}`).subscribe({
+      next: (response) => this.applyNewsSelection(response.news),
+      error: () => {
+        this.selectedNews = null;
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { id: null },
+          queryParamsHandling: 'merge',
+        });
+      },
+    });
+  }
+
+  private applyNewsSelection(news: News): void {
+    this.selectedNews = news;
+    this.seoService.override({
+      title: `${news.title} - AHEDNA`,
+      description: this.buildNewsSeoSummary(news),
+      image: this.hasNewsImage(news) ? this.getNewsImageUrl(news) : undefined,
+    });
+  }
+
+  private buildNewsSeoSummary(news: News): string {
+    const [firstParagraph] = this.getNewsParagraphs(news);
+    const summary = (firstParagraph || news.excerpt || '').trim();
+    return summary.length > 155 ? `${summary.slice(0, 155).trim()}…` : summary;
   }
 
   get visibleNews(): News[] {
@@ -171,6 +233,12 @@ export class NewsListComponent implements OnInit {
   }
 
   hasNewsImage(news: News): boolean {
+    // External articles carry scraped images that frequently fail to load or look
+    // wrong once resized into our card layout, so we never display one for them.
+    if (this.isExternalNews(news)) {
+      return false;
+    }
+
     return Boolean(this.getNewsImageUrl(news));
   }
 

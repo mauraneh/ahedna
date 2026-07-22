@@ -331,40 +331,11 @@ function getSafeExternalUrl(value, baseUrl = undefined) {
   }
 }
 
-function isLegacyGeneratedNewsImage(value) {
-  const imageUrl = normalizeString(value, 2000);
-
-  if (!imageUrl) {
-    return false;
-  }
-
-  let normalizedUrl = imageUrl.toLowerCase();
-
-  try {
-    normalizedUrl = decodeURIComponent(imageUrl).toLowerCase();
-  } catch {
-    normalizedUrl = imageUrl.toLowerCase();
-  }
-
-  return (
-    normalizedUrl.includes('commons.wikimedia.org/wiki/special:filepath/') &&
-    (
-      normalizedUrl.includes('journée hommage harkis reims 1200559.jpg') ||
-      normalizedUrl.includes('journée hommage harkis reims 1200567.jpg') ||
-      normalizedUrl.includes('camps de rivesaltes 16-05 mh-po 6797.jpg') ||
-      normalizedUrl.includes('harki-j.jpg')
-    )
-  );
-}
-
 function removeGeneratedExternalImages(rows) {
-  return rows.map((row) => {
-    if (row.source_url && isLegacyGeneratedNewsImage(row.image_url)) {
-      return { ...row, image_url: null };
-    }
-
-    return row;
-  });
+  // Images scraped or fed from external sources (Google Actualités, Bing, GDELT) are
+  // unreliable in practice (broken links, mismatched illustrations), so externally
+  // sourced articles are never shown with an image, regardless of what is stored.
+  return rows.map((row) => (row.source_url ? { ...row, image_url: null } : row));
 }
 
 function getHtmlAttribute(tag, attributeName) {
@@ -1084,7 +1055,7 @@ async function handleGet(request) {
 
       try {
         const result = await pool.query(query, params);
-        rows = filterNewsRows(result.rows, filters);
+        rows = removeGeneratedExternalImages(filterNewsRows(result.rows, filters));
       } catch (error) {
         if (shouldCompleteWithPublicNews) {
           try {
@@ -1101,8 +1072,6 @@ async function handleGet(request) {
       }
 
       if (shouldCompleteWithPublicNews) {
-        rows = removeGeneratedExternalImages(rows);
-
         try {
           const publicRows = removeGeneratedExternalImages(
             filterNewsRows(await getCachedPublicNewsRows(30), filters)
@@ -1133,7 +1102,7 @@ async function handleGet(request) {
         return jsonResponse({ error: 'News not found' }, { status: 404, headers: corsHeaders });
       }
 
-      const news = result.rows[0];
+      const [news] = removeGeneratedExternalImages(result.rows);
       if (!news.published) {
         const authUser = getOptionalUser(request);
         const canReadDraft =
@@ -1629,7 +1598,7 @@ async function handlePost(request) {
              title, content, excerpt, author_id, published, image_url,
              source_url, source_name, source_published_at, created_at, updated_at
            )
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, COALESCE($9, CURRENT_TIMESTAMP), CURRENT_TIMESTAMP)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, COALESCE($10, CURRENT_TIMESTAMP), CURRENT_TIMESTAMP)
            RETURNING *`,
           [
             article.title,
@@ -1637,9 +1606,12 @@ async function handlePost(request) {
             article.excerpt,
             authResult.user.id,
             published,
-            article.imageUrl,
+            // Scraped/fed images from external sources are unreliable, so imported
+            // articles are never stored with one (see removeGeneratedExternalImages).
+            null,
             article.sourceUrl,
             article.sourceName,
+            article.publishedAt,
             article.publishedAt,
           ]
         );
@@ -2571,4 +2543,15 @@ module.exports = {
   handlePost,
   handlePut,
   handleDelete,
+  // Exported for direct unit testing, independent of any live HTTP request.
+  getSafeExternalUrl,
+  isBlockedHostname,
+  isPrivateIPv4,
+  decodeXmlEntities,
+  stripHtml,
+  isNewsAggregatorUrl,
+  removeGeneratedExternalImages,
+  getGdeltDate,
+  normalizeString,
+  normalizeEmail,
 };

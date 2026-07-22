@@ -1,5 +1,6 @@
 {
   "navbar": {
+    "skipToContent": "Skip to main content",
     "brand": {
       "name": "AHEDNA",
       "region": "Dordogne & Nouvelle-Aquitaine",
@@ -359,33 +360,43 @@
       "nextLabel": "View next members",
       "members": [
         {
-          "name": "Name to add",
+          "name": "Hugues Robert",
           "role": "President",
-          "photoUrl": ""
+          "photoUrl": "/members/robert-hugues.jpg"
         },
         {
-          "name": "Name to add",
+          "name": "Kathyba Hanou",
           "role": "Vice-president",
-          "photoUrl": ""
+          "photoUrl": "/members/hanou-kathyba.jpg"
         },
         {
-          "name": "Name to add",
+          "name": "Hocine Bouzidi",
+          "role": "Vice-president",
+          "photoUrl": "/members/bouzidi-hocine.jpg"
+        },
+        {
+          "name": "Martine Villate",
           "role": "Secretary",
-          "photoUrl": ""
+          "photoUrl": "/members/villate-martine.jpg"
         },
         {
-          "name": "Name to add",
+          "name": "Louiza Bouzidi",
           "role": "Treasurer",
+          "photoUrl": "/members/bouzidi-louiza.jpg"
+        },
+        {
+          "name": "Nadia Boukhelifa",
+          "role": "Board member",
           "photoUrl": ""
         },
         {
-          "name": "Name to add",
-          "role": "Communication",
+          "name": "Michel Bouchet",
+          "role": "Board member",
           "photoUrl": ""
         },
         {
-          "name": "Name to add",
-          "role": "Memory and transmission",
+          "name": "Didier Robert",
+          "role": "Board member",
           "photoUrl": ""
         }
       ]

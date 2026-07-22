@@ -45,13 +45,12 @@ export class ScrollToTopComponent implements OnInit, OnDestroy {
       this.checkScrollPosition();
     };
     window.addEventListener('scroll', this.scrollListener, { passive: true });
-    // Vérifier la position initiale
     this.checkScrollPosition();
   }
 
   checkScrollPosition(): void {
     const scrollTop = window.scrollY || document.documentElement.scrollTop;
-    this.showButton = scrollTop > 300; // Afficher après 300px de scroll
+    this.showButton = scrollTop > 300;
   }
 
   scrollToTop(): void {

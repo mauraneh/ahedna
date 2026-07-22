@@ -181,18 +181,6 @@ export class HomeComponent implements OnInit {
     return name || member.role;
   }
 
-  getMemberInitials(member: HomeTeamMember): string {
-    const source = this.getMemberDisplayName(member);
-    const letters = source
-      .split(/\s+/)
-      .slice(0, 2)
-      .map((chunk) => chunk.charAt(0))
-      .join('')
-      .toUpperCase();
-
-    return letters || 'AH';
-  }
-
   scrollTeamCarousel(track: HTMLElement, direction: number): void {
     const cardWidth = track.querySelector<HTMLElement>('.team-polaroid')?.offsetWidth ?? 280;
     const styles = window.getComputedStyle(track);

@@ -3,6 +3,8 @@
 
     <app-navbar></app-navbar>
 
+    <main id="main-content">
+
     <div class="site-hero site-public-hero">
       <div class="site-hero-nav"></div>
       <div class="site-hero-content">
@@ -141,10 +143,10 @@
               }
 
               @if (participationError) {
-                <div class="site-state-box site-state-box-error">{{ t(participationError) }}</div>
+                <div class="site-state-box site-state-box-error" role="alert">{{ t(participationError) }}</div>
               }
               @if (participationMessage) {
-                <div class="site-state-box site-state-box-success">{{ t(participationMessage) }}</div>
+                <div class="site-state-box site-state-box-success" role="status">{{ t(participationMessage) }}</div>
               }
 
               <div class="event-modal-actions">
@@ -194,6 +196,8 @@
         </section>
       </div>
     }
+
+    </main>
 
     <app-scroll-to-top></app-scroll-to-top>
   </div>

@@ -864,23 +864,15 @@ a.news-source-inline:hover {
   padding: 1.5rem;
 }
 
-.team-placeholder-logo {
-  width: 3rem;
-  height: 3rem;
-  object-fit: contain;
-  opacity: 0.6;
-}
-
-.team-initials {
-  margin-top: 0.65rem;
-  color: var(--brand-red);
-  font-family: var(--site-sans-font);
-  font-size: 1.1rem;
-  font-weight: 900;
+.team-placeholder-icon {
+  width: 45%;
+  max-width: 4rem;
+  height: auto;
+  color: #b8ab98;
 }
 
 .team-caption {
-  padding: 1rem 1.1rem 1.1rem;
+  padding: 1rem 0.65rem 1.1rem;
 }
 
 .team-name {
@@ -895,11 +887,14 @@ a.news-source-inline:hover {
 .team-role {
   margin-top: 0.35rem;
   font-family: var(--site-sans-font);
-  font-size: 0.68rem;
+  font-size: 0.42rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0;
   text-transform: uppercase;
   color: #6a5444;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ─────────────────────────────────────────
@@ -1381,7 +1376,7 @@ a.news-source-inline:hover {
 }
 
 .team-polaroid {
-  flex: 0 0 clamp(13.75rem, 22vw, 16rem);
+  flex: 0 0 clamp(8.5rem, 13vw, 10rem);
   scroll-snap-align: start;
   border-radius: 0.65rem;
 }
@@ -1467,7 +1462,7 @@ a.news-source-inline:hover {
   }
 
   .team-polaroid {
-    flex-basis: clamp(13rem, 42vw, 15.5rem);
+    flex-basis: clamp(8rem, 26vw, 9.5rem);
   }
 }
 
@@ -1667,6 +1662,6 @@ a.news-source-inline:hover {
   }
 
   .team-polaroid {
-    flex-basis: min(78vw, 17rem);
+    flex-basis: min(38vw, 10rem);
   }
 }

@@ -2,6 +2,8 @@
   <div class="site-page paper-texture relative overflow-hidden admin-page">
     <app-navbar></app-navbar>
 
+    <main id="main-content">
+
     <div class="site-tool-shell site-tool-stack admin-page-shell">
       <div class="site-masthead-card site-tool-masthead-solid admin-page-banner">
         <div class="site-tool-masthead site-tool-masthead-split">
@@ -222,10 +224,10 @@
                 </div>
 
                 @if (newsError) {
-                  <div class="mb-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-red-800 font-serif">{{ newsError }}</div>
+                  <div class="mb-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-red-800 font-serif" role="alert">{{ newsError }}</div>
                 }
                 @if (newsFeedback) {
-                  <div class="mb-4 rounded-xl bg-green-50 border border-green-200 px-4 py-3 text-green-800 font-serif">{{ newsFeedback }}</div>
+                  <div class="mb-4 rounded-xl bg-green-50 border border-green-200 px-4 py-3 text-green-800 font-serif" role="status">{{ newsFeedback }}</div>
                 }
 
                 <form [formGroup]="newsForm" (ngSubmit)="saveNews()" class="space-y-4">
@@ -367,10 +369,10 @@
                   <p class="text-paper-700 font-serif mt-2 mb-6">{{ t('admin.gallery.createAlbumSubtitle') }}</p>
 
                   @if (galleryEventError) {
-                    <div class="mb-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-red-800 font-serif">{{ galleryEventError }}</div>
+                    <div class="mb-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-red-800 font-serif" role="alert">{{ galleryEventError }}</div>
                   }
                   @if (galleryEventFeedback) {
-                    <div class="mb-4 rounded-xl bg-green-50 border border-green-200 px-4 py-3 text-green-800 font-serif">{{ galleryEventFeedback }}</div>
+                    <div class="mb-4 rounded-xl bg-green-50 border border-green-200 px-4 py-3 text-green-800 font-serif" role="status">{{ galleryEventFeedback }}</div>
                   }
 
                   <form [formGroup]="galleryEventForm" (ngSubmit)="saveGalleryEvent()" class="space-y-4">
@@ -453,10 +455,10 @@
                   <p class="text-paper-700 font-serif mt-2 mb-6">{{ t('admin.gallery.addPhotoSubtitle') }}</p>
 
                   @if (galleryPhotoError) {
-                    <div class="mb-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-red-800 font-serif">{{ galleryPhotoError }}</div>
+                    <div class="mb-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-red-800 font-serif" role="alert">{{ galleryPhotoError }}</div>
                   }
                   @if (galleryPhotoFeedback) {
-                    <div class="mb-4 rounded-xl bg-green-50 border border-green-200 px-4 py-3 text-green-800 font-serif">{{ galleryPhotoFeedback }}</div>
+                    <div class="mb-4 rounded-xl bg-green-50 border border-green-200 px-4 py-3 text-green-800 font-serif" role="status">{{ galleryPhotoFeedback }}</div>
                   }
 
                   @if (loadingGalleryEvents) {
@@ -563,7 +565,7 @@
                   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     @for (photo of pendingPhotos; track photo.id) {
                       <div class="bg-paper-50/95 rounded-xl overflow-hidden border-2 border-paper-300/80 shadow-paper paper-texture">
-                        <img [src]="photo.photo_url" [alt]="photo.description" class="w-full h-48 object-cover">
+                        <img [src]="photo.photo_url" [alt]="photo.description || photo.event_title" class="w-full h-48 object-cover">
                         <div class="p-4">
                           <p class="text-xs uppercase tracking-[0.14em] text-paper-500 font-vintage mb-2">{{ photo.event_title }}</p>
                           <p class="text-sm text-paper-700 mb-2 font-serif">{{ photo.description }}</p>
@@ -597,10 +599,10 @@
                 <p class="text-paper-700 font-serif mt-2 mb-6">{{ t('admin.events.subtitle') }}</p>
 
                 @if (eventError) {
-                  <div class="mb-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-red-800 font-serif">{{ eventError }}</div>
+                  <div class="mb-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-red-800 font-serif" role="alert">{{ eventError }}</div>
                 }
                 @if (eventFeedback) {
-                  <div class="mb-4 rounded-xl bg-green-50 border border-green-200 px-4 py-3 text-green-800 font-serif">{{ eventFeedback }}</div>
+                  <div class="mb-4 rounded-xl bg-green-50 border border-green-200 px-4 py-3 text-green-800 font-serif" role="status">{{ eventFeedback }}</div>
                 }
 
                 <form [formGroup]="eventForm" (ngSubmit)="saveEvent()" class="space-y-4">
@@ -740,6 +742,8 @@
       </div>
     </div>
     </div>
+
+    </main>
 
     <app-scroll-to-top></app-scroll-to-top>
   </div>

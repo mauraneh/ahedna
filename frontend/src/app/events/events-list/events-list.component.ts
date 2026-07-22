@@ -1,15 +1,17 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { NavbarComponent } from '../../core/components/navbar/navbar.component';
 import { ScrollToTopComponent } from '../../core/components/scroll-to-top/scroll-to-top.component';
 import { AuthService } from '../../core/services/auth.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { MediaUploadService } from '../../core/services/media-upload.service';
+import { SeoService } from '../../core/services/seo.service';
 
 interface Event {
   id: string;
@@ -45,8 +47,12 @@ export class EventsListComponent implements OnInit {
   private mediaUpload = inject(MediaUploadService);
   private sanitizer = inject(DomSanitizer);
   private transloco = inject(TranslocoService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private seoService = inject(SeoService);
+  private destroyRef = inject(DestroyRef);
   authService = inject(AuthService);
-  
+
   events: Event[] = [];
   loading = true;
   filterType: 'upcoming' | 'past' = 'upcoming';
@@ -63,6 +69,20 @@ export class EventsListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadEvents();
+
+    this.route.queryParamMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((params) => {
+        const id = params.get('id');
+
+        if (id) {
+          this.openEventById(id);
+        } else {
+          this.selectedEvent = null;
+          this.participationMessage = '';
+          this.participationError = '';
+        }
+      });
   }
 
   loadEvents(): void {
@@ -98,9 +118,11 @@ export class EventsListComponent implements OnInit {
   }
 
   openEvent(event: Event): void {
-    this.selectedEvent = event;
-    this.participationMessage = '';
-    this.participationError = '';
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { id: event.id },
+      queryParamsHandling: 'merge',
+    });
   }
 
   closeEvent(): void {
@@ -108,9 +130,48 @@ export class EventsListComponent implements OnInit {
       return;
     }
 
-    this.selectedEvent = null;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { id: null },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  private openEventById(id: string): void {
+    const existing = this.events.find((item) => item.id === id);
+
+    if (existing) {
+      this.applyEventSelection(existing);
+      return;
+    }
+
+    this.http.get<{ event: Event }>(`${environment.apiUrl}/events/${id}`).subscribe({
+      next: (response) => this.applyEventSelection(response.event),
+      error: () => {
+        this.selectedEvent = null;
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { id: null },
+          queryParamsHandling: 'merge',
+        });
+      },
+    });
+  }
+
+  private applyEventSelection(event: Event): void {
+    this.selectedEvent = event;
     this.participationMessage = '';
     this.participationError = '';
+    this.seoService.override({
+      title: `${event.title} - AHEDNA`,
+      description: this.buildEventSeoSummary(event),
+      image: this.getEventImageUrl(event.image_url) || undefined,
+    });
+  }
+
+  private buildEventSeoSummary(event: Event): string {
+    const cleaned = (event.description || '').replace(/\s+/g, ' ').trim();
+    return cleaned.length > 155 ? `${cleaned.slice(0, 155).trim()}…` : cleaned;
   }
 
   setParticipation(status: 'attending' | 'declined'): void {

@@ -1,9 +1,6 @@
-// PostgreSQL Database Connection
 const { Pool } = require('pg');
 
-function createPoolConfig() {
-  const databaseUrl = process.env.DATABASE_URL;
-
+function createPoolConfig(databaseUrl = process.env.DATABASE_URL) {
   if (!databaseUrl) {
     throw new Error('DATABASE_URL is required');
   }
@@ -40,14 +37,33 @@ function createPoolConfig() {
 
 const pool = new Pool(createPoolConfig());
 
-// Initialize database schema
+// Retries once on top of initDatabaseOnce(): concurrent first-time calls (e.g. several
+// serverless instances cold-starting at once) can race on the "IF NOT EXISTS" catalog
+// checks below, since Postgres doesn't guarantee those checks are atomic across
+// concurrent transactions.
 async function initDatabase() {
+  try {
+    await initDatabaseOnce();
+  } catch (error) {
+    if (isConcurrentInitializationRace(error)) {
+      await initDatabaseOnce();
+      return;
+    }
+
+    throw error;
+  }
+}
+
+function isConcurrentInitializationRace(error) {
+  return error?.code === '23505' && typeof error.table === 'string' && error.table.startsWith('pg_');
+}
+
+async function initDatabaseOnce() {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
     await client.query('CREATE EXTENSION IF NOT EXISTS "pgcrypto";');
 
-    // Create tables
     await client.query(`
       CREATE TABLE IF NOT EXISTS users (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -223,7 +239,6 @@ async function initDatabase() {
       );
     `);
 
-    // Create indexes
     await client.query('CREATE INDEX IF NOT EXISTS idx_news_published ON news(published);');
     await client.query('CREATE INDEX IF NOT EXISTS idx_events_date ON events(event_date);');
     await client.query('CREATE INDEX IF NOT EXISTS idx_events_gallery_enabled ON events(gallery_enabled, event_date);');
@@ -285,4 +300,7 @@ module.exports = {
   pool,
   initDatabase,
   checkDatabaseHealth,
+  // Exported for direct unit testing, independent of the live connection pool.
+  createPoolConfig,
+  isConcurrentInitializationRace,
 };
