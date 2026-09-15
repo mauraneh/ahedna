@@ -137,7 +137,7 @@ describe('HomeComponent', () => {
     expect(fixture.componentInstance.pressNewsCards[0].sourceLabel).toBe('lemonde.fr');
   });
 
-  it('builds event cards with a fallback image when the event has none', () => {
+  it('leaves the event card without an image rather than borrowing an unrelated one', () => {
     const { fixture, httpMock } = createComponent();
     fixture.detectChanges();
 
@@ -156,7 +156,7 @@ describe('HomeComponent', () => {
 
     const component = fixture.componentInstance;
     expect(component.eventCards.length).toBe(1);
-    expect(component.eventCards[0].imageUrl).toBe('/memory.jpg');
+    expect(component.eventCards[0].imageUrl).toBe('');
     expect(component.eventCards[0].isPdf).toBe(false);
     expect(component.eventCards[0].body.length).toBeLessThanOrEqual(144);
   });

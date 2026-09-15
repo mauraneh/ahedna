@@ -160,8 +160,9 @@
 
 .gallery-event-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 17rem));
+  justify-content: start;
+  gap: 1.25rem;
   margin-top: 1.4rem;
 }
 
@@ -173,7 +174,7 @@
 }
 
 .gallery-photo-media {
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
 }
 
@@ -215,5 +216,16 @@
   .gallery-event-summary {
     min-width: 0;
     text-align: left;
+  }
+
+  .gallery-event-grid {
+    grid-template-columns: repeat(auto-fill, minmax(12rem, 16rem));
+  }
+}
+
+@media (max-width: 480px) {
+  .gallery-event-grid {
+    grid-template-columns: minmax(0, 18rem);
+    justify-content: center;
   }
 }

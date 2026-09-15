@@ -88,7 +88,7 @@
         "yearEnd": 1956,
         "media": [
           {
-            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Harki-j.jpg",
+            "url": "/images/history/harki-j.webp",
             "alt": "Jeune harki photographié en Algérie pendant la guerre d'Algérie",
             "caption": "Un jeune harki photographié en Algérie pendant la guerre d'Algérie.",
             "credit": "Poussin jean / Wikimedia Commons",
@@ -109,7 +109,7 @@
         "yearEnd": 1960,
         "media": [
           {
-            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Harki-ag.jpg",
+            "url": "/images/history/harki-ag.webp",
             "alt": "Portrait d'un harki vétéran de 39-45 pendant la guerre d'Algérie",
             "caption": "Portrait d'un harki vétéran de 39-45 pendant la guerre d'Algérie.",
             "credit": "Poussin jean / Wikimedia Commons",
@@ -130,7 +130,7 @@
         "yearEnd": 1962,
         "media": [
           {
-            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/%C3%89vian%20Accords.jpg",
+            "url": "/images/history/evian-accords.webp",
             "alt": "Délégation du FLN lors des accords d'Évian en 1962",
             "caption": "La délégation du FLN lors des négociations des accords d'Évian en 1962.",
             "credit": "UtCon Collection / Wikimedia Commons",
@@ -151,7 +151,7 @@
         "yearEnd": 1975,
         "media": [
           {
-            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Camps%20de%20Rivesaltes%2016-05%20MH-PO%206797.jpg",
+            "url": "/images/history/camps-de-rivesaltes-16-05-mh-po-6797.webp",
             "alt": "Entrée du camp de Rivesaltes et du mémorial",
             "caption": "Entrée du camp de Rivesaltes et du mémorial, lieu central de la mémoire de l'exil.",
             "credit": "Jebulon / Wikimedia Commons",
@@ -162,7 +162,7 @@
             "orientation": "landscape"
           },
           {
-            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Hameau%20de%20forestage%20montmeyan.jpg",
+            "url": "/images/history/hameau-de-forestage-montmeyan.webp",
             "alt": "Ancien logement du hameau de forestage de Montmeyan",
             "caption": "Un ancien logement du hameau de forestage de Montmeyan, autre forme d'installation durable en France.",
             "credit": "Faqscl / Wikimedia Commons",
@@ -183,7 +183,7 @@
         "yearEnd": 2000,
         "media": [
           {
-            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Carte-combattant%20pour%20les%20Harkis.jpg",
+            "url": "/images/history/carte-combattant-pour-les-harkis.webp",
             "alt": "Carte du combattant pour les harkis",
             "caption": "Carte du combattant liée aux harkis, symbole concret d'une reconnaissance encore tardive et partielle.",
             "credit": "Poussin jean / Wikimedia Commons",
@@ -204,7 +204,7 @@
         "yearEnd": 2012,
         "media": [
           {
-            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/C%C3%A9r%C3%A9monie%20d%27hommage%20aux%20Harkis%20Toulon%20IX-2006.jpg",
+            "url": "/images/history/ceremonie-d-hommage-aux-harkis-toulon-ix-2006.webp",
             "alt": "Cérémonie d'hommage aux harkis à Toulon en 2006",
             "caption": "Cérémonie d'hommage aux harkis à Toulon, illustration de l'inscription progressive dans les commémorations officielles.",
             "credit": "Aussie Oc / Wikimedia Commons",
@@ -215,7 +215,7 @@
             "orientation": "landscape"
           },
           {
-            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Saint-Pons-de-Thomieres%20Stele%20des%20Harkis.JPG",
+            "url": "/images/history/saint-pons-de-thomieres-stele-des-harkis.webp",
             "alt": "Stèle des harkis à Saint-Pons-de-Thomières",
             "caption": "La stèle des harkis à Saint-Pons-de-Thomières rappelle l'ancrage de cette mémoire dans l'espace public.",
             "credit": "Fagairolles 34 / Wikimedia Commons",
@@ -236,7 +236,7 @@
         "yearEnd": 2025,
         "media": [
           {
-            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Journ%C3%A9e%20hommage%20harkis%20Reims%201200567.jpg",
+            "url": "/images/history/journee-hommage-harkis-reims-1200567.webp",
             "alt": "Journée nationale d'hommage aux harkis à Reims",
             "caption": "Journée nationale d'hommage aux harkis à Reims, reflet des transmissions publiques actuelles.",
             "credit": "Gérald Garitan / Wikimedia Commons",
@@ -247,7 +247,7 @@
             "orientation": "landscape"
           },
           {
-            "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Rivesaltes%20Camp%20Memorial%20-%20Temporary%20exhibition%20-%20Treize%20Chibanis%20harkis%20-%20Serge%20Vollin%20-%20Fatima%20Besnaci-Lancou%20-%20Poster.jpg",
+            "url": "/images/history/rivesaltes-camp-memorial-temporary-exhibition-treize-chibani.webp",
             "alt": "Affiche de l'exposition Treize chibanis harkis au mémorial de Rivesaltes",
             "caption": "Affiche de l'exposition « Treize chibanis harkis » au mémorial de Rivesaltes, témoin du travail actuel de transmission.",
             "credit": "Ji-Elle / Wikimedia Commons",
@@ -325,7 +325,7 @@
       "body2": "Nous relions les récits familiaux, les archives, les commémorations et les rencontres associatives pour rendre cette mémoire visible, accessible et vivante.",
       "cta": "Découvrir notre histoire",
       "visual": {
-        "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Journ%C3%A9e%20hommage%20harkis%20Reims%201200559.jpg",
+        "url": "/images/history/journee-hommage-harkis-reims-1200559.webp",
         "alt": "Participants a une journee d'hommage aux harkis, dans un esprit de transmission entre generations",
         "sourceUrl": "https://commons.wikimedia.org/wiki/File:Journ%C3%A9e_hommage_harkis_Reims_1200559.jpg",
         "sourceLabel": "Journee d'hommage aux harkis, Reims, 2021"
@@ -399,7 +399,7 @@
     },
     "gallery": [
       {
-        "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Harki-j.jpg",
+        "url": "/images/history/harki-j.webp",
         "alt": "Jeune harki photographié en Algérie pendant la guerre d'Algérie",
         "title": "Archives",
         "caption": "L'engagement des harkis au cœur de la guerre d'Algérie.",
@@ -407,7 +407,7 @@
         "sourceLabel": "Jeune harki en Algérie, été 1961"
       },
       {
-        "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Camps%20de%20Rivesaltes%2016-05%20MH-PO%206797.jpg",
+        "url": "/images/history/camps-de-rivesaltes-16-05-mh-po-6797.webp",
         "alt": "Entrée du camp de Rivesaltes et du mémorial",
         "title": "Exil",
         "caption": "Les camps et les lieux de mémoire racontent l'après-1962.",
@@ -415,7 +415,7 @@
         "sourceLabel": "Camp de Rivesaltes et mémorial"
       },
       {
-        "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Journ%C3%A9e%20hommage%20harkis%20Reims%201200567.jpg",
+        "url": "/images/history/journee-hommage-harkis-reims-1200567.webp",
         "alt": "Journée nationale d'hommage aux harkis à Reims",
         "title": "Transmission",
         "caption": "Une mémoire encore portée publiquement aujourd'hui.",
@@ -429,7 +429,7 @@
       "body": "Entre la Dordogne, la Nouvelle-Aquitaine et les grands lieux de mémoire harkie, l'AHEDNA relie les parcours familiaux, les commémorations, les archives et la vie associative pour donner une place visible et durable à cette histoire.",
       "actionLabel": "Explorer la frise historique",
       "visual": {
-        "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Journ%C3%A9e%20hommage%20harkis%20Reims%201200567.jpg",
+        "url": "/images/history/journee-hommage-harkis-reims-1200567.webp",
         "alt": "Journée nationale d'hommage aux harkis à Reims",
         "sourceUrl": "https://commons.wikimedia.org/wiki/File:Journ%C3%A9e_hommage_harkis_Reims_1200567.jpg",
         "sourceLabel": "Journée nationale d'hommage aux harkis, Reims, 2021"

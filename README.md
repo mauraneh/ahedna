@@ -37,6 +37,17 @@ cd frontend && yarn install && yarn start
 
 ## Verification
 
+Les tests backend ecrivent en base : ils utilisent une base dediee, jamais celle de `.env`.
+A faire une fois :
+
+```bash
+createdb ahedna_test
+cp .env.test.example .env.test   # puis ajuster DATABASE_URL si besoin
+```
+
+`backend/tests/setup-env.js` charge `.env.test` avec `override: true` : un `DATABASE_URL`
+herite du shell ou du conteneur Docker ne peut pas prendre le dessus.
+
 ```bash
 cd backend && yarn lint:backend && yarn test:backend
 cd frontend && yarn test:ci && yarn build

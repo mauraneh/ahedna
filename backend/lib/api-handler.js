@@ -112,8 +112,7 @@ function isOriginAllowed(origin) {
   return allowedOrigins.includes(origin);
 }
 
-function buildCorsHeaders(request) {
-  const origin = request.headers.get('origin');
+function buildCorsHeadersForOrigin(origin) {
   const headers = {
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
@@ -125,6 +124,10 @@ function buildCorsHeaders(request) {
   }
 
   return headers;
+}
+
+function buildCorsHeaders(request) {
+  return buildCorsHeadersForOrigin(request.headers.get('origin'));
 }
 
 function getCorsRejectionResponse(request, corsHeaders) {
@@ -358,13 +361,6 @@ function getSafeExternalUrl(value, baseUrl = undefined) {
   }
 }
 
-function removeGeneratedExternalImages(rows) {
-  // Images scraped or fed from external sources (Google Actualités, Bing, GDELT) are
-  // unreliable in practice (broken links, mismatched illustrations), so externally
-  // sourced articles are never shown with an image, regardless of what is stored.
-  return rows.map((row) => (row.source_url ? { ...row, image_url: null } : row));
-}
-
 function getHtmlAttribute(tag, attributeName) {
   const match = tag.match(
     new RegExp(`\\s${attributeName}=["']([^"']+)["']`, 'i')
@@ -487,6 +483,16 @@ async function fetchArticleImageUrl(sourceUrl) {
 }
 
 async function withExternalArticleImage(article, shouldFetchSourceImage = true) {
+  // Aggregator links (news.google.com, bing.com) never resolve server-side to the
+  // publisher page: both the feed thumbnail and the og:image found there belong to the
+  // aggregator, so every article would end up with the same logo.
+  if (isNewsAggregatorUrl(article.sourceUrl)) {
+    return {
+      ...article,
+      imageUrl: null,
+    };
+  }
+
   const normalizedImageUrl = getSafeExternalUrl(article.imageUrl, article.sourceUrl);
 
   if (normalizedImageUrl) {
@@ -1082,13 +1088,11 @@ async function handleGet(request) {
 
       try {
         const result = await pool.query(query, params);
-        rows = removeGeneratedExternalImages(filterNewsRows(result.rows, filters));
+        rows = filterNewsRows(result.rows, filters);
       } catch (error) {
         if (shouldCompleteWithPublicNews) {
           try {
-            const publicRows = removeGeneratedExternalImages(
-              filterNewsRows(await getCachedPublicNewsRows(30), filters)
-            );
+            const publicRows = filterNewsRows(await getCachedPublicNewsRows(30), filters);
             return jsonResponse({ news: publicRows }, { headers: corsHeaders });
           } catch {
             throw error;
@@ -1100,9 +1104,7 @@ async function handleGet(request) {
 
       if (shouldCompleteWithPublicNews) {
         try {
-          const publicRows = removeGeneratedExternalImages(
-            filterNewsRows(await getCachedPublicNewsRows(30), filters)
-          );
+          const publicRows = filterNewsRows(await getCachedPublicNewsRows(30), filters);
           return jsonResponse(
             { news: mergeNewsRows(rows, publicRows, 30) },
             { headers: corsHeaders }
@@ -1129,7 +1131,7 @@ async function handleGet(request) {
         return jsonResponse({ error: 'News not found' }, { status: 404, headers: corsHeaders });
       }
 
-      const [news] = removeGeneratedExternalImages(result.rows);
+      const [news] = result.rows;
       if (!news.published) {
         const authUser = getOptionalUser(request);
         const canReadDraft =
@@ -1633,9 +1635,7 @@ async function handlePost(request) {
             article.excerpt,
             authResult.user.id,
             published,
-            // Scraped/fed images from external sources are unreliable, so imported
-            // articles are never stored with one (see removeGeneratedExternalImages).
-            null,
+            article.imageUrl || null,
             article.sourceUrl,
             article.sourceName,
             article.publishedAt,
@@ -2577,7 +2577,7 @@ module.exports = {
   decodeXmlEntities,
   stripHtml,
   isNewsAggregatorUrl,
-  removeGeneratedExternalImages,
+  buildCorsHeadersForOrigin,
   getGdeltDate,
   normalizeString,
   normalizeEmail,

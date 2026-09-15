@@ -132,9 +132,10 @@ test('aggregates, de-duplicates and filters public news across all three provide
   const importedFromExemplePresse = result.body.imported.find(
     (item) => item.source_url === sharedUrl
   );
-  // Fed images (here, the RSS <media:thumbnail>) are unreliable enough that imported
-  // external articles are never persisted with one — see removeGeneratedExternalImages.
-  assert.equal(importedFromExemplePresse.image_url, null);
+  assert.equal(
+    importedFromExemplePresse.image_url,
+    'https://www.exemple-presse.fr/img/harkis.jpg'
+  );
 
   // Filter by a run-unique keyword so this assertion stays correct regardless of how many
   // other news rows already exist (the public feed caps results, unrelated older rows must
@@ -240,7 +241,7 @@ test('returns a 502 when every provider fails', async () => {
   assert.match(result.body.error, /Impossible de recuperer les articles publics/);
 });
 
-test('scrapes the article page for an image when the feed provides none, but still never persists it', async () => {
+test('scrapes the article page for an image when the feed provides none', async () => {
   const admin = await registerAdmin('aggregation-image-scrape');
   const sourceUrl = 'https://www.exemple-presse.fr/harkis-sans-image-' + Date.now();
   const item = `
@@ -284,6 +285,51 @@ test('scrapes the article page for an image when the feed provides none, but sti
 
   assert.equal(result.status, 200);
   assert.equal(result.body.imported.length, 1);
-  // The scrape (mocked above) succeeds, but the result is still discarded at persistence time.
+  assert.equal(
+    result.body.imported[0].image_url,
+    'https://www.exemple-presse.fr/img/scraped.jpg'
+  );
+});
+
+test('never keeps an image for articles that only resolve to an aggregator redirect', async () => {
+  const admin = await registerAdmin('aggregation-aggregator-image');
+  const runToken = `Agregateur${Date.now()}`;
+  const aggregatorUrl = 'https://news.google.com/rss/articles/' + Date.now();
+  const item = `
+    <item>
+      <title>Hommage aux harkis ${runToken}</title>
+      <link>${aggregatorUrl}</link>
+      <pubDate>Fri, 08 Jan 2027 10:00:00 GMT</pubDate>
+      <description>Un hommage rendu aux harkis.</description>
+      <source url="https://news.google.com">Presse Locale</source>
+      <media:thumbnail url="https://lh3.googleusercontent.com/logo-google-news"/>
+    </item>
+  `;
+
+  global.fetch = async (input) => {
+    const url = typeof input === 'string' ? input : input.toString();
+
+    if (url.includes('news.google.com/rss/search')) {
+      return xmlResponse(googleRssWith(item));
+    }
+
+    if (url.includes('bing.com')) {
+      return xmlResponse(bingRssWith(''));
+    }
+
+    if (url.includes('gdeltproject.org')) {
+      return jsonResponse({ articles: [] });
+    }
+
+    throw new Error(`Unexpected fetch call in test: ${url}`);
+  };
+
+  const result = await call('POST', 'news/import-public', {
+    token: admin,
+    body: { max_records: 12 },
+  });
+
+  assert.equal(result.status, 200);
+  assert.equal(result.body.imported.length, 1);
   assert.equal(result.body.imported[0].image_url, null);
 });

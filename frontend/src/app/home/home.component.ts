@@ -295,7 +295,7 @@ export class HomeComponent implements OnInit {
       return {
         title: item.title,
         body: this.truncateText(item.description, 140),
-        imageUrl: eventImageUrl || this.content?.memory.visual.url || '',
+        imageUrl: eventImageUrl,
         imageAlt: item.title,
         dateLabel: this.formatDate(item.event_date),
         location: item.location,

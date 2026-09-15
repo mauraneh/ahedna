@@ -10,7 +10,6 @@ const {
   decodeXmlEntities,
   stripHtml,
   isNewsAggregatorUrl,
-  removeGeneratedExternalImages,
   getGdeltDate,
   normalizeString,
   normalizeEmail,
@@ -84,18 +83,6 @@ test('getGdeltDate parses the compact GDELT timestamp format', () => {
   assert.equal(getGdeltDate('20260427101500'), '2026-04-27T10:15:00Z');
   assert.equal(getGdeltDate('not-a-date'), null);
   assert.equal(getGdeltDate(null), null);
-});
-
-test('removeGeneratedExternalImages strips the image from externally sourced rows only', () => {
-  const rows = [
-    { id: '1', source_url: 'https://www.lemonde.fr/a', image_url: 'https://www.lemonde.fr/a.jpg' },
-    { id: '2', source_url: null, image_url: '/api/uploads/images/local.png' },
-  ];
-
-  const result = removeGeneratedExternalImages(rows);
-
-  assert.equal(result[0].image_url, null);
-  assert.equal(result[1].image_url, '/api/uploads/images/local.png');
 });
 
 test('normalizeString trims, bounds the length and rejects non-strings', () => {

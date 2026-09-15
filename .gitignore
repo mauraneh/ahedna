@@ -76,3 +76,4 @@ cms/media/
 RNCP/
 .env*.local
 .env*
+!.env.test.example

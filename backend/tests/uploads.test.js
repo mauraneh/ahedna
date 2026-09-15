@@ -212,3 +212,36 @@ test('getMimeType resolves every supported extension and defaults for unknown on
   assert.equal(getMimeType('document.pdf'), 'application/pdf');
   assert.equal(getMimeType('photo.txt'), 'application/octet-stream');
 });
+
+test('the dedicated upload routes answer with CORS headers', async () => {
+  process.env.CORS_ORIGINS = 'http://localhost:4200';
+
+  const { buildServer } = require('../server');
+  const { generateToken } = require('../lib/auth');
+  const server = buildServer();
+  const token = generateToken({ id: 'cors-test', email: 'cors@example.org', role: 'admin' });
+  const pngBase64 =
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+
+  for (const route of ['/api/uploads/images', '/api/uploads/event-media']) {
+    const response = await server.inject({
+      method: 'POST',
+      url: route,
+      headers: {
+        origin: 'http://localhost:4200',
+        authorization: `Bearer ${token}`,
+        'content-type': 'application/json',
+      },
+      payload: { file_name: 'cors.png', mime_type: 'image/png', data_base64: pngBase64 },
+    });
+
+    assert.equal(response.statusCode, 200);
+    // Without this header the browser drops the response and the upload fails with
+    // a status 0, even though the server answered 200.
+    assert.equal(response.headers['access-control-allow-origin'], 'http://localhost:4200');
+
+    createdFiles.add(path.resolve(__dirname, '..', response.json().url.replace('/api/', '')));
+  }
+
+  await server.close();
+});

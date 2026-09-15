@@ -21,6 +21,7 @@ const {
   handlePost,
   handlePut,
   handleDelete,
+  buildCorsHeadersForOrigin,
 } = require('./lib/api-handler');
 const { verifyToken } = require('./lib/auth');
 const { checkDatabaseHealth } = require('./lib/db');
@@ -219,6 +220,10 @@ function buildServer() {
   });
 
   fastify.post('/api/uploads/images', async (request, reply) => {
+    // These routes bypass dispatchApiRequest, so they must set the CORS headers
+    // themselves: the browser drops any cross-origin response without them.
+    reply.headers(buildCorsHeadersForOrigin(request.headers.origin));
+
     const authHeader = request.headers.authorization;
     const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
     const user = token ? verifyToken(token) : null;
@@ -242,6 +247,8 @@ function buildServer() {
   });
 
   fastify.post('/api/uploads/event-media', async (request, reply) => {
+    reply.headers(buildCorsHeadersForOrigin(request.headers.origin));
+
     const authHeader = request.headers.authorization;
     const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
     const user = token ? verifyToken(token) : null;
