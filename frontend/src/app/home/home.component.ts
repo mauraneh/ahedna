@@ -11,14 +11,17 @@ import { RouterLink } from '@angular/router';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { environment } from '../../environments/environment';
 import { NavbarComponent } from '../core/components/navbar/navbar.component';
+import { PdfThumbnailComponent } from '../core/components/pdf-thumbnail/pdf-thumbnail.component';
 import { ScrollToTopComponent } from '../core/components/scroll-to-top/scroll-to-top.component';
 import { I18nService } from '../core/services/i18n.service';
 import { MediaUploadService } from '../core/services/media-upload.service';
 
-type ShortcutIcon = 'history' | 'news' | 'events' | 'forum' | 'membership';
+type ShortcutIcon = 'history' | 'news' | 'events' | 'membership';
 
 interface HomeVisual {
   url: string;
+  srcset?: string;
+  sizes?: string;
   alt: string;
   sourceUrl?: string;
   sourceLabel?: string;
@@ -135,12 +138,13 @@ interface HomeEventCard {
   dateLabel: string;
   location: string;
   route: string;
+  isPdf: boolean;
 }
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, TranslocoDirective, NavbarComponent, ScrollToTopComponent],
+  imports: [CommonModule, RouterLink, TranslocoDirective, NavbarComponent, ScrollToTopComponent, PdfThumbnailComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
@@ -285,15 +289,20 @@ export class HomeComponent implements OnInit {
       return [];
     }
 
-    return this.apiEvents.slice(0, 3).map((item) => ({
-      title: item.title,
-      body: this.truncateText(item.description, 140),
-      imageUrl: this.mediaUpload.resolveMediaUrl(item.image_url) || this.content?.memory.visual.url || '',
-      imageAlt: item.title,
-      dateLabel: this.formatDate(item.event_date),
-      location: item.location,
-      route: '/evenements',
-    }));
+    return this.apiEvents.slice(0, 3).map((item) => {
+      const eventImageUrl = this.mediaUpload.resolveMediaUrl(item.image_url);
+
+      return {
+        title: item.title,
+        body: this.truncateText(item.description, 140),
+        imageUrl: eventImageUrl || this.content?.memory.visual.url || '',
+        imageAlt: item.title,
+        dateLabel: this.formatDate(item.event_date),
+        location: item.location,
+        route: '/evenements',
+        isPdf: this.mediaUpload.isPdfMedia(item.image_url),
+      };
+    });
   }
 
   private getNewsSummary(item: ApiNews): string {

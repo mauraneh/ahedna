@@ -34,6 +34,7 @@ class AuthServiceStub {
 class AddressAutocompleteServiceStub {
   searchResult: any = of([]);
   searchByPostalCodeResult: any = of([]);
+  citySearchResult: any = of([]);
 
   search() {
     return this.searchResult;
@@ -43,8 +44,16 @@ class AddressAutocompleteServiceStub {
     return this.searchByPostalCodeResult;
   }
 
+  searchCities() {
+    return this.citySearchResult;
+  }
+
   formatLocation(suggestion: any) {
     return suggestion.label;
+  }
+
+  formatCity(suggestion: any) {
+    return `${suggestion.city} (${suggestion.postalCode})`;
   }
 }
 
@@ -55,8 +64,20 @@ class MediaUploadServiceStub {
     return url || '';
   }
 
+  getMediaFileName(url?: string | null) {
+    return url?.split('/').pop() || '';
+  }
+
   uploadImage() {
     return this.uploadResult;
+  }
+
+  uploadEventMedia() {
+    return this.uploadResult;
+  }
+
+  isPdfMedia(url?: string | null) {
+    return Boolean(url && /\.pdf(?:[?#]|$)/i.test(url));
   }
 }
 
@@ -99,6 +120,36 @@ describe('ContentManagementComponent', () => {
     await initPromise;
 
     expect(fixture.componentInstance.activeTab).toBe('events');
+  });
+
+  it('shows the uploaded image on the event card', async () => {
+    const { fixture, httpMock } = createComponent({ tab: 'events' });
+
+    fixture.detectChanges();
+    await Promise.resolve();
+
+    httpMock.expectOne(`${environment.apiUrl}/news`).flush({ news: [] });
+    httpMock.expectOne(`${environment.apiUrl}/events`).flush({
+      events: [{
+        id: 'evt-image',
+        title: 'Rencontre à Périgueux',
+        description: 'Présentation de la rencontre',
+        event_date: '2026-09-20T10:30:00',
+        location: 'Périgueux (24000)',
+        image_url: '/api/uploads/event-media/rencontre.png',
+        type: 'upcoming',
+        price_amount: 0,
+        gallery_enabled: false,
+      }],
+    });
+    httpMock.expectOne(`${environment.apiUrl}/gallery/events`).flush({ events: [] });
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const cover = fixture.nativeElement.querySelector('.content-event-card-cover') as HTMLImageElement;
+    expect(cover).not.toBeNull();
+    expect(cover.getAttribute('src')).toBe('/api/uploads/event-media/rencontre.png');
+    expect(cover.getAttribute('alt')).toBe('Rencontre à Périgueux');
   });
 
   it('forces a non-admin author back to the news tab and skips advanced content', async () => {
@@ -272,7 +323,7 @@ describe('ContentManagementComponent', () => {
     const addressAutocomplete = TestBed.inject(
       AddressAutocompleteService
     ) as unknown as AddressAutocompleteServiceStub;
-    addressAutocomplete.searchResult = of([
+    addressAutocomplete.citySearchResult = of([
       { label: 'Périgueux, France', city: 'Périgueux', postalCode: '24000', kind: 'municipality' },
     ]);
 
@@ -313,6 +364,12 @@ describe('ContentManagementComponent', () => {
       price_amount: 0,
       payment_details: '',
     });
+    component.selectGalleryAlbumLocation({
+      label: 'Périgueux, 24000 Périgueux',
+      city: 'Périgueux',
+      postalCode: '24000',
+      kind: 'municipality',
+    } as any);
 
     component.saveGalleryAlbum();
 
@@ -438,6 +495,7 @@ describe('ContentManagementComponent', () => {
       id: 'evt-1',
       title: 'Avant',
       event_date: '2027-01-01T10:00:00.000Z',
+      location: 'Périgueux (24000)',
       type: 'upcoming',
     } as any);
 
@@ -466,6 +524,12 @@ describe('ContentManagementComponent', () => {
       price_amount: 0,
       payment_details: '',
     });
+    component.selectEventLocation({
+      label: 'Périgueux, 24000 Périgueux',
+      city: 'Périgueux',
+      postalCode: '24000',
+      kind: 'municipality',
+    } as any);
 
     component.saveEvent();
 
@@ -528,6 +592,7 @@ describe('ContentManagementComponent', () => {
       event_date: '2027-01-01T10:00:00.000Z',
       type: 'upcoming',
       gallery_enabled: true,
+      location: 'Périgueux (24000)',
       photo_count: 0,
       photos: [],
     } as any);
@@ -574,6 +639,12 @@ describe('ContentManagementComponent', () => {
       price_amount: 0,
       payment_details: '',
     });
+    component.selectGalleryAlbumLocation({
+      label: 'Périgueux, 24000 Périgueux',
+      city: 'Périgueux',
+      postalCode: '24000',
+      kind: 'municipality',
+    } as any);
 
     component.saveGalleryAlbum();
 
@@ -662,9 +733,40 @@ describe('ContentManagementComponent', () => {
 
     component.onEventImageSelected({ target: input } as unknown as Event);
     expect(component.eventForm.value.image_url).toBe('/api/uploads/images/photo.png');
+    expect(component.eventMediaFileName).toBe('photo.png');
 
     component.onGalleryAlbumImageSelected({ target: input } as unknown as Event);
     expect(component.galleryAlbumForm.value.image_url).toBe('/api/uploads/images/photo.png');
+  });
+
+  it('stores a selected PDF as the event document', () => {
+    const { fixture } = createComponent();
+    const mediaUpload = TestBed.inject(MediaUploadService) as unknown as MediaUploadServiceStub;
+    mediaUpload.uploadResult = of({ url: '/api/uploads/event-media/programme.pdf' });
+    const component = fixture.componentInstance;
+    const file = new File(['%PDF-1.4'], 'programme.pdf', { type: 'application/pdf' });
+    const input = document.createElement('input');
+    Object.defineProperty(input, 'files', { value: [file] });
+
+    component.onEventImageSelected({ target: input } as unknown as Event);
+
+    expect(component.eventForm.value.image_url).toBe('/api/uploads/event-media/programme.pdf');
+    expect(component.eventMediaFileName).toBe('programme.pdf');
+    expect(component.isPdfMedia(component.eventForm.value.image_url)).toBe(true);
+  });
+
+  it('removes the selected media from the event form', () => {
+    const { fixture } = createComponent();
+    const component = fixture.componentInstance;
+    component.eventForm.patchValue({ image_url: '/api/uploads/event-media/programme.pdf' });
+    component.eventImagePreview = '/api/uploads/event-media/programme.pdf';
+    component.eventMediaFileName = 'programme.pdf';
+
+    component.clearEventMedia();
+
+    expect(component.eventForm.value.image_url).toBe('');
+    expect(component.eventImagePreview).toBe('');
+    expect(component.eventMediaFileName).toBe('');
   });
 
   it('surfaces an upload error for the event and gallery album image inputs', () => {
@@ -684,17 +786,28 @@ describe('ContentManagementComponent', () => {
     expect(component.galleryFeedbackError).toBe('Upload broke');
   });
 
-  it('auto-selects the gallery album location when searching by a full postal code', () => {
+  it('lists official cities for a gallery postal code without accepting the raw code', () => {
     const { fixture } = createComponent();
     const addressAutocomplete = TestBed.inject(
       AddressAutocompleteService
     ) as unknown as AddressAutocompleteServiceStub;
-    addressAutocomplete.searchByPostalCodeResult = of([{ label: 'Périgueux (24000)' }]);
+    addressAutocomplete.citySearchResult = of([
+      {
+        label: 'Périgueux, 24000 Périgueux',
+        city: 'Périgueux',
+        postalCode: '24000',
+        kind: 'municipality',
+      },
+    ]);
 
     const component = fixture.componentInstance;
     component.galleryAlbumForm.patchValue({ location: '24000' });
     component.onGalleryAlbumLocationInput();
 
+    expect(component.galleryAlbumForm.value.location).toBe('24000');
+    expect(component.galleryAlbumLocationSuggestions.length).toBe(1);
+
+    component.selectGalleryAlbumLocation(component.galleryAlbumLocationSuggestions[0]);
     expect(component.galleryAlbumForm.value.location).toBe('Périgueux (24000)');
   });
 
@@ -703,7 +816,7 @@ describe('ContentManagementComponent', () => {
     const addressAutocomplete = TestBed.inject(
       AddressAutocompleteService
     ) as unknown as AddressAutocompleteServiceStub;
-    const searchSpy = spyOn(addressAutocomplete, 'search').and.callThrough();
+    const searchSpy = spyOn(addressAutocomplete, 'searchCities').and.callThrough();
 
     const component = fixture.componentInstance;
     component.eventForm.patchValue({ location: 'Pa' });
@@ -722,17 +835,21 @@ describe('ContentManagementComponent', () => {
       AddressAutocompleteService
     ) as unknown as AddressAutocompleteServiceStub;
     const staleResults = new Subject<any[]>();
-    addressAutocomplete.searchResult = staleResults.asObservable();
+    addressAutocomplete.citySearchResult = staleResults.asObservable();
 
     const component = fixture.componentInstance;
     component.eventForm.patchValue({ location: 'Perigueux' });
     component.onEventLocationInput();
 
-    addressAutocomplete.searchResult = of([{ label: 'Nouvelle-Aquitaine' }]);
+    addressAutocomplete.citySearchResult = of([
+      { label: 'Pérignac', city: 'Pérignac', postalCode: '17800', kind: 'municipality' },
+    ]);
     component.onEventLocationInput();
 
     staleResults.next([{ label: 'Résultat périmé' }]);
 
-    expect(component.eventLocationSuggestions).toEqual([{ label: 'Nouvelle-Aquitaine' } as any]);
+    expect(component.eventLocationSuggestions).toEqual([
+      { label: 'Pérignac', city: 'Pérignac', postalCode: '17800', kind: 'municipality' } as any,
+    ]);
   });
 });

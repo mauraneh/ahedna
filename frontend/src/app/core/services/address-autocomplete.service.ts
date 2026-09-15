@@ -22,12 +22,28 @@ interface GeoplatformCompletionResponse {
   results?: GeoplatformCompletionResult[];
 }
 
+interface GeoplatformMunicipalityProperties {
+  label?: string;
+  name?: string;
+  city?: string;
+  municipality?: string;
+  postcode?: string;
+  type?: string;
+}
+
+interface GeoplatformMunicipalityResponse {
+  features?: Array<{
+    properties?: GeoplatformMunicipalityProperties;
+  }>;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class AddressAutocompleteService {
   private http = inject(HttpClient);
   private readonly completionUrl = 'https://data.geopf.fr/geocodage/completion/';
+  private readonly municipalitySearchUrl = 'https://data.geopf.fr/geocodage/search/';
 
   search(text: string, postalCode?: string): Observable<AddressSuggestion[]> {
     const query = text.trim();
@@ -61,12 +77,34 @@ export class AddressAutocompleteService {
     return this.search(normalizedPostalCode, normalizedPostalCode);
   }
 
+  searchCities(text: string): Observable<AddressSuggestion[]> {
+    const query = text.trim();
+
+    if (query.length < 3) {
+      return of([]);
+    }
+
+    const params = new HttpParams()
+      .set('q', query)
+      .set('type', 'municipality')
+      .set('limit', '10');
+
+    return this.http.get<GeoplatformMunicipalityResponse>(this.municipalitySearchUrl, { params }).pipe(
+      map((response) => this.normalizeMunicipalitySuggestions(response.features || [])),
+      catchError(() => of([])),
+    );
+  }
+
   formatLocation(suggestion: AddressSuggestion): string {
     if (suggestion.kind === 'municipality') {
       return `${suggestion.postalCode} ${suggestion.city}`.trim();
     }
 
     return suggestion.label;
+  }
+
+  formatCity(suggestion: AddressSuggestion): string {
+    return `${suggestion.city} (${suggestion.postalCode})`;
   }
 
   private normalizeSuggestions(results: GeoplatformCompletionResult[]): AddressSuggestion[] {
@@ -94,6 +132,38 @@ export class AddressAutocompleteService {
         postalCode,
         kind: result.kind || 'address',
         street: result.street,
+      });
+
+      return suggestions;
+    }, []);
+  }
+
+  private normalizeMunicipalitySuggestions(
+    features: NonNullable<GeoplatformMunicipalityResponse['features']>
+  ): AddressSuggestion[] {
+    const seen = new Set<string>();
+
+    return features.reduce<AddressSuggestion[]>((suggestions, feature) => {
+      const properties = feature.properties;
+      const city = (properties?.city || properties?.municipality || properties?.name || '').trim();
+      const postalCode = (properties?.postcode || '').trim();
+
+      if (!city || !postalCode || properties?.type !== 'municipality') {
+        return suggestions;
+      }
+
+      const key = `${city}-${postalCode}`.toLocaleLowerCase('fr');
+
+      if (seen.has(key)) {
+        return suggestions;
+      }
+
+      seen.add(key);
+      suggestions.push({
+        label: (properties?.label || city).trim(),
+        city,
+        postalCode,
+        kind: 'municipality',
       });
 
       return suggestions;

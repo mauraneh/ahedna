@@ -11,6 +11,7 @@ import { AddressAutocompleteService, AddressSuggestion } from '../core/services/
 import { AuthService } from '../core/services/auth.service';
 import { I18nService } from '../core/services/i18n.service';
 import { MediaUploadService } from '../core/services/media-upload.service';
+import { PdfThumbnailComponent } from '../core/components/pdf-thumbnail/pdf-thumbnail.component';
 import { formatEuroPrice, toDateTimeInputValue } from '../core/utils/date-time';
 
 interface AdminStats {
@@ -21,7 +22,6 @@ interface AdminStats {
   published_news: number;
   events: number;
   upcoming_events: number;
-  pending_topics: number;
   pending_photos: number;
 }
 
@@ -90,7 +90,7 @@ interface PendingPhoto {
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule, TranslocoDirective, NavbarComponent, ScrollToTopComponent],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule, TranslocoDirective, NavbarComponent, ScrollToTopComponent, PdfThumbnailComponent],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
 })
@@ -103,11 +103,11 @@ export class AdminComponent implements OnInit {
   private mediaUpload = inject(MediaUploadService);
   authService = inject(AuthService);
 
-  activeTab = 'users';
+  activeTab = 'overview';
   tabs = [
+    { id: 'overview', labelKey: 'admin.tabs.overview' },
     { id: 'users', labelKey: 'admin.tabs.users' },
     { id: 'news', labelKey: 'admin.tabs.news' },
-    { id: 'forum', labelKey: 'admin.tabs.forum' },
     { id: 'gallery', labelKey: 'admin.tabs.gallery' },
     { id: 'events', labelKey: 'admin.tabs.events' }
   ];
@@ -120,7 +120,6 @@ export class AdminComponent implements OnInit {
     published_news: 0,
     events: 0,
     upcoming_events: 0,
-    pending_topics: 0,
     pending_photos: 0,
   };
 
@@ -133,6 +132,8 @@ export class AdminComponent implements OnInit {
   recentEvents: EventItem[] = [];
 
   newsItems: NewsItem[] = [];
+  activeNewsView: 'create' | 'list' = 'create';
+  readonly newsViews = ['create', 'list'] as const;
   loadingNews = true;
   savingNews = false;
   importingPublicNews = false;
@@ -142,25 +143,31 @@ export class AdminComponent implements OnInit {
   newsError = '';
   uploadingNewsImage = false;
   newsImagePreview = '';
-
-  pendingTopics: any[] = [];
-  loadingTopics = true;
+  newsImageFileName = '';
 
   pendingPhotos: PendingPhoto[] = [];
   loadingPhotos = true;
 
   galleryEvents: GalleryAlbum[] = [];
+  activeGalleryView: 'create' | 'albums' = 'create';
+  readonly galleryViews = ['create', 'albums'] as const;
   loadingGalleryEvents = true;
   savingGalleryEvent = false;
   galleryEventFeedback = '';
   galleryEventError = '';
   uploadingGalleryPhoto = false;
+  uploadingGalleryPhotoMedia = false;
   galleryPhotoFeedback = '';
   galleryPhotoError = '';
+  galleryPhotoFileName = '';
+  galleryPhotoPreview = '';
   uploadingGalleryEventImage = false;
   galleryEventImagePreview = '';
+  galleryEventImageFileName = '';
 
   events: EventItem[] = [];
+  activeEventView: 'create' | 'planned' = 'create';
+  readonly eventViews = ['create', 'planned'] as const;
   loadingEvents = true;
   savingEvent = false;
   uploadingEventImage = false;
@@ -169,10 +176,11 @@ export class AdminComponent implements OnInit {
   eventFeedback = '';
   eventError = '';
   eventImagePreview = '';
+  eventMediaFileName = '';
   eventLocationSuggestions: AddressSuggestion[] = [];
   galleryEventLocationSuggestions: AddressSuggestion[] = [];
-  private eventLocationConfirmed = true;
-  private galleryEventLocationConfirmed = true;
+  private eventLocationConfirmed = false;
+  private galleryEventLocationConfirmed = false;
   private eventLocationRequestId = 0;
   private galleryEventLocationRequestId = 0;
 
@@ -188,7 +196,7 @@ export class AdminComponent implements OnInit {
     title: ['', [Validators.required]],
     description: [''],
     event_date: ['', [Validators.required]],
-    location: [''],
+    location: ['', [Validators.required]],
     image_url: [''],
     type: ['upcoming', [Validators.required]],
     gallery_enabled: [false],
@@ -200,7 +208,7 @@ export class AdminComponent implements OnInit {
     title: ['', [Validators.required]],
     description: [''],
     event_date: ['', [Validators.required]],
-    location: [''],
+    location: ['', [Validators.required]],
     image_url: [''],
     type: ['upcoming', [Validators.required]],
     price_amount: [0],
@@ -213,11 +221,24 @@ export class AdminComponent implements OnInit {
     description: [''],
   });
 
+  onTabKeydown(event: KeyboardEvent, id: string): void {
+    const index = this.tabs.findIndex(tab => tab.id === id);
+    let next = index;
+    if (event.key === 'ArrowRight') next = (index + 1) % this.tabs.length;
+    else if (event.key === 'ArrowLeft') next = (index - 1 + this.tabs.length) % this.tabs.length;
+    else if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = this.tabs.length - 1;
+    else return;
+    event.preventDefault();
+    this.activeTab = this.tabs[next].id;
+    const list = (event.currentTarget as HTMLElement).closest('[role="tablist"]');
+    (list?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[next])?.focus();
+  }
+
   ngOnInit(): void {
     this.loadOverview();
     this.loadUsers();
     this.loadNews();
-    this.loadPendingTopics();
     this.loadPendingPhotos();
     this.loadEvents();
     this.loadGalleryEvents();
@@ -259,20 +280,6 @@ export class AdminComponent implements OnInit {
         error: () => {
           this.newsError = this.transloco.translate('admin.messages.loadNewsError');
           this.loadingNews = false;
-        }
-      });
-  }
-
-  loadPendingTopics(): void {
-    this.loadingTopics = true;
-    this.http.get<{ topics: any[] }>(`${environment.apiUrl}/forum/topics`)
-      .subscribe({
-        next: (response) => {
-          this.pendingTopics = response.topics.filter(topic => !topic.validated);
-          this.loadingTopics = false;
-        },
-        error: () => {
-          this.loadingTopics = false;
         }
       });
   }
@@ -362,6 +369,10 @@ export class AdminComponent implements OnInit {
   }
 
   saveNews(): void {
+    if (this.uploadingNewsImage) {
+      return;
+    }
+
     if (this.newsForm.invalid) {
       this.newsForm.markAllAsTouched();
       return;
@@ -379,6 +390,7 @@ export class AdminComponent implements OnInit {
       next: (response) => {
         this.newsFeedback = response.message;
         this.resetNewsForm();
+        this.activeNewsView = 'list';
         this.loadNews();
         this.loadOverview();
         this.savingNews = false;
@@ -414,6 +426,7 @@ export class AdminComponent implements OnInit {
 
   editNews(item: NewsItem): void {
     this.activeTab = 'news';
+    this.activeNewsView = 'create';
     this.editingNewsId = item.id;
     this.newsFeedback = '';
     this.newsError = '';
@@ -425,6 +438,20 @@ export class AdminComponent implements OnInit {
       published: item.published,
     });
     this.newsImagePreview = this.resolveMediaUrl(item.image_url);
+    this.newsImageFileName = this.mediaUpload.getMediaFileName(item.image_url);
+  }
+
+  setNewsView(view: 'create' | 'list'): void {
+    this.activeNewsView = view;
+  }
+
+  onNewsViewKeydown(event: KeyboardEvent, view: 'create' | 'list'): void {
+    this.selectWorkspaceView(event, view, this.newsViews, (next) => this.activeNewsView = next);
+  }
+
+  cancelNewsForm(): void {
+    this.resetNewsForm();
+    this.activeNewsView = 'list';
   }
 
   deleteNews(item: NewsItem): void {
@@ -461,9 +488,14 @@ export class AdminComponent implements OnInit {
       published: false,
     });
     this.newsImagePreview = '';
+    this.newsImageFileName = '';
   }
 
   saveGalleryEvent(): void {
+    if (this.uploadingGalleryEventImage) {
+      return;
+    }
+
     if (!this.ensureGalleryEventLocationIsConfirmed()) {
       return;
     }
@@ -484,6 +516,7 @@ export class AdminComponent implements OnInit {
       next: (response) => {
         this.galleryEventFeedback = response.message || this.transloco.translate('admin.gallery.messages.eventCreated');
         this.resetGalleryEventForm();
+        this.activeGalleryView = 'albums';
         this.galleryPhotoForm.patchValue({ event_id: response.event.id });
         this.loadEvents();
         this.loadGalleryEvents();
@@ -509,11 +542,29 @@ export class AdminComponent implements OnInit {
       payment_details: '',
     });
     this.galleryEventImagePreview = '';
-    this.galleryEventLocationConfirmed = true;
+    this.galleryEventImageFileName = '';
+    this.galleryEventLocationConfirmed = false;
     this.galleryEventLocationSuggestions = [];
   }
 
+  setGalleryView(view: 'create' | 'albums'): void {
+    this.activeGalleryView = view;
+  }
+
+  onGalleryViewKeydown(event: KeyboardEvent, view: 'create' | 'albums'): void {
+    this.selectWorkspaceView(event, view, this.galleryViews, (next) => this.activeGalleryView = next);
+  }
+
+  cancelGalleryEventForm(): void {
+    this.resetGalleryEventForm();
+    this.activeGalleryView = 'albums';
+  }
+
   uploadGalleryPhoto(): void {
+    if (this.uploadingGalleryPhotoMedia) {
+      return;
+    }
+
     if (this.galleryPhotoForm.invalid) {
       this.galleryPhotoForm.markAllAsTouched();
       return;
@@ -538,6 +589,8 @@ export class AdminComponent implements OnInit {
           photo_url: '',
           description: '',
         });
+        this.galleryPhotoFileName = '';
+        this.galleryPhotoPreview = '';
         this.loadGalleryEvents();
         this.loadPendingPhotos();
         this.loadOverview();
@@ -548,6 +601,41 @@ export class AdminComponent implements OnInit {
         this.uploadingGalleryPhoto = false;
       }
     });
+  }
+
+  onGalleryPhotoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    this.uploadingGalleryPhotoMedia = true;
+    this.galleryPhotoError = '';
+    const previousFileName = this.galleryPhotoFileName;
+    this.galleryPhotoFileName = file.name;
+
+    this.mediaUpload.uploadImage(file).subscribe({
+      next: ({ url }) => {
+        this.galleryPhotoForm.patchValue({ photo_url: url });
+        this.galleryPhotoPreview = this.resolveMediaUrl(url);
+        this.uploadingGalleryPhotoMedia = false;
+        input.value = '';
+      },
+      error: (error) => {
+        this.galleryPhotoFileName = previousFileName;
+        this.galleryPhotoError = error?.message || error?.error?.error || this.transloco.translate('admin.messages.uploadImageError');
+        this.uploadingGalleryPhotoMedia = false;
+        input.value = '';
+      }
+    });
+  }
+
+  clearGalleryPhoto(): void {
+    this.galleryPhotoForm.patchValue({ photo_url: '' });
+    this.galleryPhotoFileName = '';
+    this.galleryPhotoPreview = '';
   }
 
   openGalleryEvent(item: GalleryAlbum): void {
@@ -575,6 +663,8 @@ export class AdminComponent implements OnInit {
 
     this.uploadingGalleryEventImage = true;
     this.galleryEventError = '';
+    const previousFileName = this.galleryEventImageFileName;
+    this.galleryEventImageFileName = file.name;
 
     this.mediaUpload.uploadImage(file).subscribe({
       next: ({ url }) => {
@@ -584,6 +674,7 @@ export class AdminComponent implements OnInit {
         input.value = '';
       },
       error: (error) => {
+        this.galleryEventImageFileName = previousFileName;
         this.galleryEventError = error?.message || error?.error?.error || this.transloco.translate('admin.messages.uploadImageError');
         this.uploadingGalleryEventImage = false;
         input.value = '';
@@ -591,7 +682,17 @@ export class AdminComponent implements OnInit {
     });
   }
 
+  clearGalleryEventImage(): void {
+    this.galleryEventForm.patchValue({ image_url: '' });
+    this.galleryEventImagePreview = '';
+    this.galleryEventImageFileName = '';
+  }
+
   saveEvent(): void {
+    if (this.uploadingEventImage) {
+      return;
+    }
+
     if (!this.ensureEventLocationIsConfirmed()) {
       return;
     }
@@ -613,6 +714,7 @@ export class AdminComponent implements OnInit {
       next: (response) => {
         this.eventFeedback = response.message;
         this.resetEventForm();
+        this.activeEventView = 'planned';
         this.loadEvents();
         this.loadGalleryEvents();
         this.loadOverview();
@@ -627,6 +729,7 @@ export class AdminComponent implements OnInit {
 
   editEvent(item: EventItem): void {
     this.activeTab = 'events';
+    this.activeEventView = 'create';
     this.editingEventId = item.id;
     this.eventFeedback = '';
     this.eventError = '';
@@ -642,8 +745,34 @@ export class AdminComponent implements OnInit {
       payment_details: item.payment_details || '',
     });
     this.eventImagePreview = this.resolveMediaUrl(item.image_url);
+    this.eventMediaFileName = this.mediaUpload.getMediaFileName(item.image_url);
     this.eventLocationConfirmed = true;
     this.eventLocationSuggestions = [];
+  }
+
+  setEventView(view: 'create' | 'planned'): void {
+    this.activeEventView = view;
+  }
+
+  onEventViewKeydown(event: KeyboardEvent, view: 'create' | 'planned'): void {
+    const index = this.eventViews.indexOf(view);
+    let next = index;
+
+    if (event.key === 'ArrowRight') next = (index + 1) % this.eventViews.length;
+    else if (event.key === 'ArrowLeft') next = (index - 1 + this.eventViews.length) % this.eventViews.length;
+    else if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = this.eventViews.length - 1;
+    else return;
+
+    event.preventDefault();
+    this.activeEventView = this.eventViews[next];
+    const tabList = (event.currentTarget as HTMLElement).closest('[role="tablist"]');
+    tabList?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[next]?.focus();
+  }
+
+  cancelEventForm(): void {
+    this.resetEventForm();
+    this.activeEventView = 'planned';
   }
 
   deleteEvent(item: EventItem): void {
@@ -685,36 +814,9 @@ export class AdminComponent implements OnInit {
       payment_details: '',
     });
     this.eventImagePreview = '';
-    this.eventLocationConfirmed = true;
+    this.eventMediaFileName = '';
+    this.eventLocationConfirmed = false;
     this.eventLocationSuggestions = [];
-  }
-
-  validateTopic(topicId: string, validated: boolean): void {
-    this.http.put(`${environment.apiUrl}/forum/topics/${topicId}/validate`, { validated })
-      .subscribe({
-        next: () => {
-          this.loadPendingTopics();
-          this.loadOverview();
-        },
-        error: () => {
-          alert(this.transloco.translate('admin.messages.validationError'));
-        }
-      });
-  }
-
-  deleteTopic(topicId: string): void {
-    if (confirm(this.transloco.translate('admin.messages.confirmDeleteTopic'))) {
-      this.http.delete(`${environment.apiUrl}/forum/topics/${topicId}`)
-        .subscribe({
-          next: () => {
-            this.loadPendingTopics();
-            this.loadOverview();
-          },
-          error: () => {
-            alert(this.transloco.translate('admin.messages.deleteError'));
-          }
-        });
-    }
   }
 
   validatePhoto(photoId: string, validated: boolean): void {
@@ -781,6 +883,8 @@ export class AdminComponent implements OnInit {
 
     this.uploadingNewsImage = true;
     this.newsError = '';
+    const previousFileName = this.newsImageFileName;
+    this.newsImageFileName = file.name;
 
     this.mediaUpload.uploadImage(file).subscribe({
       next: ({ url }) => {
@@ -790,6 +894,7 @@ export class AdminComponent implements OnInit {
         input.value = '';
       },
       error: (error) => {
+        this.newsImageFileName = previousFileName;
         this.newsError = error?.message || error?.error?.error || this.transloco.translate('admin.messages.uploadImageError');
         this.uploadingNewsImage = false;
         input.value = '';
@@ -800,6 +905,7 @@ export class AdminComponent implements OnInit {
   clearNewsImage(): void {
     this.newsForm.patchValue({ image_url: '' });
     this.newsImagePreview = '';
+    this.newsImageFileName = '';
   }
 
   onEventImageSelected(event: Event): void {
@@ -812,8 +918,10 @@ export class AdminComponent implements OnInit {
 
     this.uploadingEventImage = true;
     this.eventError = '';
+    const previousFileName = this.eventMediaFileName;
+    this.eventMediaFileName = file.name;
 
-    this.mediaUpload.uploadImage(file).subscribe({
+    this.mediaUpload.uploadEventMedia(file).subscribe({
       next: ({ url }) => {
         this.eventForm.patchValue({ image_url: url });
         this.eventImagePreview = this.resolveMediaUrl(url);
@@ -821,11 +929,22 @@ export class AdminComponent implements OnInit {
         input.value = '';
       },
       error: (error) => {
-        this.eventError = error?.message || error?.error?.error || this.transloco.translate('admin.messages.uploadImageError');
+        this.eventMediaFileName = previousFileName;
+        this.eventError = error?.message || error?.error?.error || this.transloco.translate('content.messages.uploadEventMediaError');
         this.uploadingEventImage = false;
         input.value = '';
       }
     });
+  }
+
+  clearEventMedia(): void {
+    this.eventForm.patchValue({ image_url: '' });
+    this.eventImagePreview = '';
+    this.eventMediaFileName = '';
+  }
+
+  isPdfMedia(url?: string | null): boolean {
+    return this.mediaUpload.isPdfMedia(url);
   }
 
   onEventLocationInput(): void {
@@ -841,15 +960,36 @@ export class AdminComponent implements OnInit {
   }
 
   selectEventLocation(suggestion: AddressSuggestion): void {
-    this.eventForm.patchValue({ location: this.addressAutocomplete.formatLocation(suggestion) });
+    this.eventForm.patchValue({ location: this.addressAutocomplete.formatCity(suggestion) });
     this.eventLocationConfirmed = true;
     this.eventLocationSuggestions = [];
   }
 
   selectGalleryEventLocation(suggestion: AddressSuggestion): void {
-    this.galleryEventForm.patchValue({ location: this.addressAutocomplete.formatLocation(suggestion) });
+    this.galleryEventForm.patchValue({ location: this.addressAutocomplete.formatCity(suggestion) });
     this.galleryEventLocationConfirmed = true;
     this.galleryEventLocationSuggestions = [];
+  }
+
+  private selectWorkspaceView<T extends string>(
+    event: KeyboardEvent,
+    view: T,
+    views: readonly T[],
+    select: (next: T) => void
+  ): void {
+    const index = views.indexOf(view);
+    let next = index;
+
+    if (event.key === 'ArrowRight') next = (index + 1) % views.length;
+    else if (event.key === 'ArrowLeft') next = (index - 1 + views.length) % views.length;
+    else if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = views.length - 1;
+    else return;
+
+    event.preventDefault();
+    select(views[next]);
+    const tabList = (event.currentTarget as HTMLElement).closest('[role="tablist"]');
+    tabList?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[next]?.focus();
   }
 
   private formatDateTimeInput(date: string): string {
@@ -864,7 +1004,7 @@ export class AdminComponent implements OnInit {
 
     if (!query) {
       this.setLocationSuggestions(target, []);
-      this.setLocationConfirmed(target, true);
+      this.setLocationConfirmed(target, false);
       return;
     }
 
@@ -873,31 +1013,13 @@ export class AdminComponent implements OnInit {
       return;
     }
 
-    const lookup = /^\d{5}$/.test(query)
-      ? this.addressAutocomplete.searchByPostalCode(query)
-      : this.addressAutocomplete.search(query);
-
-    lookup.subscribe((suggestions) => {
+    this.addressAutocomplete.searchCities(query).subscribe((suggestions) => {
       if (!this.isLatestLocationRequest(target, requestId)) {
-        return;
-      }
-
-      if (/^\d{5}$/.test(query) && suggestions[0]) {
-        this.patchLocationFromSuggestion(target, suggestions[0]);
         return;
       }
 
       this.setLocationSuggestions(target, suggestions);
     });
-  }
-
-  private patchLocationFromSuggestion(target: 'event' | 'galleryEvent', suggestion: AddressSuggestion): void {
-    if (target === 'event') {
-      this.selectEventLocation(suggestion);
-      return;
-    }
-
-    this.selectGalleryEventLocation(suggestion);
   }
 
   private setLocationSuggestions(target: 'event' | 'galleryEvent', suggestions: AddressSuggestion[]): void {
@@ -927,10 +1049,11 @@ export class AdminComponent implements OnInit {
   private ensureEventLocationIsConfirmed(): boolean {
     const location = (this.eventForm.value.location || '').trim();
 
-    if (!location || this.eventLocationConfirmed) {
+    if (location && this.eventLocationConfirmed) {
       return true;
     }
 
+    this.eventForm.controls.location.markAsTouched();
     this.eventError = this.transloco.translate('content.messages.locationSuggestionRequired');
     return false;
   }
@@ -938,10 +1061,11 @@ export class AdminComponent implements OnInit {
   private ensureGalleryEventLocationIsConfirmed(): boolean {
     const location = (this.galleryEventForm.value.location || '').trim();
 
-    if (!location || this.galleryEventLocationConfirmed) {
+    if (location && this.galleryEventLocationConfirmed) {
       return true;
     }
 
+    this.galleryEventForm.controls.location.markAsTouched();
     this.galleryEventError = this.transloco.translate('content.messages.locationSuggestionRequired');
     return false;
   }

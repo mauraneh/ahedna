@@ -85,7 +85,7 @@ import { AuthService } from '../../services/auth.service';
                             (click)="closeAccountMenu()">
                             {{ t('navbar.auth.profile') }}
                           </a>
-                          @if (authService.hasRole(['auteur', 'admin'])) {
+                          @if (authService.hasRole(['auteur']) && !authService.hasRole(['admin'])) {
                             <a
                               routerLink="/contenu"
                               class="nav-account-item"
@@ -170,7 +170,7 @@ import { AuthService } from '../../services/auth.service';
                     (click)="closeMenu()">
                     {{ t('navbar.auth.profile') }}
                   </a>
-                  @if (authService.hasRole(['auteur', 'admin'])) {
+                  @if (authService.hasRole(['auteur']) && !authService.hasRole(['admin'])) {
                     <a
                       routerLink="/contenu"
                       routerLinkActive="active-link"
@@ -757,7 +757,6 @@ export class NavbarComponent {
     { route: '/histoire', labelKey: 'navbar.links.history', exact: false, tone: 'var(--brand-red)' },
     { route: '/actualites', labelKey: 'navbar.links.news', exact: false, tone: 'var(--brand-yellow)', toneText: 'var(--site-ink)' },
     { route: '/evenements', labelKey: 'navbar.links.events', exact: false, tone: 'var(--brand-green)' },
-    { route: '/forum', labelKey: 'navbar.links.forum', exact: false, tone: 'var(--brand-red)' },
     { route: '/galerie', labelKey: 'navbar.links.gallery', exact: false, tone: 'var(--brand-turquoise)' },
     { route: '/adhesion', labelKey: 'navbar.links.membership', exact: false, tone: 'var(--brand-yellow)', toneText: 'var(--site-ink)' },
   ];

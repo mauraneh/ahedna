@@ -60,6 +60,7 @@
           @for (event of events; track event.id) {
             <article
               class="event-card site-card-hover"
+              [class.event-card-with-media]="!!event.image_url"
               role="button"
               tabindex="0"
               (click)="openEvent(event)"
@@ -67,14 +68,14 @@
               (keydown.space)="$event.preventDefault(); openEvent(event)">
               @if (event.image_url) {
                 <div class="event-card-media">
-                  <img [src]="getEventImageUrl(event.image_url)" [alt]="event.title" class="event-card-img" loading="lazy">
+                  @if (isPdfMedia(event.image_url)) {
+                    <app-pdf-thumbnail [src]="getEventImageUrl(event.image_url)" [alt]="event.title" class="event-card-pdf"></app-pdf-thumbnail>
+                  } @else {
+                    <img [src]="getEventImageUrl(event.image_url)" [alt]="event.title" class="event-card-img" loading="lazy">
+                  }
                 </div>
               }
               <div class="event-card-body">
-                <div class="event-date-badge">
-                  <span class="event-day">{{ getDay(event.event_date) }}</span>
-                  <span class="event-month">{{ getMonth(event.event_date) }}</span>
-                </div>
                 <div class="event-card-content">
                   <h2 class="event-card-title">{{ event.title }}</h2>
                   @if (event.location) {
@@ -89,6 +90,10 @@
                   </div>
                   <p class="event-card-desc">{{ event.description }}</p>
                 </div>
+                <time class="event-date-badge" [attr.datetime]="event.event_date">
+                  <span class="event-day">{{ getDay(event.event_date) }}</span>
+                  <span class="event-month">{{ getMonth(event.event_date) }}</span>
+                </time>
               </div>
             </article>
           }
@@ -105,8 +110,12 @@
           </button>
 
           @if (event.image_url) {
-            <div class="event-modal-media">
-              <img [src]="getEventImageUrl(event.image_url)" [alt]="event.title" loading="lazy">
+            <div class="event-modal-media" [class.event-modal-media-pdf]="isPdfMedia(event.image_url)">
+              @if (isPdfMedia(event.image_url)) {
+                <app-pdf-thumbnail [src]="getEventImageUrl(event.image_url)" [alt]="event.title" class="event-modal-pdf"></app-pdf-thumbnail>
+              } @else {
+                <img [src]="getEventImageUrl(event.image_url)" [alt]="event.title" loading="lazy">
+              }
             </div>
           }
 

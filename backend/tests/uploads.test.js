@@ -6,6 +6,7 @@ const path = require('path');
 const {
   ensureUploadDirectory,
   saveBase64Image,
+  saveBase64EventMedia,
   resolveUploadPath,
   getMimeType,
 } = require('../lib/uploads');
@@ -44,6 +45,34 @@ test('saveBase64Image persists a supported image and returns its public API path
 
   assert.equal(fs.existsSync(storedFile), true);
   assert.equal(getMimeType(storedFile), 'image/png');
+});
+
+test('saveBase64EventMedia persists a PDF in the dedicated event folder', () => {
+  const publicUrl = saveBase64EventMedia({
+    fileName: 'Programme annuel.pdf',
+    mimeType: 'application/pdf',
+    dataBase64: Buffer.from('%PDF-1.4\n1 0 obj\n<<>>\nendobj\n%%EOF').toString('base64'),
+  });
+
+  assert.match(publicUrl, /^\/api\/uploads\/event-media\//);
+
+  const storedFile = path.resolve(__dirname, `..${publicUrl.replace('/api', '')}`);
+  createdFiles.add(storedFile);
+
+  assert.equal(fs.existsSync(storedFile), true);
+  assert.equal(getMimeType(storedFile), 'application/pdf');
+});
+
+test('saveBase64EventMedia rejects a fake PDF', () => {
+  assert.throws(
+    () =>
+      saveBase64EventMedia({
+        fileName: 'fake.pdf',
+        mimeType: 'application/pdf',
+        dataBase64: Buffer.from('<script>alert(1)</script>').toString('base64'),
+      }),
+    /Event media content does not match the declared format/
+  );
 });
 
 test('saveBase64Image rejects unsupported files and resolveUploadPath blocks traversal attempts', () => {
@@ -180,5 +209,6 @@ test('getMimeType resolves every supported extension and defaults for unknown on
   assert.equal(getMimeType('photo.jpeg'), 'image/jpeg');
   assert.equal(getMimeType('photo.webp'), 'image/webp');
   assert.equal(getMimeType('photo.gif'), 'image/gif');
+  assert.equal(getMimeType('document.pdf'), 'application/pdf');
   assert.equal(getMimeType('photo.txt'), 'application/octet-stream');
 });

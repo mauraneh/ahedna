@@ -7,6 +7,7 @@ import { provideTranslocoTesting } from '../../../testing/transloco-testing';
 class AuthServiceStub {
   authenticated = false;
   user: User | null = null;
+  role: User['role'] | null = null;
   logoutSpy = jasmine.createSpy('logout');
 
   isAuthenticated() {
@@ -17,8 +18,8 @@ class AuthServiceStub {
     return this.user;
   }
 
-  hasRole() {
-    return false;
+  hasRole(roles: string[]) {
+    return this.role ? roles.includes(this.role) : false;
   }
 
   logout() {
@@ -120,6 +121,34 @@ describe('NavbarComponent', () => {
     authService.user = { id: 'u1', email: 'jean.dupont@example.org', role: 'membre' };
 
     expect(fixture.componentInstance.getAccountDisplayName()).toBe('jean.dupont@example.org');
+  });
+
+  it('shows administration without the redundant content link for an admin', () => {
+    const fixture = createComponent();
+    const authService = TestBed.inject(AuthService) as unknown as AuthServiceStub;
+    authService.authenticated = true;
+    authService.role = 'admin';
+    authService.user = { id: 'u1', email: 'admin@example.org', role: 'admin' };
+
+    fixture.componentInstance.toggleAccountMenu();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.nav-account-menu a[href="/admin"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.nav-account-menu a[href="/contenu"]')).toBeFalsy();
+  });
+
+  it('keeps the direct content link for an author', () => {
+    const fixture = createComponent();
+    const authService = TestBed.inject(AuthService) as unknown as AuthServiceStub;
+    authService.authenticated = true;
+    authService.role = 'auteur';
+    authService.user = { id: 'u1', email: 'auteur@example.org', role: 'auteur' };
+
+    fixture.componentInstance.toggleAccountMenu();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.nav-account-menu a[href="/contenu"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.nav-account-menu a[href="/admin"]')).toBeFalsy();
   });
 
   it('closes both menus when clicking outside of the navbar', () => {

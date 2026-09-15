@@ -2910,3 +2910,56 @@ body {
     min-height: 2.35rem !important;
   }
 }
+
+/* Management layouts must shrink within the viewport, including grid children. */
+:is(.admin-page, .content-page) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+:is(.admin-page, .content-page) .site-tool-shell {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1120px;
+  padding: clamp(0.75rem, 3vw, 2rem);
+}
+:is(.admin-page, .content-page) :is(.grid, .flex, section, article, form, .site-surface, .site-tool-masthead, .site-tool-stack, .admin-tab-panel) > * {
+  min-width: 0;
+}
+:is(.admin-page, .content-page) :is(input, select, textarea, button, img) {
+  max-width: 100%;
+}
+:is(.admin-page, .content-page) .overflow-x-auto {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+:is(.admin-page, .content-page) .site-tool-masthead-split {
+  grid-template-columns: minmax(0, 1fr);
+}
+:is(.admin-page, .content-page) .site-tool-actions {
+  flex-wrap: wrap;
+}
+:is(.admin-page, .content-page) [class*='grid-cols-['] {
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 1000px) {
+  :is(.admin-page, .content-page) [class*='grid-cols-['] {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+@media (max-width: 760px) {
+  :is(.admin-page, .content-page) :is(.p-8, .p-6) { padding: 1rem; }
+  :is(.admin-page, .content-page) .flex.items-start.justify-between { flex-wrap: wrap; }
+  :is(.admin-page, .content-page) :is(.site-button-primary, .site-button-secondary) {
+    white-space: normal;
+    text-align: center;
+  }
+}
+
+:is(.admin-page, .content-page) .site-tool-stack {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.site-password-field { position: relative; min-width: 0; }
+.site-password-field > input { padding-inline-end: 3.25rem; }

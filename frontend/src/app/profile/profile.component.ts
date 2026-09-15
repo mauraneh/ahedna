@@ -1,3 +1,4 @@
+import { PasswordToggleComponent } from '../core/components/password-toggle/password-toggle.component';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, inject } from '@angular/core';
@@ -32,7 +33,7 @@ interface MemberDocument {
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslocoDirective, NavbarComponent, ScrollToTopComponent],
+  imports: [PasswordToggleComponent, CommonModule, ReactiveFormsModule, TranslocoDirective, NavbarComponent, ScrollToTopComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })

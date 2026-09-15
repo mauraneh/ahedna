@@ -10,7 +10,7 @@ export const routes: Routes = [
       seo: {
         title: 'AHEDNA - Mémoire, entraide et transmission harki',
         description:
-          "Association harki en Dordogne et Nouvelle-Aquitaine : histoire, entraide, actualités, événements, forum et adhésion.",
+          "Association harki en Dordogne et Nouvelle-Aquitaine : histoire, entraide, actualités, événements, adhésion et authentification.",
       },
     },
   },
@@ -95,17 +95,6 @@ export const routes: Routes = [
         title: 'Événements - AHEDNA',
         description:
           "Agenda des commémorations, rencontres, ateliers et temps forts organisés par AHEDNA.",
-      },
-    },
-  },
-  {
-    path: 'forum',
-    loadComponent: () => import('./forum/forum-list/forum-list.component').then((m) => m.ForumListComponent),
-    data: {
-      seo: {
-        title: 'Forum - AHEDNA',
-        description:
-          "Forum AHEDNA pour partager témoignages, questions et échanges autour de l'histoire harki.",
       },
     },
   },

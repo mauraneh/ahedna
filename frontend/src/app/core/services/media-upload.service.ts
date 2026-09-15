@@ -7,8 +7,9 @@ interface UploadImageResponse {
   url: string;
 }
 
-const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
+const MAX_UPLOAD_SIZE_BYTES = 5 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+const ALLOWED_EVENT_MEDIA_TYPES = new Set([...ALLOWED_IMAGE_TYPES, 'application/pdf']);
 
 @Injectable({
   providedIn: 'root'
@@ -17,11 +18,31 @@ export class MediaUploadService {
   private http = inject(HttpClient);
 
   uploadImage(file: File): Observable<UploadImageResponse> {
-    return from(this.readFileAsPayload(file)).pipe(
+    return from(this.readFileAsPayload(
+      file,
+      ALLOWED_IMAGE_TYPES,
+      'Formats acceptés : JPG, PNG, WebP ou GIF.'
+    )).pipe(
       switchMap((payload) =>
         this.http.post<UploadImageResponse>(`${environment.apiUrl}/uploads/images`, payload)
       )
     );
+  }
+
+  uploadEventMedia(file: File): Observable<UploadImageResponse> {
+    return from(this.readFileAsPayload(
+      file,
+      ALLOWED_EVENT_MEDIA_TYPES,
+      'Formats acceptés : JPG, PNG, WebP, GIF ou PDF.'
+    )).pipe(
+      switchMap((payload) =>
+        this.http.post<UploadImageResponse>(`${environment.apiUrl}/uploads/event-media`, payload)
+      )
+    );
+  }
+
+  isPdfMedia(url?: string | null): boolean {
+    return Boolean(url && /\.pdf(?:[?#]|$)/i.test(url));
   }
 
   resolveMediaUrl(url?: string | null): string {
@@ -48,20 +69,40 @@ export class MediaUploadService {
     return url;
   }
 
-  private async readFileAsPayload(file: File): Promise<{ file_name: string; mime_type: string; data_base64: string }> {
-    if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
-      throw new Error('Formats acceptés : JPG, PNG, WebP ou GIF.');
+  getMediaFileName(url?: string | null): string {
+    if (!url) {
+      return '';
+    }
+
+    const pathWithoutSuffix = url.split(/[?#]/, 1)[0];
+    const encodedFileName = pathWithoutSuffix.split('/').pop() || '';
+
+    try {
+      const fileName = decodeURIComponent(encodedFileName);
+      return fileName.replace(/^\d+-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-/i, '');
+    } catch {
+      return encodedFileName;
+    }
+  }
+
+  private async readFileAsPayload(
+    file: File,
+    allowedTypes: ReadonlySet<string>,
+    unsupportedTypeMessage: string
+  ): Promise<{ file_name: string; mime_type: string; data_base64: string }> {
+    if (!allowedTypes.has(file.type)) {
+      throw new Error(unsupportedTypeMessage);
     }
 
     if (file.size <= 0) {
       throw new Error('Le fichier sélectionné est vide.');
     }
 
-    if (file.size > MAX_IMAGE_SIZE_BYTES) {
-      throw new Error('L’image doit faire moins de 5 Mo.');
+    if (file.size > MAX_UPLOAD_SIZE_BYTES) {
+      throw new Error('Le fichier doit faire moins de 5 Mo.');
     }
 
-    if (!(await this.hasValidImageSignature(file))) {
+    if (!(await this.hasValidFileSignature(file))) {
       throw new Error('Le contenu du fichier ne correspond pas au format annoncé.');
     }
 
@@ -75,7 +116,7 @@ export class MediaUploadService {
     const [, dataBase64 = ''] = dataUrl.split(',');
 
     if (!dataBase64) {
-      throw new Error('Impossible de préparer cette image.');
+      throw new Error('Impossible de préparer ce fichier.');
     }
 
     return {
@@ -85,8 +126,12 @@ export class MediaUploadService {
     };
   }
 
-  private async hasValidImageSignature(file: File): Promise<boolean> {
+  private async hasValidFileSignature(file: File): Promise<boolean> {
     const bytes = new Uint8Array(await file.slice(0, 12).arrayBuffer());
+
+    if (file.type === 'application/pdf') {
+      return this.readAscii(bytes, 0, 5) === '%PDF-';
+    }
 
     if (file.type === 'image/jpeg') {
       return bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;

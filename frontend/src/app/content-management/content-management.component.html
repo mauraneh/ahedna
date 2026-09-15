@@ -19,7 +19,7 @@
                   {{ importingPublicNews ? t('content.actions.importingPublicNews') : t('content.actions.importPublicNews') }}
                 </button>
               }
-              <button (click)="resetNewsForm()" class="site-button-primary">
+              <button (click)="startNewsCreation()" class="site-button-primary">
                 {{ t('content.actions.newArticle') }}
               </button>
             } @else if (activeTab === 'events') {
@@ -27,7 +27,7 @@
                 {{ t('content.actions.newEvent') }}
               </button>
             } @else {
-              <button (click)="resetGalleryAlbumForm()" class="site-button-primary">
+              <button (click)="startGalleryAlbumCreation()" class="site-button-primary">
                 {{ t('content.actions.newGalleryAlbum') }}
               </button>
             }
@@ -36,36 +36,82 @@
       </div>
 
       <div class="site-surface site-tool-panel-solid paper-texture content-tabs-panel">
-        <div class="content-tabs">
+        <div
+          class="content-tabs"
+          [class.content-tabs-single]="!canManageAdvancedContent"
+          role="tablist"
+          [attr.aria-label]="t('content.title')">
           <button
             type="button"
             (click)="selectTab('news')"
             class="content-tab"
+            role="tab"
+            [attr.aria-selected]="activeTab === 'news'"
             [class.content-tab-active]="activeTab === 'news'">
-            {{ t('content.tabs.news') }}
+            <span class="content-tab-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 5h11v14H4z"></path>
+                <path d="M15 8h5v11h-5"></path>
+                <path d="M7 9h5M7 13h5M7 16h3"></path>
+              </svg>
+            </span>
+            <span class="content-tab-label">{{ t('content.tabs.news') }}</span>
+            <span class="content-tab-count" aria-hidden="true">{{ newsItems.length }}</span>
           </button>
           @if (canManageAdvancedContent) {
             <button
               type="button"
               (click)="selectTab('events')"
               class="content-tab"
+              role="tab"
+              [attr.aria-selected]="activeTab === 'events'"
               [class.content-tab-active]="activeTab === 'events'">
-              {{ t('content.tabs.events') }}
+              <span class="content-tab-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                  <path d="M8 3v4M16 3v4M3 10h18"></path>
+                  <path d="M8 14h3M14 14h2M8 17h2"></path>
+                </svg>
+              </span>
+              <span class="content-tab-label">{{ t('content.tabs.events') }}</span>
+              <span class="content-tab-count" aria-hidden="true">{{ events.length }}</span>
             </button>
             <button
               type="button"
               (click)="selectTab('gallery')"
               class="content-tab"
+              role="tab"
+              [attr.aria-selected]="activeTab === 'gallery'"
               [class.content-tab-active]="activeTab === 'gallery'">
-              {{ t('content.tabs.gallery') }}
+              <span class="content-tab-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                  <circle cx="9" cy="10" r="2"></circle>
+                  <path d="m4 17 5-4 3 2 3-3 5 5"></path>
+                </svg>
+              </span>
+              <span class="content-tab-label">{{ t('content.tabs.gallery') }}</span>
+              <span class="content-tab-count" aria-hidden="true">{{ galleryAlbums.length }}</span>
             </button>
           }
         </div>
       </div>
 
       @if (activeTab === 'news') {
-        <div class="grid xl:grid-cols-[0.95fr_1.05fr] gap-8">
-          <section class="site-surface site-tool-panel-solid p-6 paper-texture">
+        <div class="content-workspace">
+          <div class="content-view-tabs" role="tablist" [attr.aria-label]="t('content.tabs.news')">
+            <button type="button" id="content-news-view-create" role="tab" class="content-view-tab" [class.content-view-tab-active]="activeNewsView === 'create'" [attr.aria-selected]="activeNewsView === 'create'" aria-controls="content-news-panel-create" [attr.tabindex]="activeNewsView === 'create' ? 0 : -1" (click)="setNewsView('create')" (keydown)="onNewsViewKeydown($event, 'create')">
+              <span class="content-view-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg></span>
+              <span><strong>{{ t('content.form.createTitle') }}</strong><small>{{ t('content.form.subtitle') }}</small></span>
+            </button>
+            <button type="button" id="content-news-view-list" role="tab" class="content-view-tab" [class.content-view-tab-active]="activeNewsView === 'list'" [attr.aria-selected]="activeNewsView === 'list'" aria-controls="content-news-panel-list" [attr.tabindex]="activeNewsView === 'list' ? 0 : -1" (click)="setNewsView('list')" (keydown)="onNewsViewKeydown($event, 'list')">
+              <span class="content-view-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h11v14H4z"></path><path d="M15 8h5v11h-5"></path><path d="M7 9h5M7 13h5M7 16h3"></path></svg></span>
+              <span><strong>{{ t('content.list.title') }}</strong><small>{{ newsItems.length }} · {{ t('content.list.subtitle') }}</small></span>
+            </button>
+          </div>
+
+          @if (activeNewsView === 'create') {
+          <section id="content-news-panel-create" role="tabpanel" aria-labelledby="content-news-view-create" class="site-surface site-tool-panel-solid p-6 paper-texture content-form-pane">
             <div class="flex items-center justify-between gap-4 mb-6">
               <div>
                 <h2 class="text-2xl font-vintage font-bold text-paper-900">
@@ -97,34 +143,35 @@
               </div>
               <div>
                 <label class="site-form-label">{{ t('content.fields.imageFile') }}</label>
-                <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" class="site-input" (change)="onNewsImageSelected($event)">
+                <label for="content-news-image-file" class="content-event-media-trigger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M5 14v5h14v-5"></path></svg>{{ t('content.actions.chooseFile') }}</label>
+                <input id="content-news-image-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif" class="sr-only" (change)="onNewsImageSelected($event)">
                 <p class="content-field-help">{{ t('content.fields.imageHelp') }}</p>
                 @if (uploadingNewsImage) {
                   <p class="mt-2 text-sm text-paper-600 font-serif">{{ t('content.messages.uploadingImage') }}</p>
                 }
-                @if (newsImagePreview) {
-                  <img [src]="newsImagePreview" [alt]="newsForm.value.title || t('content.fields.title')" class="content-upload-preview">
-                  <button type="button" (click)="clearNewsImage()" class="content-inline-action">
-                    {{ t('content.actions.removeImage') }}
-                  </button>
+                @if (newsImageFileName) {
+                  <div class="content-event-file-row"><div class="content-event-file-name" [title]="newsImageFileName"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h8l4 4v16H6z"></path><path d="M14 2v5h5"></path></svg><span>{{ newsImageFileName }}</span></div><button type="button" class="content-event-file-delete" (click)="clearNewsImage()" [attr.aria-label]="t('content.actions.removeFile')" [title]="t('content.actions.removeFile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 14h8l1-14M10 11v6M14 11v6"></path></svg></button></div>
                 }
+                @if (newsImagePreview) { <img [src]="newsImagePreview" [alt]="newsForm.value.title || t('content.fields.title')" class="content-upload-preview"> }
               </div>
               <label class="flex items-center gap-3 text-paper-800 font-serif">
                 <input formControlName="published" type="checkbox" class="site-checkbox">
                 <span>{{ t('content.fields.published') }}</span>
               </label>
               <div class="flex flex-wrap gap-3 pt-2">
-                <button type="submit" [disabled]="savingNews" class="site-button-danger">
+                <button type="submit" [disabled]="savingNews || uploadingNewsImage" class="site-button-danger disabled:opacity-50">
                   {{ savingNews ? t('content.actions.saving') : (editingNewsId ? t('content.actions.update') : t('content.actions.create')) }}
                 </button>
-                <button type="button" (click)="resetNewsForm()" class="site-button-secondary">
+                <button type="button" (click)="cancelNewsForm()" class="site-button-secondary">
                   {{ t('content.actions.cancel') }}
                 </button>
               </div>
             </form>
           </section>
+          }
 
-          <section class="site-surface site-tool-panel-solid p-6 paper-texture">
+          @if (activeNewsView === 'list') {
+          <section id="content-news-panel-list" role="tabpanel" aria-labelledby="content-news-view-list" class="site-surface site-tool-panel-solid p-6 paper-texture">
             <div class="flex items-center justify-between gap-4 mb-6">
               <div>
                 <h2 class="text-2xl font-vintage font-bold text-paper-900">{{ t('content.list.title') }}</h2>
@@ -144,9 +191,11 @@
             } @else {
               <div class="space-y-4">
                 @for (item of newsItems; track item.id) {
-                  <article class="site-surface-soft site-tool-panel-solid p-5">
-                    <div class="flex items-start justify-between gap-4">
-                      <div>
+                  <article class="content-event-card site-surface-soft site-tool-panel-solid p-5">
+                    <div class="content-event-card-layout" [class.content-event-card-layout-with-media]="!!item.image_url">
+                      @if (item.image_url) { <div class="content-event-card-media"><img [src]="resolveMediaUrl(item.image_url)" [alt]="item.title" class="content-event-card-cover" loading="lazy"></div> }
+                      <div class="content-event-card-body">
+                        <div class="content-event-card-header">
                         <div class="flex flex-wrap items-center gap-3">
                           <h3 class="text-xl font-vintage font-bold text-paper-900">{{ item.title }}</h3>
                           <span class="px-3 py-1 rounded-full text-xs font-vintage font-bold"
@@ -157,23 +206,25 @@
                             {{ item.published ? t('content.status.published') : t('content.status.draft') }}
                           </span>
                         </div>
+                        <time class="content-event-card-date" [attr.datetime]="item.created_at">{{ formatDate(item.created_at) }}</time>
+                        </div>
                         <p class="mt-3 text-paper-700 font-serif">{{ item.excerpt || item.content }}</p>
-                        <p class="mt-3 text-sm text-paper-500 font-serif">{{ formatDate(item.created_at) }}</p>
                       </div>
-                      <div class="flex flex-col gap-2">
+                    </div>
+                    <div class="content-event-actions">
                         <button (click)="editNews(item)" class="site-button-primary px-4 py-2 text-sm">
                           {{ t('content.actions.edit') }}
                         </button>
                         <button (click)="deleteNews(item)" [disabled]="deletingNewsId === item.id" class="site-button-danger px-4 py-2 text-sm disabled:opacity-50">
                           {{ deletingNewsId === item.id ? t('content.actions.deleting') : t('content.actions.delete') }}
                         </button>
-                      </div>
                     </div>
                   </article>
                 }
               </div>
             }
           </section>
+          }
         </div>
       }
 
@@ -213,15 +264,20 @@
                     type="text"
                     class="site-input"
                     autocomplete="off"
+                    required
+                    role="combobox"
+                    aria-autocomplete="list"
+                    aria-controls="content-event-city-suggestions"
+                    [attr.aria-expanded]="eventLocationSuggestions.length > 0"
                     [placeholder]="t('content.fields.locationPlaceholder')"
                     (input)="onEventLocationInput()">
                   <p class="content-field-help">{{ t('content.fields.locationHelp') }}</p>
                   @if (eventLocationSuggestions.length > 0) {
-                    <div class="content-location-suggestions">
+                    <div id="content-event-city-suggestions" class="content-location-suggestions" role="listbox">
                       @for (suggestion of eventLocationSuggestions; track suggestion.label) {
-                        <button type="button" class="content-location-suggestion" (click)="selectEventLocation(suggestion)">
-                          <span>{{ suggestion.label }}</span>
-                          <small>{{ suggestion.postalCode }} {{ suggestion.city }}</small>
+                        <button type="button" class="content-location-suggestion" role="option" (click)="selectEventLocation(suggestion)">
+                          <span>{{ suggestion.city }}</span>
+                          <small>{{ suggestion.postalCode }}</small>
                         </button>
                       }
                     </div>
@@ -229,13 +285,41 @@
                 </div>
               </div>
               <div>
-                <label class="site-form-label">{{ t('content.fields.imageFile') }}</label>
-                <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" class="site-input" (change)="onEventImageSelected($event)">
+                <label class="site-form-label">{{ t('content.fields.eventMediaFile') }}</label>
+                <label for="content-event-media-file" class="content-event-media-trigger">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 16V4M7 9l5-5 5 5"></path>
+                    <path d="M5 14v5h14v-5"></path>
+                  </svg>
+                  {{ t('content.actions.chooseFile') }}
+                </label>
+                <input id="content-event-media-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif,application/pdf" class="sr-only" (change)="onEventImageSelected($event)">
+                <p class="content-field-help">{{ t('content.fields.eventMediaHelp') }}</p>
                 @if (uploadingEventImage) {
-                  <p class="mt-2 text-sm text-paper-600 font-serif">{{ t('content.messages.uploadingImage') }}</p>
+                  <p class="mt-2 text-sm text-paper-600 font-serif">{{ t('content.messages.uploadingEventMedia') }}</p>
+                }
+                @if (eventMediaFileName) {
+                  <div class="content-event-file-row">
+                    <div class="content-event-file-name" [title]="eventMediaFileName">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M6 2h8l4 4v16H6z"></path>
+                        <path d="M14 2v5h5"></path>
+                      </svg>
+                      <span>{{ eventMediaFileName }}</span>
+                    </div>
+                    <button type="button" class="content-event-file-delete" (click)="clearEventMedia()" [attr.aria-label]="t('content.actions.removeFile')" [title]="t('content.actions.removeFile')">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M4 7h16M9 7V4h6v3M7 7l1 14h8l1-14M10 11v6M14 11v6"></path>
+                      </svg>
+                    </button>
+                  </div>
                 }
                 @if (eventImagePreview) {
-                  <img [src]="eventImagePreview" [alt]="eventForm.value.title || t('admin.events.fields.title')" class="content-upload-preview">
+                  @if (isPdfMedia(eventImagePreview)) {
+                    <app-pdf-thumbnail [src]="eventImagePreview" [alt]="eventForm.value.title || t('admin.events.fields.title')" class="content-upload-preview"></app-pdf-thumbnail>
+                  } @else {
+                    <img [src]="eventImagePreview" [alt]="eventForm.value.title || t('admin.events.fields.title')" class="content-upload-preview">
+                  }
                 }
               </div>
               <div>
@@ -260,7 +344,7 @@
                 <span>{{ t('admin.events.fields.galleryEnabled') }}</span>
               </label>
               <div class="flex flex-wrap gap-3 pt-2">
-                <button type="submit" [disabled]="savingEvent" class="site-button-primary">
+                <button type="submit" [disabled]="savingEvent || uploadingEventImage" class="site-button-primary disabled:opacity-50">
                   {{ savingEvent ? t('content.actions.saving') : (editingEventId ? t('content.actions.update') : t('content.actions.create')) }}
                 </button>
                 <button type="button" (click)="resetEventForm()" class="site-button-secondary">
@@ -286,29 +370,38 @@
             } @else {
               <div class="space-y-4">
                 @for (event of events; track event.id) {
-                  <article class="site-surface-soft site-tool-panel-solid p-5">
-                    <div class="flex items-start justify-between gap-4">
-                      <div>
-                        <div class="flex flex-wrap items-center gap-3">
-                          <h3 class="text-xl font-vintage font-bold text-paper-900">{{ event.title }}</h3>
-                          <span class="px-3 py-1 rounded-full text-xs font-vintage font-bold"
-                            [class.bg-green-100]="event.type === 'upcoming'"
-                            [class.text-green-800]="event.type === 'upcoming'"
-                            [class.bg-yellow-100]="event.type === 'past'"
-                            [class.text-yellow-800]="event.type === 'past'">
-                            {{ event.type === 'upcoming' ? t('admin.events.types.upcoming') : t('admin.events.types.past') }}
-                          </span>
-                          @if (event.gallery_enabled) {
-                            <span class="px-3 py-1 rounded-full text-xs font-vintage font-bold content-gallery-pill">
-                              {{ t('admin.events.galleryBadge') }}
-                            </span>
+                  <article class="content-event-card site-surface-soft site-tool-panel-solid p-5">
+                    <div class="content-event-card-layout" [class.content-event-card-layout-with-media]="!!event.image_url">
+                      @if (event.image_url) {
+                        <div class="content-event-card-media">
+                          @if (isPdfMedia(event.image_url)) {
+                            <app-pdf-thumbnail [src]="resolveMediaUrl(event.image_url)" [alt]="event.title" class="content-event-card-pdf"></app-pdf-thumbnail>
+                          } @else {
+                            <img [src]="resolveMediaUrl(event.image_url)" [alt]="event.title" class="content-event-card-cover" loading="lazy">
                           }
                         </div>
-                        @if (event.image_url) {
-                          <img [src]="resolveMediaUrl(event.image_url)" [alt]="event.title" class="content-item-inline-image">
-                        }
+                      }
+                      <div class="content-event-card-body">
+                        <div class="content-event-card-header">
+                          <div class="flex flex-wrap items-center gap-3">
+                            <h3 class="text-xl font-vintage font-bold text-paper-900">{{ event.title }}</h3>
+                            <span class="px-3 py-1 rounded-full text-xs font-vintage font-bold"
+                              [class.bg-green-100]="event.type === 'upcoming'"
+                              [class.text-green-800]="event.type === 'upcoming'"
+                              [class.bg-yellow-100]="event.type === 'past'"
+                              [class.text-yellow-800]="event.type === 'past'">
+                              {{ event.type === 'upcoming' ? t('admin.events.types.upcoming') : t('admin.events.types.past') }}
+                            </span>
+                            @if (event.gallery_enabled) {
+                              <span class="px-3 py-1 rounded-full text-xs font-vintage font-bold content-gallery-pill">
+                                {{ t('admin.events.galleryBadge') }}
+                              </span>
+                            }
+                          </div>
+                          <time class="content-event-card-date" [attr.datetime]="event.event_date">{{ formatDateTime(event.event_date) }}</time>
+                        </div>
                         <p class="mt-3 text-paper-700 font-serif">{{ event.description }}</p>
-                        <p class="mt-3 text-sm text-paper-500 font-serif">{{ formatDateTime(event.event_date) }} · {{ event.location || t('admin.events.noLocation') }}</p>
+                        <p class="mt-3 text-sm text-paper-500 font-serif">{{ event.location || t('admin.events.noLocation') }}</p>
                         <p class="mt-2 text-sm text-paper-700 font-serif">
                           {{ t('admin.events.fields.price') }} : {{ formatPrice(event.price_amount) }}
                           @if (event.payment_details) {
@@ -316,14 +409,14 @@
                           }
                         </p>
                       </div>
-                      <div class="flex flex-col gap-2">
-                        <button (click)="editEvent(event)" class="site-button-primary px-4 py-2 text-sm">
-                          {{ t('content.actions.edit') }}
-                        </button>
-                        <button (click)="deleteEvent(event)" [disabled]="deletingEventId === event.id" class="site-button-danger px-4 py-2 text-sm disabled:opacity-50">
-                          {{ deletingEventId === event.id ? t('content.actions.deleting') : t('content.actions.delete') }}
-                        </button>
-                      </div>
+                    </div>
+                    <div class="content-event-actions">
+                      <button type="button" (click)="editEvent(event)" class="site-button-primary px-4 py-2 text-sm">
+                        {{ t('content.actions.edit') }}
+                      </button>
+                      <button type="button" (click)="deleteEvent(event)" [disabled]="deletingEventId === event.id" class="site-button-danger px-4 py-2 text-sm disabled:opacity-50">
+                        {{ deletingEventId === event.id ? t('content.actions.deleting') : t('content.actions.delete') }}
+                      </button>
                     </div>
                   </article>
                 }
@@ -334,9 +427,20 @@
       }
 
       @if (activeTab === 'gallery' && canManageAdvancedContent) {
-        <div class="space-y-8">
-          <div class="grid xl:grid-cols-[0.95fr_1.05fr] gap-8">
-            <section class="site-surface site-tool-panel-solid p-6 paper-texture">
+        <div class="content-workspace">
+          <div class="content-view-tabs" role="tablist" [attr.aria-label]="t('content.tabs.gallery')">
+            <button type="button" id="content-gallery-view-create" role="tab" class="content-view-tab" [class.content-view-tab-active]="activeGalleryView === 'create'" [attr.aria-selected]="activeGalleryView === 'create'" aria-controls="content-gallery-panel-create" [attr.tabindex]="activeGalleryView === 'create' ? 0 : -1" (click)="setGalleryView('create')" (keydown)="onGalleryViewKeydown($event, 'create')">
+              <span class="content-view-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg></span>
+              <span><strong>{{ t('content.gallery.albumForm.createTitle') }}</strong><small>{{ t('content.gallery.albumForm.subtitle') }}</small></span>
+            </button>
+            <button type="button" id="content-gallery-view-albums" role="tab" class="content-view-tab" [class.content-view-tab-active]="activeGalleryView === 'albums'" [attr.aria-selected]="activeGalleryView === 'albums'" aria-controls="content-gallery-panel-albums" [attr.tabindex]="activeGalleryView === 'albums' ? 0 : -1" (click)="setGalleryView('albums')" (keydown)="onGalleryViewKeydown($event, 'albums')">
+              <span class="content-view-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="9" cy="10" r="2"></circle><path d="m4 17 5-4 3 2 3-3 5 5"></path></svg></span>
+              <span><strong>{{ t('content.gallery.list.title') }}</strong><small>{{ galleryAlbums.length }} · {{ t('content.gallery.list.subtitle') }}</small></span>
+            </button>
+          </div>
+
+          @if (activeGalleryView === 'create') {
+            <section id="content-gallery-panel-create" role="tabpanel" aria-labelledby="content-gallery-view-create" class="site-surface site-tool-panel-solid p-6 paper-texture content-form-pane">
               <h2 class="text-2xl font-vintage font-bold text-paper-900">
                 {{ editingGalleryAlbumId ? t('content.gallery.albumForm.editTitle') : t('content.gallery.albumForm.createTitle') }}
               </h2>
@@ -370,15 +474,20 @@
                       type="text"
                       class="site-input"
                       autocomplete="off"
+                      required
+                      role="combobox"
+                      aria-autocomplete="list"
+                      aria-controls="content-gallery-city-suggestions"
+                      [attr.aria-expanded]="galleryAlbumLocationSuggestions.length > 0"
                       [placeholder]="t('content.fields.locationPlaceholder')"
                       (input)="onGalleryAlbumLocationInput()">
                     <p class="content-field-help">{{ t('content.fields.locationHelp') }}</p>
                     @if (galleryAlbumLocationSuggestions.length > 0) {
-                      <div class="content-location-suggestions">
+                      <div id="content-gallery-city-suggestions" class="content-location-suggestions" role="listbox">
                         @for (suggestion of galleryAlbumLocationSuggestions; track suggestion.label) {
-                          <button type="button" class="content-location-suggestion" (click)="selectGalleryAlbumLocation(suggestion)">
-                            <span>{{ suggestion.label }}</span>
-                            <small>{{ suggestion.postalCode }} {{ suggestion.city }}</small>
+                          <button type="button" class="content-location-suggestion" role="option" (click)="selectGalleryAlbumLocation(suggestion)">
+                            <span>{{ suggestion.city }}</span>
+                            <small>{{ suggestion.postalCode }}</small>
                           </button>
                         }
                       </div>
@@ -387,13 +496,16 @@
                 </div>
                 <div>
                   <label class="site-form-label">{{ t('content.fields.imageFile') }}</label>
-                  <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" class="site-input" (change)="onGalleryAlbumImageSelected($event)">
+                  <label for="content-gallery-image-file" class="content-event-media-trigger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M5 14v5h14v-5"></path></svg>{{ t('content.actions.chooseFile') }}</label>
+                  <input id="content-gallery-image-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif" class="sr-only" (change)="onGalleryAlbumImageSelected($event)">
+                  <p class="content-field-help">{{ t('content.fields.imageHelp') }}</p>
                   @if (uploadingGalleryAlbumImage) {
                     <p class="mt-2 text-sm text-paper-600 font-serif">{{ t('content.messages.uploadingImage') }}</p>
                   }
-                  @if (galleryAlbumImagePreview) {
-                    <img [src]="galleryAlbumImagePreview" [alt]="galleryAlbumForm.value.title || t('admin.events.fields.title')" class="content-upload-preview">
+                  @if (galleryAlbumImageFileName) {
+                    <div class="content-event-file-row"><div class="content-event-file-name" [title]="galleryAlbumImageFileName"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h8l4 4v16H6z"></path><path d="M14 2v5h5"></path></svg><span>{{ galleryAlbumImageFileName }}</span></div><button type="button" class="content-event-file-delete" (click)="clearGalleryAlbumImage()" [attr.aria-label]="t('content.actions.removeFile')" [title]="t('content.actions.removeFile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 14h8l1-14M10 11v6M14 11v6"></path></svg></button></div>
                   }
+                  @if (galleryAlbumImagePreview) { <img [src]="galleryAlbumImagePreview" [alt]="galleryAlbumForm.value.title || t('admin.events.fields.title')" class="content-upload-preview"> }
                 </div>
                 <div>
                   <label class="site-form-label">{{ t('admin.events.fields.type') }}</label>
@@ -413,16 +525,19 @@
                   </div>
                 </div>
                 <div class="flex flex-wrap gap-3 pt-2">
-                  <button type="submit" [disabled]="savingGalleryAlbum" class="site-button-primary">
+                  <button type="submit" [disabled]="savingGalleryAlbum || uploadingGalleryAlbumImage" class="site-button-primary disabled:opacity-50">
                     {{ savingGalleryAlbum ? t('content.actions.saving') : (editingGalleryAlbumId ? t('content.actions.update') : t('content.actions.create')) }}
                   </button>
-                  <button type="button" (click)="resetGalleryAlbumForm()" class="site-button-secondary">
+                  <button type="button" (click)="cancelGalleryAlbumForm()" class="site-button-secondary">
                     {{ t('content.actions.cancel') }}
                   </button>
                 </div>
               </form>
             </section>
+          }
 
+          @if (activeGalleryView === 'albums') {
+          <div id="content-gallery-panel-albums" role="tabpanel" aria-labelledby="content-gallery-view-albums" class="content-gallery-albums-pane">
             <section class="site-surface site-tool-panel-solid p-6 paper-texture">
               <h2 class="text-2xl font-vintage font-bold text-paper-900">{{ t('content.gallery.photoForm.title') }}</h2>
               <p class="text-paper-700 font-serif mt-2 mb-6">{{ t('content.gallery.photoForm.subtitle') }}</p>
@@ -447,22 +562,28 @@
                     </select>
                   </div>
                   <div>
-                    <label class="site-form-label">{{ t('gallery.upload.fields.photoUrl') }}</label>
-                    <input formControlName="photo_url" type="url" class="site-input" [placeholder]="t('gallery.upload.fields.photoUrlPlaceholder')">
+                    <label class="site-form-label">{{ t('content.fields.imageFile') }}</label>
+                    <label for="content-gallery-photo-file" class="content-event-media-trigger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M5 14v5h14v-5"></path></svg>{{ t('content.actions.chooseFile') }}</label>
+                    <input id="content-gallery-photo-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif" class="sr-only" (change)="onGalleryPhotoSelected($event)">
+                    <p class="content-field-help">{{ t('content.fields.imageHelp') }}</p>
+                    @if (uploadingGalleryPhotoImage) { <p class="mt-2 text-sm text-paper-600 font-serif">{{ t('content.messages.uploadingImage') }}</p> }
+                    @if (galleryPhotoFileName) {
+                      <div class="content-event-file-row"><div class="content-event-file-name" [title]="galleryPhotoFileName"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h8l4 4v16H6z"></path><path d="M14 2v5h5"></path></svg><span>{{ galleryPhotoFileName }}</span></div><button type="button" class="content-event-file-delete" (click)="clearGalleryPhoto()" [attr.aria-label]="t('content.actions.removeFile')" [title]="t('content.actions.removeFile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 14h8l1-14M10 11v6M14 11v6"></path></svg></button></div>
+                    }
+                    @if (galleryPhotoPreview) { <img [src]="galleryPhotoPreview" [alt]="galleryPhotoForm.value.description || t('content.gallery.photoForm.title')" class="content-upload-preview"> }
                   </div>
                   <div>
                     <label class="site-form-label">{{ t('gallery.upload.fields.description') }}</label>
                     <textarea formControlName="description" rows="4" class="site-textarea" [placeholder]="t('gallery.upload.fields.descriptionPlaceholder')"></textarea>
                   </div>
                   <div class="flex flex-wrap gap-3 pt-2">
-                    <button type="submit" [disabled]="savingGalleryPhoto" class="site-button-primary">
+                    <button type="submit" [disabled]="savingGalleryPhoto || uploadingGalleryPhotoImage" class="site-button-primary disabled:opacity-50">
                       {{ savingGalleryPhoto ? t('content.actions.saving') : t('content.actions.addPhoto') }}
                     </button>
                   </div>
                 </form>
               }
             </section>
-          </div>
 
           <section class="site-surface site-tool-panel-solid p-6 paper-texture">
             <h2 class="text-2xl font-vintage font-bold text-paper-900">{{ t('content.gallery.list.title') }}</h2>
@@ -480,29 +601,22 @@
             } @else {
               <div class="space-y-6">
                 @for (album of galleryAlbums; track album.id) {
-                  <article class="site-surface-soft site-tool-panel-solid p-5">
-                    <div class="flex items-start justify-between gap-4">
-                      <div>
-                        <div class="flex flex-wrap items-center gap-3">
-                          <h3 class="text-xl font-vintage font-bold text-paper-900">{{ album.title }}</h3>
-                          <span class="px-3 py-1 rounded-full text-xs font-vintage font-bold content-gallery-pill">
-                            {{ album.photo_count }} {{ t('content.gallery.album.photoCount') }}
-                          </span>
-                        </div>
-                        @if (album.image_url) {
-                          <img [src]="resolveMediaUrl(album.image_url)" [alt]="album.title" class="content-item-inline-image">
-                        }
+                  <article class="content-event-card site-surface-soft site-tool-panel-solid p-5">
+                    <div class="content-event-card-layout" [class.content-event-card-layout-with-media]="!!album.image_url">
+                      @if (album.image_url) { <div class="content-event-card-media"><img [src]="resolveMediaUrl(album.image_url)" [alt]="album.title" class="content-event-card-cover" loading="lazy"></div> }
+                      <div class="content-event-card-body">
+                        <div class="content-event-card-header"><div class="flex flex-wrap items-center gap-3"><h3 class="text-xl font-vintage font-bold text-paper-900">{{ album.title }}</h3><span class="px-3 py-1 rounded-full text-xs font-vintage font-bold content-gallery-pill">{{ album.photo_count }} {{ t('content.gallery.album.photoCount') }}</span></div><time class="content-event-card-date" [attr.datetime]="album.event_date">{{ formatDateTime(album.event_date) }}</time></div>
                         <p class="mt-3 text-paper-700 font-serif">{{ album.description || t('gallery.event.noDescription') }}</p>
-                        <p class="mt-3 text-sm text-paper-500 font-serif">{{ formatDateTime(album.event_date) }} · {{ album.location || t('admin.events.noLocation') }}</p>
+                        <p class="mt-3 text-sm text-paper-500 font-serif">{{ album.location || t('admin.events.noLocation') }}</p>
                       </div>
-                      <div class="flex flex-col gap-2">
+                    </div>
+                    <div class="content-event-actions">
                         <button (click)="editGalleryAlbum(album)" class="site-button-primary px-4 py-2 text-sm">
                           {{ t('content.actions.edit') }}
                         </button>
                         <button (click)="deleteEvent(album)" [disabled]="deletingEventId === album.id" class="site-button-danger px-4 py-2 text-sm disabled:opacity-50">
                           {{ deletingEventId === album.id ? t('content.actions.deleting') : t('content.actions.delete') }}
                         </button>
-                      </div>
                     </div>
 
                     @if (album.photos.length === 0) {
@@ -530,6 +644,8 @@
               </div>
             }
           </section>
+          </div>
+          }
         </div>
       }
     </section>
