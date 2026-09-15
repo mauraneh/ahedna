@@ -24,12 +24,13 @@ const {
   buildCorsHeadersForOrigin,
 } = require('./lib/api-handler');
 const { verifyToken } = require('./lib/auth');
-const { checkDatabaseHealth } = require('./lib/db');
+const { pool, checkDatabaseHealth } = require('./lib/db');
+const { createMediaStore } = require('./lib/media-store');
 const { createMonitoringState } = require('./lib/monitoring');
 const {
   ensureUploadDirectory,
-  saveBase64Image,
-  saveBase64EventMedia,
+  prepareBase64Image,
+  prepareBase64EventMedia,
   resolveUploadPath,
   resolveBundledUploadPath,
   getMimeType,
@@ -129,7 +130,7 @@ async function dispatchApiRequest(request, reply) {
   return sendWebResponse(reply, response);
 }
 
-function buildServer() {
+function buildServer({ mediaStore = createMediaStore(pool) } = {}) {
   const fastify = Fastify({
     logger: process.env.NODE_ENV !== 'test',
     bodyLimit: Number(process.env.BODY_LIMIT_BYTES || 10 * 1024 * 1024),
@@ -213,16 +214,25 @@ function buildServer() {
     reply.headers(buildCorsHeadersForOrigin(request.headers.origin));
 
     const requestedPath = request.params['*'] || '';
-    const uploadPath = [resolveUploadPath(requestedPath), resolveBundledUploadPath(requestedPath)]
-      .find((candidate) => candidate && fs.existsSync(candidate) && fs.statSync(candidate).isFile());
-
-    if (!uploadPath || !fs.existsSync(uploadPath) || !fs.statSync(uploadPath).isFile()) {
-      return reply.code(404).send({ error: 'File not found' });
+    if (!resolveUploadPath(requestedPath)) return reply.code(404).send({ error: 'File not found' });
+    const url = `/api/uploads/${requestedPath}`;
+    try {
+      let media = await mediaStore.get(url);
+      if (!media) {
+        const legacyPath = [resolveUploadPath(requestedPath), resolveBundledUploadPath(requestedPath)]
+          .find((candidate) => candidate && fs.existsSync(candidate) && fs.statSync(candidate).isFile());
+        if (!legacyPath) return reply.code(404).send({ error: 'File not found' });
+        media = { mimeType: getMimeType(legacyPath), buffer: await fs.promises.readFile(legacyPath) };
+        // Migrate existing files without changing event URLs.
+        await mediaStore.put({ url, ...media });
+      }
+      reply.header('Cache-Control', 'public, max-age=31536000, immutable');
+      reply.header('X-Content-Type-Options', 'nosniff');
+      return reply.type(media.mimeType).send(media.buffer);
+    } catch (error) {
+      request.log.error({ err: error }, 'Media storage unavailable');
+      return reply.code(503).send({ error: 'Media storage temporarily unavailable' });
     }
-
-    reply.header('Cache-Control', 'public, max-age=31536000, immutable');
-    reply.header('X-Content-Type-Options', 'nosniff');
-    return reply.type(getMimeType(uploadPath)).send(fs.createReadStream(uploadPath));
   });
 
   fastify.post('/api/uploads/images', async (request, reply) => {
@@ -240,13 +250,19 @@ function buildServer() {
 
     try {
       const { file_name, mime_type, data_base64 } = request.body || {};
-      const url = saveBase64Image({
+      const media = prepareBase64Image({
         fileName: file_name,
         mimeType: mime_type,
         dataBase64: data_base64,
       });
 
-      return reply.send({ url });
+      try {
+        await mediaStore.put(media);
+      } catch (error) {
+        request.log.error({ err: error }, 'Media upload persistence failed');
+        return reply.code(503).send({ error: 'Media storage temporarily unavailable. Please retry.' });
+      }
+      return reply.send({ url: media.url });
     } catch (error) {
       return reply.code(400).send({ error: error.message || 'Upload failed' });
     }
@@ -265,13 +281,19 @@ function buildServer() {
 
     try {
       const { file_name, mime_type, data_base64 } = request.body || {};
-      const url = saveBase64EventMedia({
+      const media = prepareBase64EventMedia({
         fileName: file_name,
         mimeType: mime_type,
         dataBase64: data_base64,
       });
 
-      return reply.send({ url });
+      try {
+        await mediaStore.put(media);
+      } catch (error) {
+        request.log.error({ err: error }, 'Media upload persistence failed');
+        return reply.code(503).send({ error: 'Media storage temporarily unavailable. Please retry.' });
+      }
+      return reply.send({ url: media.url });
     } catch (error) {
       return reply.code(400).send({ error: error.message || 'Upload failed' });
     }

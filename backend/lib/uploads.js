@@ -85,7 +85,7 @@ function sanitizeBaseName(fileName, fallbackName = 'image') {
   return cleaned || fallbackName;
 }
 
-function saveBase64Image({ fileName, mimeType, dataBase64 }) {
+function prepareBase64Image({ fileName, mimeType, dataBase64 }) {
   const extension = IMAGE_TYPES[mimeType];
 
   if (!extension) {
@@ -106,18 +106,12 @@ function saveBase64Image({ fileName, mimeType, dataBase64 }) {
     throw new Error('Image content does not match the declared format');
   }
 
-  ensureUploadDirectory();
-
   const fileBaseName = sanitizeBaseName(fileName);
   const uniqueName = `${Date.now()}-${crypto.randomUUID()}-${fileBaseName}${extension}`;
-  const absolutePath = path.join(UPLOAD_ROOT, IMAGE_FOLDER, uniqueName);
-
-  fs.writeFileSync(absolutePath, buffer);
-
-  return `/api/uploads/${IMAGE_FOLDER}/${uniqueName}`;
+  return { url: `/api/uploads/${IMAGE_FOLDER}/${uniqueName}`, mimeType, buffer };
 }
 
-function saveBase64EventMedia({ fileName, mimeType, dataBase64 }) {
+function prepareBase64EventMedia({ fileName, mimeType, dataBase64 }) {
   const extension = EVENT_MEDIA_TYPES[mimeType];
 
   if (!extension) {
@@ -138,15 +132,25 @@ function saveBase64EventMedia({ fileName, mimeType, dataBase64 }) {
     throw new Error('Event media content does not match the declared format');
   }
 
-  ensureUploadDirectory(EVENT_MEDIA_FOLDER);
-
   const fileBaseName = sanitizeBaseName(fileName, 'event-document');
   const uniqueName = `${Date.now()}-${crypto.randomUUID()}-${fileBaseName}${extension}`;
-  const absolutePath = path.join(UPLOAD_ROOT, EVENT_MEDIA_FOLDER, uniqueName);
+  return { url: `/api/uploads/${EVENT_MEDIA_FOLDER}/${uniqueName}`, mimeType, buffer };
+}
 
-  fs.writeFileSync(absolutePath, buffer);
+// Legacy filesystem helpers remain for imports and existing installations.
+function savePreparedMedia(media) {
+  const filePath = resolveUploadPath(media.url.replace('/api/uploads/', ''));
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, media.buffer);
+  return media.url;
+}
 
-  return `/api/uploads/${EVENT_MEDIA_FOLDER}/${uniqueName}`;
+function saveBase64Image(payload) {
+  return savePreparedMedia(prepareBase64Image(payload));
+}
+
+function saveBase64EventMedia(payload) {
+  return savePreparedMedia(prepareBase64EventMedia(payload));
 }
 
 function resolveUploadPath(requestedPath) {
@@ -194,6 +198,8 @@ function getMimeType(filePath) {
 }
 
 module.exports = {
+  prepareBase64Image,
+  prepareBase64EventMedia,
   ensureUploadDirectory,
   saveBase64Image,
   saveBase64EventMedia,

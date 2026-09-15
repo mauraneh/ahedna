@@ -14,6 +14,14 @@ const {
 
 const createdFiles = new Set();
 
+function memoryMediaStore() {
+  const files = new Map();
+  return {
+    async put(media) { files.set(media.url, { mimeType: media.mimeType, buffer: media.buffer }); },
+    async get(url) { return files.get(url) || null; },
+  };
+}
+
 test.afterEach(() => {
   for (const filePath of createdFiles) {
     if (fs.existsSync(filePath)) {
@@ -219,7 +227,7 @@ test('the dedicated upload routes answer with CORS headers', async () => {
 
   const { buildServer } = require('../server');
   const { generateToken } = require('../lib/auth');
-  const server = buildServer();
+  const server = buildServer({ mediaStore: memoryMediaStore() });
   const token = generateToken({ id: 'cors-test', email: 'cors@example.org', role: 'admin' });
   const pngBase64 =
     'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
@@ -252,7 +260,7 @@ test('PDF previews can fetch uploaded files from an allowed frontend origin', as
   const previousOrigins = process.env.CORS_ORIGINS;
   process.env.CORS_ORIGINS = 'https://www.ahedna.fr';
   const { buildServer } = require('../server');
-  const server = buildServer();
+  const server = buildServer({ mediaStore: memoryMediaStore() });
   const pdf = Buffer.from('%PDF-1.4\n1 0 obj<</Type/Catalog>>endobj\n%%EOF');
   const url = saveBase64EventMedia({
     fileName: 'event-preview.pdf', mimeType: 'application/pdf', dataBase64: pdf.toString('base64'),
@@ -282,7 +290,7 @@ test('PDF previews can fetch uploaded files from an allowed frontend origin', as
 
 test('bundled public media remains readable when the runtime upload is absent', async () => {
   const { buildServer } = require('../server');
-  const server = buildServer();
+  const server = buildServer({ mediaStore: memoryMediaStore() });
   const relativePath = `event-media/bundled-test-${process.pid}.pdf`;
   const bundledPath = resolveBundledUploadPath(relativePath);
   fs.mkdirSync(path.dirname(bundledPath), { recursive: true });
@@ -298,4 +306,50 @@ test('bundled public media remains readable when the runtime upload is absent', 
   } finally {
     await server.close();
   }
+});
+
+
+test('admin uploads survive an application restart without writing a local file', async () => {
+  const { buildServer } = require('../server');
+  const { generateToken } = require('../lib/auth');
+  const mediaStore = memoryMediaStore();
+  const firstServer = buildServer({ mediaStore });
+  const pdf = Buffer.from('%PDF-1.4 persistent upload test');
+  let url;
+  try {
+    const uploaded = await firstServer.inject({
+      method: 'POST', url: '/api/uploads/event-media',
+      headers: { authorization: `Bearer ${generateToken({ id: 'upload-test', role: 'admin' })}` },
+      payload: { file_name: 'poster.pdf', mime_type: 'application/pdf', data_base64: pdf.toString('base64') },
+    });
+    assert.equal(uploaded.statusCode, 200);
+    url = uploaded.json().url;
+    assert.equal(fs.existsSync(resolveUploadPath(url.replace('/api/uploads/', ''))), false);
+  } finally { await firstServer.close(); }
+  const secondServer = buildServer({ mediaStore });
+  try {
+    const downloaded = await secondServer.inject({ method: 'GET', url });
+    assert.equal(downloaded.statusCode, 200);
+    assert.deepEqual(downloaded.rawPayload, pdf);
+  } finally { await secondServer.close(); }
+});
+
+test('failed durable storage returns an error instead of an unusable upload URL', async () => {
+  const { buildServer } = require('../server');
+  const { generateToken } = require('../lib/auth');
+  const server = buildServer({ mediaStore: {
+    async put() { throw new Error('Database unavailable'); },
+    async get() { throw new Error('Database unavailable'); },
+  } });
+  try {
+    const uploaded = await server.inject({
+      method: 'POST', url: '/api/uploads/event-media',
+      headers: { authorization: `Bearer ${generateToken({ id: 'upload-test', role: 'admin' })}` },
+      payload: { file_name: 'poster.pdf', mime_type: 'application/pdf', data_base64: Buffer.from('%PDF-1.4 test').toString('base64') },
+    });
+    assert.equal(uploaded.statusCode, 503);
+    assert.equal(uploaded.json().url, undefined);
+    const downloaded = await server.inject({ method: 'GET', url: '/api/uploads/event-media/poster.pdf' });
+    assert.equal(downloaded.statusCode, 503);
+  } finally { await server.close(); }
 });
