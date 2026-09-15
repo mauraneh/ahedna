@@ -1,3 +1,4 @@
+import { PasswordToggleComponent } from '../../core/components/password-toggle/password-toggle.component';
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -10,7 +11,7 @@ import { ScrollToTopComponent } from '../../core/components/scroll-to-top/scroll
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslocoDirective, NavbarComponent, ScrollToTopComponent],
+  imports: [PasswordToggleComponent, CommonModule, ReactiveFormsModule, RouterLink, TranslocoDirective, NavbarComponent, ScrollToTopComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
@@ -46,7 +47,14 @@ export class LoginComponent {
         },
         error: (err) => {
           this.loading = false;
-          this.error = err.error?.error || this.transloco.translate('auth.login.errors.default');
+          const messageKey = err.status === 401
+            ? 'invalidCredentials'
+            : err.status === 0
+              ? 'network'
+              : err.status === 429
+                ? 'tooManyAttempts'
+                : 'default';
+          this.error = this.transloco.translate(`auth.login.errors.${messageKey}`);
         }
       });
     }

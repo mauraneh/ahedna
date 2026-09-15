@@ -4,6 +4,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { AddressAutocompleteService, AddressSuggestion } from './address-autocomplete.service';
 
 const COMPLETION_URL = 'https://data.geopf.fr/geocodage/completion/';
+const MUNICIPALITY_SEARCH_URL = 'https://data.geopf.fr/geocodage/search/';
 
 describe('AddressAutocompleteService', () => {
   let service: AddressAutocompleteService;
@@ -118,6 +119,83 @@ describe('AddressAutocompleteService', () => {
     request.flush({ results: [] });
   });
 
+  it('searchCities uses the municipality endpoint for a partial city name', (done) => {
+    service.searchCities('Bor').subscribe((suggestions) => {
+      expect(suggestions).toEqual([
+        {
+          label: 'Bordeaux',
+          city: 'Bordeaux',
+          postalCode: '33000',
+          kind: 'municipality',
+        },
+      ]);
+      done();
+    });
+
+    const request = httpMock.expectOne(
+      (req) => req.url === MUNICIPALITY_SEARCH_URL && req.params.get('q') === 'Bor'
+    );
+    expect(request.request.params.get('type')).toBe('municipality');
+    expect(request.request.params.get('limit')).toBe('10');
+    request.flush({
+      features: [
+        {
+          properties: {
+            label: 'Bordeaux',
+            city: 'Bordeaux',
+            postcode: '33000',
+            type: 'municipality',
+          },
+        },
+        {
+          properties: {
+            label: 'Bordeaux Lac',
+            city: 'Bordeaux',
+            postcode: '33000',
+            type: 'locality',
+          },
+        },
+      ],
+    });
+  });
+
+  it('searchCities keeps postal-code searches working', (done) => {
+    service.searchCities('24000').subscribe((suggestions) => {
+      expect(suggestions[0]).toEqual({
+        label: 'Périgueux',
+        city: 'Périgueux',
+        postalCode: '24000',
+        kind: 'municipality',
+      });
+      done();
+    });
+
+    const request = httpMock.expectOne(
+      (req) => req.url === MUNICIPALITY_SEARCH_URL && req.params.get('q') === '24000'
+    );
+    request.flush({
+      features: [
+        {
+          properties: {
+            label: 'Périgueux',
+            city: 'Périgueux',
+            postcode: '24000',
+            type: 'municipality',
+          },
+        },
+      ],
+    });
+  });
+
+  it('searchCities does not call the API for a query shorter than 3 characters', (done) => {
+    service.searchCities('Pa').subscribe((suggestions) => {
+      expect(suggestions).toEqual([]);
+      done();
+    });
+
+    httpMock.expectNone(() => true);
+  });
+
   it('formatLocation shows "postal code + city" for a municipality and the full label otherwise', () => {
     const municipality: AddressSuggestion = {
       label: 'Périgueux',
@@ -134,5 +212,6 @@ describe('AddressAutocompleteService', () => {
 
     expect(service.formatLocation(municipality)).toBe('24000 Périgueux');
     expect(service.formatLocation(street)).toBe('12 rue de la Paix 75002 Paris');
+    expect(service.formatCity(municipality)).toBe('Périgueux (24000)');
   });
 });

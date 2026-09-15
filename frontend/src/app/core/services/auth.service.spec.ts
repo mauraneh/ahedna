@@ -1,8 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter, Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { authInterceptor } from '../interceptors/auth.interceptor';
 import { AuthService, User } from './auth.service';
 
 const TOKEN_KEY = 'ahedna_token';
@@ -15,7 +16,7 @@ const testUser: User = {
 
 function configureTestBed() {
   TestBed.configureTestingModule({
-    providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
+    providers: [provideHttpClient(withInterceptors([authInterceptor])), provideHttpClientTesting(), provideRouter([])],
   });
 }
 
@@ -42,7 +43,7 @@ describe('AuthService', () => {
     expect(service.getCurrentRole()).toBe('visitor');
   });
 
-  it('loads the current user when a token is already stored', async () => {
+  it('restores the session through the real interceptor after a page refresh', async () => {
     localStorage.setItem(TOKEN_KEY, 'stored-token');
     configureTestBed();
 
@@ -50,6 +51,7 @@ describe('AuthService', () => {
     httpMock = TestBed.inject(HttpTestingController);
 
     const request = httpMock.expectOne(`${environment.apiUrl}/auth/me`);
+    expect(request.request.headers.get('Authorization')).toBe('Bearer stored-token');
     request.flush({ user: testUser });
 
     await service.ensureLoaded();
@@ -147,4 +149,35 @@ describe('AuthService', () => {
     expect(service.hasRole(['visitor'])).toBe(true);
     expect(service.hasRole(['membre'])).toBe(false);
   });
+  for (const status of [0, 503]) {
+    it(`keeps the stored token when session restoration fails with status ${status}`, async () => {
+      localStorage.setItem(TOKEN_KEY, 'stored-token');
+      configureTestBed();
+      const service = TestBed.inject(AuthService);
+      httpMock = TestBed.inject(HttpTestingController);
+      const request = httpMock.expectOne(`${environment.apiUrl}/auth/me`);
+      if (status === 0) request.error(new ProgressEvent('error'));
+      else request.flush({}, { status, statusText: 'Service Unavailable' });
+      await service.ensureLoaded();
+      expect(localStorage.getItem(TOKEN_KEY)).toBe('stored-token');
+      expect(service.isAuthenticated()).toBe(false);
+      expect(service.authResolved()).toBe(true);
+    });
+  }
+
+  it('does not restore a session after logout while the startup request is pending', async () => {
+    localStorage.setItem(TOKEN_KEY, 'stored-token');
+    configureTestBed();
+    const service = TestBed.inject(AuthService);
+    httpMock = TestBed.inject(HttpTestingController);
+    spyOn(TestBed.inject(Router), 'navigate');
+    const request = httpMock.expectOne(`${environment.apiUrl}/auth/me`);
+    service.logout();
+    request.flush({ user: testUser });
+    await service.ensureLoaded();
+    expect(service.isAuthenticated()).toBe(false);
+    expect(service.currentUser()).toBeNull();
+    expect(service.getToken()).toBeNull();
+  });
+
 });

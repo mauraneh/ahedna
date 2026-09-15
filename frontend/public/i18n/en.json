@@ -11,7 +11,6 @@
       "history": "History",
       "news": "News",
       "events": "Events",
-      "forum": "Forum",
       "gallery": "Gallery",
       "membership": "Membership"
     },
@@ -269,16 +268,18 @@
   "home": {
     "hero": {
       "titlePrimary": "Association de Harkis",
-      "titleSecondary": "et de leurs Enfants de Dordogne et Nouvelle-Aquitaine",
+      "titleSecondary": "et leurs Enfants de Dordogne et Nouvelle-Aquitaine",
       "region": "AHEDNA",
       "subtitle": "A living memory carried forward through history, encounters, and collective engagement.",
       "primaryCta": "Discover the History",
       "secondaryCta": "Join and support",
       "visual": {
-        "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Camps%20de%20Rivesaltes%2016-05%20MH-PO%206797.jpg?width=1600",
+        "url": "/images/home/rivesaltes-v1-1200.webp",
         "alt": "Rivesaltes camp and memorial, a major site of Harki memory",
         "sourceUrl": "https://commons.wikimedia.org/wiki/File:Camps_de_Rivesaltes_16-05_MH-PO_6797.jpg",
-        "sourceLabel": "Rivesaltes camp and memorial"
+        "sourceLabel": "Rivesaltes camp and memorial",
+        "srcset": "/images/home/rivesaltes-v1-640.webp 640w, /images/home/rivesaltes-v1-1200.webp 1200w, /images/home/rivesaltes-v1-1600.webp 1600w",
+        "sizes": "(max-width: 760px) 100vw, (max-width: 1200px) 90vw, 1120px"
       }
     },
     "shortcuts": [
@@ -296,11 +297,6 @@
         "label": "Agenda",
         "route": "/evenements",
         "icon": "events"
-      },
-      {
-        "label": "Forum",
-        "route": "/forum",
-        "icon": "forum"
       },
       {
         "label": "Membership",
@@ -467,8 +463,8 @@
       },
       "community": {
         "title": "An active community",
-        "body": "Share testimonies, join the forum, and take part in the association's day-to-day life.",
-        "cta": "Join the forum"
+        "body": "Follow our news and take part in the association's day-to-day life.",
+        "cta": "Join the association"
       }
     },
     "cta": {
@@ -515,7 +511,10 @@
         "register": "Sign up"
       },
       "errors": {
-        "default": "Unable to log in right now."
+        "invalidCredentials": "Incorrect email address or password. Check your details and try again.",
+        "network": "Unable to connect. Check your internet connection and try again.",
+        "tooManyAttempts": "Too many login attempts. Please wait a few minutes before trying again.",
+        "default": "Sign-in is temporarily unavailable. Please try again shortly."
       }
     },
     "register": {
@@ -550,6 +549,10 @@
       "errors": {
         "default": "Unable to create the account right now."
       }
+    },
+    "password": {
+      "show": "Show password",
+      "hide": "Hide password"
     }
   },
   "news": {
@@ -627,61 +630,9 @@
       "participationError": "Unable to save your participation right now.",
       "free": "Free",
       "noPaymentDetails": "Payment details to be confirmed",
+      "pdfDocument": "PDF document available",
+      "openPdf": "Open PDF document",
       "openMap": "Open in Maps"
-    }
-  },
-  "forum": {
-    "list": {
-      "title": "Forum",
-      "subtitle": "Talk with the community",
-      "sidebar": {
-        "kicker": "Join the conversation",
-        "title": "A space to share stories, questions, and memory",
-        "body": "The forum brings together testimonies, questions, and exchanges between members around Harki history, families, and transmission."
-      },
-      "stats": {
-        "topics": "Topics",
-        "responses": "Replies"
-      },
-      "createTitle": "Create a new topic",
-      "fields": {
-        "title": {
-          "label": "Title",
-          "placeholder": "Give your topic a clear title"
-        },
-        "content": {
-          "label": "Message",
-          "placeholder": "Share your message, question, or testimony"
-        }
-      },
-      "actions": {
-        "cancel": "Cancel",
-        "newTopic": "+ New topic",
-        "loginToPost": "Log in to post",
-        "publish": "Publish",
-        "creating": "Creating..."
-      },
-      "access": {
-        "kicker": "Restricted access",
-        "title": "Please log in to access the forum",
-        "body": "The forum is reserved for signed-in users so the association can keep the space moderated, respectful, and easy to follow for the community.",
-        "button": "Log in"
-      },
-      "loading": "Loading forum...",
-      "empty": {
-        "title": "No topics for now",
-        "body": "Be the first to start a discussion."
-      },
-      "topic": {
-        "responseSingle": "response",
-        "responsePlural": "responses",
-        "pendingValidation": "Pending validation",
-        "fallbackInitial": "U"
-      },
-      "messages": {
-        "createSuccess": "Topic created successfully. It will appear after validation.",
-        "createError": "Unable to publish this topic right now."
-      }
     }
   },
   "gallery": {
@@ -744,7 +695,7 @@
       "body": "Join AHEDNA and take an active part in our work to preserve the memory of the Harkis.",
       "features": {
         "events": "Access to all events and activities",
-        "community": "Participation in the forum and gallery",
+        "community": "Participation in association activities and the gallery",
         "newsletter": "Receive our newsletter and updates",
         "memory": "Support our actions for memory and transmission"
       },
@@ -784,7 +735,6 @@
   "admin": {
     "header": {
       "title": "Admin area",
-      "manageContent": "Manage content",
       "backToSite": "Back to site"
     },
     "stats": {
@@ -795,16 +745,15 @@
       "publishedNews": "Published news",
       "events": "Events",
       "upcomingEvents": "Upcoming events",
-      "topics": "Forum topics",
       "photos": "Gallery photos",
       "pendingModeration": "Pending moderation"
     },
     "tabs": {
       "users": "Users",
       "news": "News",
-      "forum": "Forum",
       "gallery": "Gallery",
-      "events": "Events"
+      "events": "Events",
+      "overview": "Overview"
     },
     "users": {
       "title": "User management",
@@ -869,12 +818,6 @@
         "deleting": "Deleting..."
       }
     },
-    "forum": {
-      "title": "Forum moderation",
-      "empty": "No topics pending validation",
-      "validate": "Approve",
-      "reject": "Reject"
-    },
     "gallery": {
       "title": "Gallery moderation",
       "subtitle": "Review photos submitted by members to event albums.",
@@ -910,14 +853,23 @@
       "createTitle": "Create event",
       "editTitle": "Edit event",
       "subtitle": "Prepare upcoming meetings and keep the event history accurate.",
+      "createSubtitle": "Enter the useful information, add an image or PDF, then publish the event.",
       "listTitle": "Scheduled events",
       "listSubtitle": "All events currently visible to the administration.",
+      "emptyTitle": "No scheduled events",
+      "emptySubtitle": "Create your first event to make it visible on the website.",
+      "views": {
+        "create": "Create an event",
+        "createHint": "Add a new meeting",
+        "planned": "Scheduled events",
+        "plannedHint": "{{ count }} in total"
+      },
       "noLocation": "Location to be confirmed",
       "fields": {
         "title": "Title",
         "description": "Description",
         "date": "Date and time",
-        "location": "Location",
+        "location": "City",
         "price": "Price",
         "paymentDetails": "Payable to",
         "type": "Type",
@@ -1074,8 +1026,10 @@
       "imageUrl": "Cover image",
       "imageFile": "Image from device",
       "imageHelp": "Accepted formats: JPG, PNG, WebP or GIF. Maximum size: 5 MB.",
-      "locationPlaceholder": "Address, city or postal code",
-      "locationHelp": "Enter an address or postal code, then choose an official suggestion.",
+      "eventMediaFile": "Image or PDF document",
+      "eventMediaHelp": "Accepted formats: JPG, PNG, WebP, GIF or PDF. Maximum size: 5 MB.",
+      "locationPlaceholder": "City or postal code",
+      "locationHelp": "Enter at least 3 characters, then choose a city from the official list.",
       "published": "Publish immediately"
     },
     "list": {
@@ -1102,6 +1056,9 @@
       "edit": "Edit",
       "delete": "Delete",
       "removeImage": "Remove image",
+      "chooseFile": "Choose a file",
+      "removeFile": "Remove file",
+      "openPdf": "Open PDF document",
       "deletePhoto": "Delete photo",
       "deleting": "Deleting...",
       "confirmDelete": "Do you really want to delete this article?",
@@ -1160,8 +1117,10 @@
       "deleteGalleryPhotoError": "Unable to delete this photo.",
       "importNewsError": "Unable to import public articles right now.",
       "uploadingImage": "Uploading image...",
+      "uploadingEventMedia": "Uploading file...",
       "uploadImageError": "Unable to upload this image.",
-      "locationSuggestionRequired": "Select a location from the official suggestion list before saving."
+      "uploadEventMediaError": "Unable to upload this image or PDF document.",
+      "locationSuggestionRequired": "Select an existing city from the official list before saving."
     }
   }
 }

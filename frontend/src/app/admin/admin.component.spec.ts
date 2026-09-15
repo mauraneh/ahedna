@@ -31,6 +31,7 @@ class AuthServiceStub {
 class AddressAutocompleteServiceStub {
   searchResult: any = of([]);
   searchByPostalCodeResult: any = of([]);
+  citySearchResult: any = of([]);
 
   search() {
     return this.searchResult;
@@ -40,8 +41,16 @@ class AddressAutocompleteServiceStub {
     return this.searchByPostalCodeResult;
   }
 
+  searchCities() {
+    return this.citySearchResult;
+  }
+
   formatLocation(suggestion: any) {
     return suggestion.label;
+  }
+
+  formatCity(suggestion: any) {
+    return `${suggestion.city} (${suggestion.postalCode})`;
   }
 }
 
@@ -52,8 +61,20 @@ class MediaUploadServiceStub {
     return url || '';
   }
 
+  getMediaFileName(url?: string | null) {
+    return url?.split('/').pop() || '';
+  }
+
   uploadImage() {
     return this.uploadResult;
+  }
+
+  uploadEventMedia() {
+    return this.uploadResult;
+  }
+
+  isPdfMedia(url?: string | null) {
+    return Boolean(url && /\.pdf(?:[?#]|$)/i.test(url));
   }
 }
 
@@ -97,9 +118,7 @@ function flushInitialLoad(httpMock: HttpTestingController, overrides: Record<str
   );
   httpMock.expectOne(`${environment.apiUrl}/users`).flush(overrides['users'] ?? { users: [] });
   httpMock.expectOne(`${environment.apiUrl}/news`).flush(overrides['news'] ?? { news: [] });
-  httpMock
-    .expectOne(`${environment.apiUrl}/forum/topics`)
-    .flush(overrides['topics'] ?? { topics: [] });
+  httpMock.expectNone(`${environment.apiUrl}/forum/topics`);
   httpMock
     .expectOne(`${environment.apiUrl}/gallery/event-photos`)
     .flush(overrides['photos'] ?? { photos: [] });
@@ -110,11 +129,96 @@ function flushInitialLoad(httpMock: HttpTestingController, overrides: Record<str
 }
 
 describe('AdminComponent', () => {
+  it('opens the overview and supports keyboard navigation through management tabs', () => {
+    const { fixture, httpMock } = createComponent();
+    fixture.detectChanges();
+    flushInitialLoad(httpMock);
+    fixture.detectChanges();
+    const buttons = fixture.nativeElement.querySelectorAll('[role="tab"]');
+    expect(fixture.componentInstance.activeTab).toBe('overview');
+    expect(fixture.componentInstance.tabs.some(tab => tab.id === 'forum')).toBe(false);
+    expect(fixture.componentInstance.tabs.some(tab => tab.id === 'content')).toBe(false);
+    expect(buttons.length).toBe(5);
+    buttons[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true }));
+    fixture.detectChanges();
+    expect(fixture.componentInstance.activeTab).toBe('events');
+    expect(fixture.nativeElement.querySelector('[role="tabpanel"]').getAttribute('aria-labelledby')).toBe('admin-tab-events');
+    buttons[buttons.length - 1].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    fixture.detectChanges();
+    expect(fixture.componentInstance.activeTab).toBe('overview');
+  });
+
+  it('separates event creation from the scheduled events list', () => {
+    const { fixture, httpMock } = createComponent();
+    fixture.detectChanges();
+    flushInitialLoad(httpMock);
+
+    fixture.componentInstance.activeTab = 'events';
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.activeEventView).toBe('create');
+    expect(fixture.nativeElement.querySelector('#admin-event-panel-create')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('#admin-event-panel-planned')).toBeNull();
+
+    const plannedTab = fixture.nativeElement.querySelector('#admin-event-view-planned') as HTMLButtonElement;
+    plannedTab.click();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.activeEventView).toBe('planned');
+    expect(fixture.nativeElement.querySelector('#admin-event-panel-create')).toBeNull();
+    expect(fixture.nativeElement.querySelector('#admin-event-panel-planned')).not.toBeNull();
+  });
+
+  it('shows the event image as a cover in the planned events view', () => {
+    const { fixture, httpMock } = createComponent();
+    fixture.detectChanges();
+    flushInitialLoad(httpMock, {
+      events: {
+        events: [{
+          id: 'evt-image',
+          title: 'Rencontre à Périgueux',
+          description: 'Présentation de la rencontre',
+          event_date: '2026-09-20T10:30:00',
+          location: 'Périgueux (24000)',
+          image_url: '/api/uploads/event-media/rencontre.png',
+          type: 'upcoming',
+          price_amount: 0,
+          gallery_enabled: false,
+        }],
+      },
+    });
+
+    fixture.componentInstance.activeTab = 'events';
+    fixture.componentInstance.activeEventView = 'planned';
+    fixture.detectChanges();
+
+    const cover = fixture.nativeElement.querySelector('.admin-event-card-cover') as HTMLImageElement;
+    expect(cover).not.toBeNull();
+    expect(cover.getAttribute('src')).toBe('/api/uploads/event-media/rencontre.png');
+    expect(cover.getAttribute('alt')).toBe('Rencontre à Périgueux');
+  });
+
+  it('supports arrow-key navigation between the two event views', () => {
+    const { fixture, httpMock } = createComponent();
+    fixture.detectChanges();
+    flushInitialLoad(httpMock);
+
+    fixture.componentInstance.activeTab = 'events';
+    fixture.detectChanges();
+    const createTab = fixture.nativeElement.querySelector('#admin-event-view-create') as HTMLButtonElement;
+
+    createTab.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.activeEventView).toBe('planned');
+    expect(document.activeElement?.id).toBe('admin-event-view-planned');
+  });
+
   afterEach(() => {
     TestBed.inject(HttpTestingController).verify();
   });
 
-  it('loads all seven datasets on init', () => {
+  it('loads the six active datasets without requesting the deferred forum', () => {
     const { fixture, httpMock } = createComponent();
     fixture.detectChanges();
 
@@ -123,7 +227,6 @@ describe('AdminComponent', () => {
     const component = fixture.componentInstance;
     expect(component.loadingUsers).toBe(false);
     expect(component.loadingNews).toBe(false);
-    expect(component.loadingTopics).toBe(false);
     expect(component.loadingPhotos).toBe(false);
     expect(component.loadingEvents).toBe(false);
     expect(component.loadingGalleryEvents).toBe(false);
@@ -156,21 +259,6 @@ describe('AdminComponent', () => {
     expect(fixture.componentInstance.recentUsers.length).toBe(1);
   });
 
-  it('keeps only the non-validated topics as pending', () => {
-    const { fixture, httpMock } = createComponent();
-    fixture.detectChanges();
-
-    flushInitialLoad(httpMock, {
-      topics: {
-        topics: [
-          { id: 't1', validated: false },
-          { id: 't2', validated: true },
-        ],
-      },
-    });
-
-    expect(fixture.componentInstance.pendingTopics.map((topic) => topic.id)).toEqual(['t1']);
-  });
 
   it('reports whether a user id matches the current admin', () => {
     const { fixture } = createComponent();
@@ -320,6 +408,12 @@ describe('AdminComponent', () => {
       price_amount: 0,
       payment_details: '',
     });
+    component.selectGalleryEventLocation({
+      label: 'Périgueux, 24000 Périgueux',
+      city: 'Périgueux',
+      postalCode: '24000',
+      kind: 'municipality',
+    } as any);
 
     component.saveGalleryEvent();
 
@@ -366,66 +460,12 @@ describe('AdminComponent', () => {
     } as any);
 
     expect(component.activeTab).toBe('events');
+    expect(component.activeEventView).toBe('create');
     expect(component.editingEventId).toBe('album-1');
   });
 
-  it('validates a forum topic and reloads the pending list and the overview', () => {
-    const { fixture, httpMock } = createComponent();
-    fixture.detectChanges();
-    flushInitialLoad(httpMock);
 
-    fixture.componentInstance.validateTopic('topic-1', true);
 
-    httpMock
-      .expectOne(`${environment.apiUrl}/forum/topics/topic-1/validate`)
-      .flush({ message: 'Topic validation updated' });
-    httpMock.expectOne(`${environment.apiUrl}/forum/topics`).flush({ topics: [] });
-    httpMock.expectOne(`${environment.apiUrl}/admin/overview`).flush({
-      stats: {
-        users: 0,
-        active_memberships: 0,
-        pending_memberships: 0,
-        news: 0,
-        published_news: 0,
-        events: 0,
-        upcoming_events: 0,
-        pending_topics: 0,
-        pending_photos: 0,
-      },
-      recentUsers: [],
-      recentNews: [],
-      recentEvents: [],
-    });
-
-    expect(fixture.componentInstance.pendingTopics).toEqual([]);
-  });
-
-  it('alerts when validating a topic fails', () => {
-    const { fixture, httpMock } = createComponent();
-    fixture.detectChanges();
-    flushInitialLoad(httpMock);
-    const alertSpy = spyOn(window, 'alert');
-
-    fixture.componentInstance.validateTopic('topic-1', true);
-
-    httpMock
-      .expectOne(`${environment.apiUrl}/forum/topics/topic-1/validate`)
-      .flush({ error: 'Insufficient permissions' }, { status: 403, statusText: 'Forbidden' });
-
-    expect(alertSpy).toHaveBeenCalled();
-  });
-
-  it('does not delete a forum topic when the confirmation dialog is dismissed', () => {
-    const { fixture, httpMock } = createComponent();
-    fixture.detectChanges();
-    flushInitialLoad(httpMock);
-    spyOn(window, 'confirm').and.returnValue(false);
-
-    fixture.componentInstance.deleteTopic('topic-1');
-
-    httpMock.expectNone(`${environment.apiUrl}/forum/topics/topic-1`);
-    expect(fixture.componentInstance.pendingTopics).toEqual([]);
-  });
 
   it('validates a pending photo and reloads photos, gallery events and the overview', () => {
     const { fixture, httpMock } = createComponent();
@@ -483,7 +523,45 @@ describe('AdminComponent', () => {
     component.onEventImageSelected({ target: input } as unknown as Event);
 
     expect(component.eventForm.value.image_url).toBe('/api/uploads/images/photo.png');
+    expect(component.eventMediaFileName).toBe('photo.png');
     expect(component.uploadingEventImage).toBe(false);
+  });
+
+  it('accepts a PDF document for an event and identifies it as a document', () => {
+    const { fixture, httpMock } = createComponent();
+    fixture.detectChanges();
+    flushInitialLoad(httpMock);
+
+    const mediaUpload = TestBed.inject(MediaUploadService) as unknown as MediaUploadServiceStub;
+    mediaUpload.uploadResult = of({ url: '/api/uploads/event-media/programme.pdf' });
+    const component = fixture.componentInstance;
+    const file = new File(['%PDF-1.4'], 'programme.pdf', { type: 'application/pdf' });
+    const input = document.createElement('input');
+    Object.defineProperty(input, 'files', { value: [file] });
+
+    component.onEventImageSelected({ target: input } as unknown as Event);
+
+    expect(component.eventForm.value.image_url).toBe('/api/uploads/event-media/programme.pdf');
+    expect(component.eventMediaFileName).toBe('programme.pdf');
+    expect(component.isPdfMedia(component.eventForm.value.image_url)).toBe(true);
+    expect(component.uploadingEventImage).toBe(false);
+  });
+
+  it('removes the selected media from the event form', () => {
+    const { fixture, httpMock } = createComponent();
+    fixture.detectChanges();
+    flushInitialLoad(httpMock);
+
+    const component = fixture.componentInstance;
+    component.eventForm.patchValue({ image_url: '/api/uploads/event-media/programme.pdf' });
+    component.eventImagePreview = '/api/uploads/event-media/programme.pdf';
+    component.eventMediaFileName = 'programme.pdf';
+
+    component.clearEventMedia();
+
+    expect(component.eventForm.value.image_url).toBe('');
+    expect(component.eventImagePreview).toBe('');
+    expect(component.eventMediaFileName).toBe('');
   });
 
   function overviewPayload() {
@@ -670,6 +748,12 @@ describe('AdminComponent', () => {
       price_amount: 0,
       payment_details: '',
     });
+    component.selectGalleryEventLocation({
+      label: 'Périgueux, 24000 Périgueux',
+      city: 'Périgueux',
+      postalCode: '24000',
+      kind: 'municipality',
+    } as any);
     component.saveGalleryEvent();
 
     httpMock
@@ -751,6 +835,7 @@ describe('AdminComponent', () => {
       id: 'evt-1',
       title: 'Avant',
       event_date: '2027-01-01T10:00:00.000Z',
+      location: 'Périgueux (24000)',
       type: 'upcoming',
     } as any);
 
@@ -764,6 +849,7 @@ describe('AdminComponent', () => {
     httpMock.expectOne(`${environment.apiUrl}/admin/overview`).flush(overviewPayload());
 
     expect(component.editingEventId).toBeNull();
+    expect(component.activeEventView).toBe('planned');
   });
 
   it('shows an error message when saving an event fails', () => {
@@ -783,6 +869,12 @@ describe('AdminComponent', () => {
       price_amount: 0,
       payment_details: '',
     });
+    component.selectEventLocation({
+      label: 'Périgueux, 24000 Périgueux',
+      city: 'Périgueux',
+      postalCode: '24000',
+      kind: 'municipality',
+    } as any);
     component.saveEvent();
 
     httpMock
@@ -844,21 +936,6 @@ describe('AdminComponent', () => {
     expect(fixture.componentInstance.eventError).toBe('Cannot delete');
   });
 
-  it('shows an error alert when deleting a forum topic fails', () => {
-    const { fixture, httpMock } = createComponent();
-    fixture.detectChanges();
-    flushInitialLoad(httpMock);
-    spyOn(window, 'confirm').and.returnValue(true);
-    const alertSpy = spyOn(window, 'alert');
-
-    fixture.componentInstance.deleteTopic('topic-1');
-
-    httpMock
-      .expectOne(`${environment.apiUrl}/forum/topics/topic-1`)
-      .flush({ error: 'Cannot delete' }, { status: 400, statusText: 'Bad Request' });
-
-    expect(alertSpy).toHaveBeenCalled();
-  });
 
   it('deletes a pending photo and reloads photos, gallery events and the overview', () => {
     const { fixture, httpMock } = createComponent();
@@ -964,7 +1041,7 @@ describe('AdminComponent', () => {
     expect(fixture.componentInstance.uploadingEventImage).toBe(false);
   });
 
-  it('clears location suggestions and confirms the location when the field is emptied', () => {
+  it('clears city suggestions when the required field is emptied', () => {
     const { fixture, httpMock } = createComponent();
     fixture.detectChanges();
     flushInitialLoad(httpMock);
@@ -984,7 +1061,7 @@ describe('AdminComponent', () => {
     const addressAutocomplete = TestBed.inject(
       AddressAutocompleteService
     ) as unknown as AddressAutocompleteServiceStub;
-    const searchSpy = spyOn(addressAutocomplete, 'search').and.callThrough();
+    const searchSpy = spyOn(addressAutocomplete, 'searchCities').and.callThrough();
 
     const component = fixture.componentInstance;
     component.eventForm.patchValue({ location: 'Pa' });
@@ -993,7 +1070,7 @@ describe('AdminComponent', () => {
     expect(searchSpy).not.toHaveBeenCalled();
   });
 
-  it('auto-selects the location when searching by a full postal code', () => {
+  it('lists official cities for a postal code and requires an explicit selection', () => {
     const { fixture, httpMock } = createComponent();
     fixture.detectChanges();
     flushInitialLoad(httpMock);
@@ -1001,7 +1078,14 @@ describe('AdminComponent', () => {
     const addressAutocomplete = TestBed.inject(
       AddressAutocompleteService
     ) as unknown as AddressAutocompleteServiceStub;
-    addressAutocomplete.searchByPostalCodeResult = of([{ label: 'Périgueux (24000)' }]);
+    addressAutocomplete.citySearchResult = of([
+      {
+        label: 'Périgueux, 24000 Périgueux',
+        city: 'Périgueux',
+        postalCode: '24000',
+        kind: 'municipality',
+      },
+    ]);
 
     const component = fixture.componentInstance;
     component.eventForm.patchValue({
@@ -1012,9 +1096,15 @@ describe('AdminComponent', () => {
     });
     component.onEventLocationInput();
 
+    expect(component.eventForm.value.location).toBe('24000');
+    expect(component.eventLocationSuggestions.length).toBe(1);
+
+    component.saveEvent();
+    httpMock.expectNone(`${environment.apiUrl}/events`);
+
+    component.selectEventLocation(component.eventLocationSuggestions[0]);
     expect(component.eventForm.value.location).toBe('Périgueux (24000)');
 
-    // The postal-code match auto-confirms the location, so saving should not be blocked.
     component.saveEvent();
     httpMock.expectOne(`${environment.apiUrl}/events`);
   });
@@ -1027,7 +1117,10 @@ describe('AdminComponent', () => {
     const addressAutocomplete = TestBed.inject(
       AddressAutocompleteService
     ) as unknown as AddressAutocompleteServiceStub;
-    addressAutocomplete.searchResult = of([{ label: 'Périgueux' }, { label: 'Périgord' }]);
+    addressAutocomplete.citySearchResult = of([
+      { label: 'Périgueux', city: 'Périgueux', postalCode: '24000', kind: 'municipality' },
+      { label: 'Pérignac', city: 'Pérignac', postalCode: '17800', kind: 'municipality' },
+    ]);
 
     const component = fixture.componentInstance;
     component.galleryEventForm.patchValue({
@@ -1055,19 +1148,23 @@ describe('AdminComponent', () => {
       AddressAutocompleteService
     ) as unknown as AddressAutocompleteServiceStub;
     const staleResults = new Subject<any[]>();
-    addressAutocomplete.searchResult = staleResults.asObservable();
+    addressAutocomplete.citySearchResult = staleResults.asObservable();
 
     const component = fixture.componentInstance;
     component.eventForm.patchValue({ location: 'Perigueux' });
     component.onEventLocationInput();
 
     // A second, newer request supersedes the first before it resolves.
-    addressAutocomplete.searchResult = of([{ label: 'Nouvelle-Aquitaine' }]);
+    addressAutocomplete.citySearchResult = of([
+      { label: 'Pérignac', city: 'Pérignac', postalCode: '17800', kind: 'municipality' },
+    ]);
     component.onEventLocationInput();
 
     staleResults.next([{ label: 'Résultat périmé' }]);
 
-    expect(component.eventLocationSuggestions).toEqual([{ label: 'Nouvelle-Aquitaine' } as any]);
+    expect(component.eventLocationSuggestions).toEqual([
+      { label: 'Pérignac', city: 'Pérignac', postalCode: '17800', kind: 'municipality' } as any,
+    ]);
   });
 
   it('selects a suggestion for the gallery event location', () => {
@@ -1081,9 +1178,14 @@ describe('AdminComponent', () => {
       event_date: '2027-01-01T10:00',
       type: 'upcoming',
     });
-    component.selectGalleryEventLocation({ label: 'Périgueux' } as any);
+    component.selectGalleryEventLocation({
+      label: 'Périgueux, 24000 Périgueux',
+      city: 'Périgueux',
+      postalCode: '24000',
+      kind: 'municipality',
+    } as any);
 
-    expect(component.galleryEventForm.value.location).toBe('Périgueux');
+    expect(component.galleryEventForm.value.location).toBe('Périgueux (24000)');
 
     // Selecting a suggestion confirms the location, so saving should not be blocked.
     component.saveGalleryEvent();

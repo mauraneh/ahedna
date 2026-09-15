@@ -12,6 +12,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { MediaUploadService } from '../../core/services/media-upload.service';
 import { SeoService } from '../../core/services/seo.service';
+import { PdfThumbnailComponent } from '../../core/components/pdf-thumbnail/pdf-thumbnail.component';
 
 interface Event {
   id: string;
@@ -37,7 +38,7 @@ interface ParticipationResponse {
 @Component({
   selector: 'app-events-list',
   standalone: true,
-  imports: [CommonModule, TranslocoDirective, RouterLink, NavbarComponent, ScrollToTopComponent],
+  imports: [CommonModule, TranslocoDirective, RouterLink, NavbarComponent, ScrollToTopComponent, PdfThumbnailComponent],
   templateUrl: './events-list.component.html',
   styleUrl: './events-list.component.scss'
 })
@@ -117,6 +118,10 @@ export class EventsListComponent implements OnInit {
     return this.mediaUpload.resolveMediaUrl(url);
   }
 
+  isPdfMedia(url?: string | null): boolean {
+    return this.mediaUpload.isPdfMedia(url);
+  }
+
   openEvent(event: Event): void {
     this.router.navigate([], {
       relativeTo: this.route,
@@ -165,7 +170,7 @@ export class EventsListComponent implements OnInit {
     this.seoService.override({
       title: `${event.title} - AHEDNA`,
       description: this.buildEventSeoSummary(event),
-      image: this.getEventImageUrl(event.image_url) || undefined,
+      image: !this.isPdfMedia(event.image_url) ? this.getEventImageUrl(event.image_url) || undefined : undefined,
     });
   }
 

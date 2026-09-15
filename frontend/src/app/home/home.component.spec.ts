@@ -157,7 +157,31 @@ describe('HomeComponent', () => {
     const component = fixture.componentInstance;
     expect(component.eventCards.length).toBe(1);
     expect(component.eventCards[0].imageUrl).toBe('/memory.jpg');
+    expect(component.eventCards[0].isPdf).toBe(false);
     expect(component.eventCards[0].body.length).toBeLessThanOrEqual(144);
+  });
+
+  it('keeps a PDF event poster so its first page can be rendered on the homepage', () => {
+    const { fixture, httpMock } = createComponent();
+    fixture.detectChanges();
+
+    httpMock.expectOne(`${environment.apiUrl}/news?published=true`).flush({ news: [] });
+    httpMock.expectOne(`${environment.apiUrl}/events?type=upcoming`).flush({
+      events: [
+        {
+          id: 'e-pdf',
+          title: 'Un couscous, un livre, une rencontre',
+          description: 'Rencontre culturelle',
+          event_date: '2026-11-08T11:30:00.000Z',
+          location: 'Terrasson-Lavilledieu',
+          image_url: '/api/uploads/event-media/affiche.pdf',
+        },
+      ],
+    });
+
+    const card = fixture.componentInstance.eventCards[0];
+    expect(card.imageUrl).toContain('/api/uploads/event-media/affiche.pdf');
+    expect(card.isPdf).toBe(true);
   });
 
   it('keeps the events list empty when the API returns no upcoming events', () => {

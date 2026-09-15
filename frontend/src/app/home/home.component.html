@@ -32,6 +32,11 @@
           <div class="hero-image-wrap">
             <img
               [src]="home.hero.visual.url"
+              [attr.srcset]="home.hero.visual.srcset"
+              [attr.sizes]="home.hero.visual.sizes"
+              width="1200"
+              height="800"
+              fetchpriority="high"
               [alt]="home.hero.visual.alt"
               class="hero-image"
               loading="eager"
@@ -66,11 +71,7 @@
                         <path d="M3 10h18"></path>
                       </svg>
                     }
-                    @case ('forum') {
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                      </svg>
-                    }
+
                     @case ('membership') {
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M12 21s-6.7-4.35-9-8.08C1.37 10.34 2.4 6.5 6.2 5.4c2.1-.61 4.13.16 5.3 1.9 1.17-1.74 3.2-2.51 5.3-1.9 3.8 1.1 4.83 4.94 3.2 7.52C18.7 16.65 12 21 12 21Z"></path>
@@ -196,7 +197,11 @@
                 @for (event of eventCards; track event.title) {
                   <article class="event-card">
                     <div class="event-card-media">
-                      <img [src]="event.imageUrl" [alt]="event.imageAlt" class="news-img" loading="lazy" (error)="handleMediaImageError($event)">
+                      @if (event.isPdf) {
+                        <app-pdf-thumbnail [src]="event.imageUrl" [alt]="event.imageAlt" class="event-card-pdf"></app-pdf-thumbnail>
+                      } @else {
+                        <img [src]="event.imageUrl" [alt]="event.imageAlt" class="news-img" loading="lazy" (error)="handleMediaImageError($event)">
+                      }
                     </div>
                     <div class="event-card-body">
                       <span class="news-date">{{ event.dateLabel }}</span>

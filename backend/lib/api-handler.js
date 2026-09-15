@@ -22,8 +22,35 @@ const PUBLIC_NEWS_IMAGE_FETCH_LIMIT = 30;
 const ARTICLE_IMAGE_FETCH_TIMEOUT_MS = 5000;
 const MAX_ARTICLE_IMAGE_HTML_BYTES = 750000;
 
+function formatLocalEventDate(date) {
+  const year = `${date.getFullYear()}`.padStart(4, '0');
+  const month = `${date.getMonth() + 1}`.padStart(2, '0');
+  const day = `${date.getDate()}`.padStart(2, '0');
+  const hours = `${date.getHours()}`.padStart(2, '0');
+  const minutes = `${date.getMinutes()}`.padStart(2, '0');
+  const seconds = `${date.getSeconds()}`.padStart(2, '0');
+
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+}
+
+function stringifyApiJson(body) {
+  return JSON.stringify(body, function preserveLocalEventTime(key, value) {
+    const originalValue = key ? this[key] : body;
+
+    if (
+      key === 'event_date' &&
+      originalValue instanceof Date &&
+      !Number.isNaN(originalValue.getTime())
+    ) {
+      return formatLocalEventDate(originalValue);
+    }
+
+    return value;
+  });
+}
+
 function jsonResponse(body, options = {}) {
-  return new Response(JSON.stringify(body), {
+  return new Response(stringifyApiJson(body), {
     status: options.status || 200,
     headers: {
       'content-type': 'application/json; charset=utf-8',
@@ -2554,4 +2581,5 @@ module.exports = {
   getGdeltDate,
   normalizeString,
   normalizeEmail,
+  stringifyApiJson,
 };

@@ -36,13 +36,16 @@
               <label for="password" class="site-form-label">
                 {{ t('auth.login.fields.password.label') }}
               </label>
-              <input
+              <div class="site-password-field">
+                <input #passwordInput
                 id="password"
                 formControlName="password"
-                type="password"
+                type="password" autocomplete="current-password"
                 required
                 class="site-input"
                 [placeholder]="t('auth.login.fields.password.placeholder')">
+                <app-password-toggle [input]="passwordInput" />
+              </div>
             </div>
           </div>
 

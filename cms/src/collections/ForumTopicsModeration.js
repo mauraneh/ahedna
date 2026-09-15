@@ -17,6 +17,7 @@ export const ForumTopicsModeration = {
     update: isAdminUser,
   },
   admin: {
+    hidden: true,
     useAsTitle: 'title',
     defaultColumns: ['title', 'authorLabel', 'validated', 'createdAtPublic'],
     group: 'Moderation',

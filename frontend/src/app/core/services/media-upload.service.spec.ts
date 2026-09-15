@@ -19,10 +19,11 @@ function signedFile(name: string, mimeType: string, signature: number[]): File {
 function waitForUpload(
   httpMock: HttpTestingController,
   apiUrl: string,
-  respond: (request: import('@angular/common/http/testing').TestRequest) => void
+  respond: (request: import('@angular/common/http/testing').TestRequest) => void,
+  endpoint = 'uploads/images'
 ): void {
   const poll = () => {
-    const pending = httpMock.match(`${apiUrl}/uploads/images`);
+    const pending = httpMock.match(`${apiUrl}/${endpoint}`);
     if (pending.length === 0) {
       setTimeout(poll, 0);
       return;
@@ -143,6 +144,54 @@ describe('MediaUploadService', () => {
       expect(typeof request.request.body.data_base64).toBe('string');
       request.flush({ url: '/api/uploads/images/photo.png' });
     });
+  });
+
+  it('uploads a valid PDF through the event media endpoint', (done) => {
+    const file = signedFile(
+      'programme.pdf',
+      'application/pdf',
+      '%PDF-1.4'.split('').map((character) => character.charCodeAt(0))
+    );
+
+    service.uploadEventMedia(file).subscribe((response) => {
+      expect(response.url).toBe('/api/uploads/event-media/programme.pdf');
+      done();
+    });
+
+    waitForUpload(httpMock, environment.apiUrl, (request) => {
+      expect(request.request.body.file_name).toBe('programme.pdf');
+      expect(request.request.body.mime_type).toBe('application/pdf');
+      expect(typeof request.request.body.data_base64).toBe('string');
+      request.flush({ url: '/api/uploads/event-media/programme.pdf' });
+    }, 'uploads/event-media');
+  });
+
+  it('rejects a PDF whose bytes do not match its declared format', (done) => {
+    const file = new File([new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8])], 'fake.pdf', {
+      type: 'application/pdf',
+    });
+
+    service.uploadEventMedia(file).subscribe({
+      error: (error) => {
+        expect(error.message).toContain('ne correspond pas au format annoncé');
+        done();
+      },
+    });
+  });
+
+  it('recognises PDF media URLs without confusing image URLs', () => {
+    expect(service.isPdfMedia('/api/uploads/event-media/programme.PDF?version=2')).toBe(true);
+    expect(service.isPdfMedia('/api/uploads/images/photo.png')).toBe(false);
+  });
+
+  it('extracts a readable file name from an uploaded media URL', () => {
+    expect(
+      service.getMediaFileName(
+        '/api/uploads/event-media/1789470664247-69b22a56-67fc-477a-bf17-639522ad8cd6-mon-affiche.pdf?version=2'
+      )
+    ).toBe('mon-affiche.pdf');
+    expect(service.getMediaFileName('/api/uploads/event-media/photo%20event.png')).toBe('photo event.png');
+    expect(service.getMediaFileName()).toBe('');
   });
 
   it('accepts a valid JPEG signature', (done) => {

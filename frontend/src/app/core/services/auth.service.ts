@@ -1,7 +1,8 @@
 import { Injectable, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, firstValueFrom, tap } from 'rxjs';
+import { AuthTokenStorage } from './auth-token-storage.service';
 import { environment } from '../../../environments/environment';
 
 export type UserRole = 'membre' | 'auteur' | 'admin';
@@ -36,7 +37,6 @@ export interface AuthResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private tokenKey = 'ahedna_token';
   currentUser = signal<User | null>(null);
   isAuthenticated = signal<boolean>(false);
   authResolved = signal<boolean>(false);
@@ -44,7 +44,8 @@ export class AuthService {
 
   constructor(
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private tokenStorage: AuthTokenStorage
   ) {
     this.loadUserPromise = this.loadUser();
   }
@@ -64,7 +65,7 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return localStorage.getItem(this.tokenKey);
+    return this.tokenStorage.get();
   }
 
   async ensureLoaded(): Promise<void> {
@@ -85,7 +86,7 @@ export class AuthService {
 
   private handleAuth(response: AuthResponse): void {
     if (response.token) {
-      localStorage.setItem(this.tokenKey, response.token);
+      this.tokenStorage.set(response.token);
     }
     this.currentUser.set(response.user);
     this.isAuthenticated.set(true);
@@ -104,10 +105,15 @@ export class AuthService {
       const response = await firstValueFrom(
         this.http.get<{ user: User }>(`${environment.apiUrl}/auth/me`)
       );
+      // A logout or a new login may have happened while this request was pending.
+      if (this.getToken() !== token) return;
       this.currentUser.set(response.user);
       this.isAuthenticated.set(true);
-    } catch {
-      this.clearSession(false);
+    } catch (error) {
+      // Only a rejected token invalidates the stored session, not a network/server outage.
+      if (this.getToken() === token && error instanceof HttpErrorResponse && error.status === 401) {
+        this.clearSession(false);
+      }
     } finally {
       this.authResolved.set(true);
     }
@@ -119,7 +125,7 @@ export class AuthService {
   }
 
   private clearSession(redirect: boolean): void {
-    localStorage.removeItem(this.tokenKey);
+    this.tokenStorage.clear();
     this.currentUser.set(null);
     this.isAuthenticated.set(false);
     this.authResolved.set(true);

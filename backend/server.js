@@ -28,6 +28,7 @@ const { createMonitoringState } = require('./lib/monitoring');
 const {
   ensureUploadDirectory,
   saveBase64Image,
+  saveBase64EventMedia,
   resolveUploadPath,
   getMimeType,
 } = require('./lib/uploads');
@@ -229,6 +230,29 @@ function buildServer() {
     try {
       const { file_name, mime_type, data_base64 } = request.body || {};
       const url = saveBase64Image({
+        fileName: file_name,
+        mimeType: mime_type,
+        dataBase64: data_base64,
+      });
+
+      return reply.send({ url });
+    } catch (error) {
+      return reply.code(400).send({ error: error.message || 'Upload failed' });
+    }
+  });
+
+  fastify.post('/api/uploads/event-media', async (request, reply) => {
+    const authHeader = request.headers.authorization;
+    const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
+    const user = token ? verifyToken(token) : null;
+
+    if (!user) {
+      return reply.code(401).send({ error: 'Authentication required' });
+    }
+
+    try {
+      const { file_name, mime_type, data_base64 } = request.body || {};
+      const url = saveBase64EventMedia({
         fileName: file_name,
         mimeType: mime_type,
         dataBase64: data_base64,

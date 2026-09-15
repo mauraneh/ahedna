@@ -1,6 +1,10 @@
 import { formatEuroPrice, toDateTimeInputValue } from './date-time';
 
 describe('toDateTimeInputValue', () => {
+  it('keeps an event time without a timezone unchanged', () => {
+    expect(toDateTimeInputValue('2027-01-05T10:30:00')).toBe('2027-01-05T10:30');
+  });
+
   it('formats a date as a datetime-local input value (YYYY-MM-DDTHH:mm)', () => {
     const date = new Date(2027, 0, 5, 9, 7);
     expect(toDateTimeInputValue(date.toISOString())).toBe('2027-01-05T09:07');

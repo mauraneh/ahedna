@@ -11,6 +11,7 @@ import { AuthService } from '../core/services/auth.service';
 import { AddressAutocompleteService, AddressSuggestion } from '../core/services/address-autocomplete.service';
 import { I18nService } from '../core/services/i18n.service';
 import { MediaUploadService } from '../core/services/media-upload.service';
+import { PdfThumbnailComponent } from '../core/components/pdf-thumbnail/pdf-thumbnail.component';
 import { formatEuroPrice, toDateTimeInputValue } from '../core/utils/date-time';
 
 interface NewsItem {
@@ -62,7 +63,7 @@ type ContentTab = 'news' | 'events' | 'gallery';
 @Component({
   selector: 'app-content-management',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslocoDirective, NavbarComponent, ScrollToTopComponent],
+  imports: [CommonModule, ReactiveFormsModule, TranslocoDirective, NavbarComponent, ScrollToTopComponent, PdfThumbnailComponent],
   templateUrl: './content-management.component.html',
   styleUrl: './content-management.component.scss'
 })
@@ -77,6 +78,10 @@ export class ContentManagementComponent implements OnInit {
   i18nService = inject(I18nService);
 
   activeTab: ContentTab = 'news';
+  activeNewsView: 'create' | 'list' = 'create';
+  activeGalleryView: 'create' | 'albums' = 'create';
+  readonly newsViews = ['create', 'list'] as const;
+  readonly galleryViews = ['create', 'albums'] as const;
 
   loadingNews = true;
   loadingEvents = true;
@@ -90,6 +95,7 @@ export class ContentManagementComponent implements OnInit {
   uploadingNewsImage = false;
   uploadingEventImage = false;
   uploadingGalleryAlbumImage = false;
+  uploadingGalleryPhotoImage = false;
 
   deletingNewsId: string | null = null;
   deletingEventId: string | null = null;
@@ -106,12 +112,17 @@ export class ContentManagementComponent implements OnInit {
   galleryFeedbackMessage = '';
   galleryFeedbackError = '';
   newsImagePreview = '';
+  newsImageFileName = '';
   eventImagePreview = '';
+  eventMediaFileName = '';
   galleryAlbumImagePreview = '';
+  galleryAlbumImageFileName = '';
+  galleryPhotoFileName = '';
+  galleryPhotoPreview = '';
   eventLocationSuggestions: AddressSuggestion[] = [];
   galleryAlbumLocationSuggestions: AddressSuggestion[] = [];
-  private eventLocationConfirmed = true;
-  private galleryAlbumLocationConfirmed = true;
+  private eventLocationConfirmed = false;
+  private galleryAlbumLocationConfirmed = false;
   private eventLocationRequestId = 0;
   private galleryAlbumLocationRequestId = 0;
 
@@ -131,7 +142,7 @@ export class ContentManagementComponent implements OnInit {
     title: ['', [Validators.required]],
     description: [''],
     event_date: ['', [Validators.required]],
-    location: [''],
+    location: ['', [Validators.required]],
     image_url: [''],
     type: ['upcoming', [Validators.required]],
     gallery_enabled: [false],
@@ -143,7 +154,7 @@ export class ContentManagementComponent implements OnInit {
     title: ['', [Validators.required]],
     description: [''],
     event_date: ['', [Validators.required]],
-    location: [''],
+    location: ['', [Validators.required]],
     image_url: [''],
     type: ['upcoming', [Validators.required]],
     price_amount: [0],
@@ -231,6 +242,10 @@ export class ContentManagementComponent implements OnInit {
   }
 
   saveNews(): void {
+    if (this.uploadingNewsImage) {
+      return;
+    }
+
     if (this.newsForm.invalid) {
       this.newsForm.markAllAsTouched();
       return;
@@ -248,6 +263,7 @@ export class ContentManagementComponent implements OnInit {
       next: (response) => {
         this.newsFeedbackMessage = response.message;
         this.resetNewsForm();
+        this.activeNewsView = 'list';
         this.loadNews();
         this.savingNews = false;
       },
@@ -281,6 +297,7 @@ export class ContentManagementComponent implements OnInit {
 
   editNews(item: NewsItem): void {
     this.activeTab = 'news';
+    this.activeNewsView = 'create';
     this.editingNewsId = item.id;
     this.newsFeedbackMessage = '';
     this.newsFeedbackError = '';
@@ -292,6 +309,25 @@ export class ContentManagementComponent implements OnInit {
       published: item.published,
     });
     this.newsImagePreview = this.mediaUpload.resolveMediaUrl(item.image_url);
+    this.newsImageFileName = this.mediaUpload.getMediaFileName(item.image_url);
+  }
+
+  startNewsCreation(): void {
+    this.resetNewsForm();
+    this.activeNewsView = 'create';
+  }
+
+  cancelNewsForm(): void {
+    this.resetNewsForm();
+    this.activeNewsView = 'list';
+  }
+
+  setNewsView(view: 'create' | 'list'): void {
+    this.activeNewsView = view;
+  }
+
+  onNewsViewKeydown(event: KeyboardEvent, view: 'create' | 'list'): void {
+    this.selectWorkspaceView(event, view, this.newsViews, (next) => this.activeNewsView = next);
   }
 
   deleteNews(item: NewsItem): void {
@@ -326,9 +362,14 @@ export class ContentManagementComponent implements OnInit {
       published: false,
     });
     this.newsImagePreview = '';
+    this.newsImageFileName = '';
   }
 
   saveEvent(): void {
+    if (this.uploadingEventImage) {
+      return;
+    }
+
     if (!this.ensureEventLocationIsConfirmed()) {
       return;
     }
@@ -378,6 +419,7 @@ export class ContentManagementComponent implements OnInit {
       payment_details: item.payment_details || '',
     });
     this.eventImagePreview = this.mediaUpload.resolveMediaUrl(item.image_url);
+    this.eventMediaFileName = this.mediaUpload.getMediaFileName(item.image_url);
     this.eventLocationConfirmed = true;
     this.eventLocationSuggestions = [];
   }
@@ -419,11 +461,16 @@ export class ContentManagementComponent implements OnInit {
       payment_details: '',
     });
     this.eventImagePreview = '';
-    this.eventLocationConfirmed = true;
+    this.eventMediaFileName = '';
+    this.eventLocationConfirmed = false;
     this.eventLocationSuggestions = [];
   }
 
   saveGalleryAlbum(): void {
+    if (this.uploadingGalleryAlbumImage) {
+      return;
+    }
+
     if (!this.ensureGalleryAlbumLocationIsConfirmed()) {
       return;
     }
@@ -451,6 +498,7 @@ export class ContentManagementComponent implements OnInit {
       next: (response) => {
         this.galleryFeedbackMessage = response.message;
         this.resetGalleryAlbumForm();
+        this.activeGalleryView = 'albums';
         this.loadEvents();
         this.loadGalleryAlbums();
         this.savingGalleryAlbum = false;
@@ -464,6 +512,7 @@ export class ContentManagementComponent implements OnInit {
 
   editGalleryAlbum(item: GalleryAlbum): void {
     this.activeTab = 'gallery';
+    this.activeGalleryView = 'create';
     this.editingGalleryAlbumId = item.id;
     this.galleryFeedbackMessage = '';
     this.galleryFeedbackError = '';
@@ -478,8 +527,27 @@ export class ContentManagementComponent implements OnInit {
       payment_details: item.payment_details || '',
     });
     this.galleryAlbumImagePreview = this.mediaUpload.resolveMediaUrl(item.image_url);
+    this.galleryAlbumImageFileName = this.mediaUpload.getMediaFileName(item.image_url);
     this.galleryAlbumLocationConfirmed = true;
     this.galleryAlbumLocationSuggestions = [];
+  }
+
+  startGalleryAlbumCreation(): void {
+    this.resetGalleryAlbumForm();
+    this.activeGalleryView = 'create';
+  }
+
+  cancelGalleryAlbumForm(): void {
+    this.resetGalleryAlbumForm();
+    this.activeGalleryView = 'albums';
+  }
+
+  setGalleryView(view: 'create' | 'albums'): void {
+    this.activeGalleryView = view;
+  }
+
+  onGalleryViewKeydown(event: KeyboardEvent, view: 'create' | 'albums'): void {
+    this.selectWorkspaceView(event, view, this.galleryViews, (next) => this.activeGalleryView = next);
   }
 
   resetGalleryAlbumForm(): void {
@@ -495,11 +563,16 @@ export class ContentManagementComponent implements OnInit {
       payment_details: '',
     });
     this.galleryAlbumImagePreview = '';
-    this.galleryAlbumLocationConfirmed = true;
+    this.galleryAlbumImageFileName = '';
+    this.galleryAlbumLocationConfirmed = false;
     this.galleryAlbumLocationSuggestions = [];
   }
 
   uploadGalleryPhoto(): void {
+    if (this.uploadingGalleryPhotoImage) {
+      return;
+    }
+
     if (this.galleryPhotoForm.invalid) {
       this.galleryPhotoForm.markAllAsTouched();
       return;
@@ -524,6 +597,8 @@ export class ContentManagementComponent implements OnInit {
           photo_url: '',
           description: '',
         });
+        this.galleryPhotoFileName = '';
+        this.galleryPhotoPreview = '';
         this.loadGalleryAlbums();
         this.savingGalleryPhoto = false;
       },
@@ -532,6 +607,41 @@ export class ContentManagementComponent implements OnInit {
         this.savingGalleryPhoto = false;
       }
     });
+  }
+
+  onGalleryPhotoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    this.uploadingGalleryPhotoImage = true;
+    this.galleryFeedbackError = '';
+    const previousFileName = this.galleryPhotoFileName;
+    this.galleryPhotoFileName = file.name;
+
+    this.mediaUpload.uploadImage(file).subscribe({
+      next: ({ url }) => {
+        this.galleryPhotoForm.patchValue({ photo_url: url });
+        this.galleryPhotoPreview = this.resolveMediaUrl(url);
+        this.uploadingGalleryPhotoImage = false;
+        input.value = '';
+      },
+      error: (error) => {
+        this.galleryPhotoFileName = previousFileName;
+        this.galleryFeedbackError = error?.message || error?.error?.error || this.transloco.translate('content.messages.uploadImageError');
+        this.uploadingGalleryPhotoImage = false;
+        input.value = '';
+      }
+    });
+  }
+
+  clearGalleryPhoto(): void {
+    this.galleryPhotoForm.patchValue({ photo_url: '' });
+    this.galleryPhotoFileName = '';
+    this.galleryPhotoPreview = '';
   }
 
   deleteGalleryPhoto(photo: GalleryPhoto): void {
@@ -583,6 +693,8 @@ export class ContentManagementComponent implements OnInit {
 
     this.uploadingNewsImage = true;
     this.newsFeedbackError = '';
+    const previousFileName = this.newsImageFileName;
+    this.newsImageFileName = file.name;
 
     this.mediaUpload.uploadImage(file).subscribe({
       next: ({ url }) => {
@@ -592,6 +704,7 @@ export class ContentManagementComponent implements OnInit {
         input.value = '';
       },
       error: (error) => {
+        this.newsImageFileName = previousFileName;
         this.newsFeedbackError = error?.message || error?.error?.error || this.transloco.translate('content.messages.uploadImageError');
         this.uploadingNewsImage = false;
         input.value = '';
@@ -602,6 +715,7 @@ export class ContentManagementComponent implements OnInit {
   clearNewsImage(): void {
     this.newsForm.patchValue({ image_url: '' });
     this.newsImagePreview = '';
+    this.newsImageFileName = '';
   }
 
   onEventImageSelected(event: Event): void {
@@ -614,8 +728,10 @@ export class ContentManagementComponent implements OnInit {
 
     this.uploadingEventImage = true;
     this.eventFeedbackError = '';
+    const previousFileName = this.eventMediaFileName;
+    this.eventMediaFileName = file.name;
 
-    this.mediaUpload.uploadImage(file).subscribe({
+    this.mediaUpload.uploadEventMedia(file).subscribe({
       next: ({ url }) => {
         this.eventForm.patchValue({ image_url: url });
         this.eventImagePreview = this.resolveMediaUrl(url);
@@ -623,11 +739,22 @@ export class ContentManagementComponent implements OnInit {
         input.value = '';
       },
       error: (error) => {
-        this.eventFeedbackError = error?.message || error?.error?.error || this.transloco.translate('content.messages.uploadImageError');
+        this.eventMediaFileName = previousFileName;
+        this.eventFeedbackError = error?.message || error?.error?.error || this.transloco.translate('content.messages.uploadEventMediaError');
         this.uploadingEventImage = false;
         input.value = '';
       }
     });
+  }
+
+  clearEventMedia(): void {
+    this.eventForm.patchValue({ image_url: '' });
+    this.eventImagePreview = '';
+    this.eventMediaFileName = '';
+  }
+
+  isPdfMedia(url?: string | null): boolean {
+    return this.mediaUpload.isPdfMedia(url);
   }
 
   onGalleryAlbumImageSelected(event: Event): void {
@@ -640,6 +767,8 @@ export class ContentManagementComponent implements OnInit {
 
     this.uploadingGalleryAlbumImage = true;
     this.galleryFeedbackError = '';
+    const previousFileName = this.galleryAlbumImageFileName;
+    this.galleryAlbumImageFileName = file.name;
 
     this.mediaUpload.uploadImage(file).subscribe({
       next: ({ url }) => {
@@ -649,11 +778,18 @@ export class ContentManagementComponent implements OnInit {
         input.value = '';
       },
       error: (error) => {
+        this.galleryAlbumImageFileName = previousFileName;
         this.galleryFeedbackError = error?.message || error?.error?.error || this.transloco.translate('content.messages.uploadImageError');
         this.uploadingGalleryAlbumImage = false;
         input.value = '';
       }
     });
+  }
+
+  clearGalleryAlbumImage(): void {
+    this.galleryAlbumForm.patchValue({ image_url: '' });
+    this.galleryAlbumImagePreview = '';
+    this.galleryAlbumImageFileName = '';
   }
 
   onEventLocationInput(): void {
@@ -669,15 +805,36 @@ export class ContentManagementComponent implements OnInit {
   }
 
   selectEventLocation(suggestion: AddressSuggestion): void {
-    this.eventForm.patchValue({ location: this.addressAutocomplete.formatLocation(suggestion) });
+    this.eventForm.patchValue({ location: this.addressAutocomplete.formatCity(suggestion) });
     this.eventLocationConfirmed = true;
     this.eventLocationSuggestions = [];
   }
 
   selectGalleryAlbumLocation(suggestion: AddressSuggestion): void {
-    this.galleryAlbumForm.patchValue({ location: this.addressAutocomplete.formatLocation(suggestion) });
+    this.galleryAlbumForm.patchValue({ location: this.addressAutocomplete.formatCity(suggestion) });
     this.galleryAlbumLocationConfirmed = true;
     this.galleryAlbumLocationSuggestions = [];
+  }
+
+  private selectWorkspaceView<T extends string>(
+    event: KeyboardEvent,
+    view: T,
+    views: readonly T[],
+    select: (next: T) => void
+  ): void {
+    const index = views.indexOf(view);
+    let next = index;
+
+    if (event.key === 'ArrowRight') next = (index + 1) % views.length;
+    else if (event.key === 'ArrowLeft') next = (index - 1 + views.length) % views.length;
+    else if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = views.length - 1;
+    else return;
+
+    event.preventDefault();
+    select(views[next]);
+    const tabList = (event.currentTarget as HTMLElement).closest('[role="tablist"]');
+    tabList?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[next]?.focus();
   }
 
   private applyTab(tab: string | null): void {
@@ -701,7 +858,7 @@ export class ContentManagementComponent implements OnInit {
 
     if (!query) {
       this.setLocationSuggestions(target, []);
-      this.setLocationConfirmed(target, true);
+      this.setLocationConfirmed(target, false);
       return;
     }
 
@@ -710,31 +867,13 @@ export class ContentManagementComponent implements OnInit {
       return;
     }
 
-    const lookup = /^\d{5}$/.test(query)
-      ? this.addressAutocomplete.searchByPostalCode(query)
-      : this.addressAutocomplete.search(query);
-
-    lookup.subscribe((suggestions) => {
+    this.addressAutocomplete.searchCities(query).subscribe((suggestions) => {
       if (!this.isLatestLocationRequest(target, requestId)) {
-        return;
-      }
-
-      if (/^\d{5}$/.test(query) && suggestions[0]) {
-        this.patchLocationFromSuggestion(target, suggestions[0]);
         return;
       }
 
       this.setLocationSuggestions(target, suggestions);
     });
-  }
-
-  private patchLocationFromSuggestion(target: 'event' | 'galleryAlbum', suggestion: AddressSuggestion): void {
-    if (target === 'event') {
-      this.selectEventLocation(suggestion);
-      return;
-    }
-
-    this.selectGalleryAlbumLocation(suggestion);
   }
 
   private setLocationSuggestions(target: 'event' | 'galleryAlbum', suggestions: AddressSuggestion[]): void {
@@ -764,10 +903,11 @@ export class ContentManagementComponent implements OnInit {
   private ensureEventLocationIsConfirmed(): boolean {
     const location = (this.eventForm.value.location || '').trim();
 
-    if (!location || this.eventLocationConfirmed) {
+    if (location && this.eventLocationConfirmed) {
       return true;
     }
 
+    this.eventForm.controls.location.markAsTouched();
     this.eventFeedbackError = this.transloco.translate('content.messages.locationSuggestionRequired');
     return false;
   }
@@ -775,10 +915,11 @@ export class ContentManagementComponent implements OnInit {
   private ensureGalleryAlbumLocationIsConfirmed(): boolean {
     const location = (this.galleryAlbumForm.value.location || '').trim();
 
-    if (!location || this.galleryAlbumLocationConfirmed) {
+    if (location && this.galleryAlbumLocationConfirmed) {
       return true;
     }
 
+    this.galleryAlbumForm.controls.location.markAsTouched();
     this.galleryFeedbackError = this.transloco.translate('content.messages.locationSuggestionRequired');
     return false;
   }

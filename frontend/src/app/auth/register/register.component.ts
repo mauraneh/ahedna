@@ -1,3 +1,4 @@
+import { PasswordToggleComponent } from '../../core/components/password-toggle/password-toggle.component';
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -10,7 +11,7 @@ import { ScrollToTopComponent } from '../../core/components/scroll-to-top/scroll
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslocoDirective, NavbarComponent, ScrollToTopComponent],
+  imports: [PasswordToggleComponent, CommonModule, ReactiveFormsModule, RouterLink, TranslocoDirective, NavbarComponent, ScrollToTopComponent],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
 })

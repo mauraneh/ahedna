@@ -93,23 +93,23 @@ describe('LoginComponent', () => {
     expect(navigateByUrlSpy).toHaveBeenCalledWith('/');
   });
 
-  it('surfaces the server error message when the login fails', () => {
+  it('shows a clear message for incorrect credentials', () => {
     const fixture = createComponent();
     const component = fixture.componentInstance;
     const authService = TestBed.inject(AuthService) as unknown as AuthServiceStub;
-    authService.loginResult = throwError(() => ({ error: { error: 'Invalid credentials' } }));
+    authService.loginResult = throwError(() => ({ status: 401, error: { error: 'Invalid credentials' } }));
 
     component.loginForm.setValue({ email: 'membre@example.org', password: 'wrongpassword' });
     component.onSubmit();
 
     expect(component.loading).toBe(false);
-    expect(component.error).toBe('Invalid credentials');
+    expect(component.error).toBe('auth.login.errors.invalidCredentials');
   });
 
   it('exposes the error message through a role="alert" live region for assistive technology', () => {
     const fixture = createComponent();
     const authService = TestBed.inject(AuthService) as unknown as AuthServiceStub;
-    authService.loginResult = throwError(() => ({ error: { error: 'Invalid credentials' } }));
+    authService.loginResult = throwError(() => ({ status: 401, error: { error: 'Invalid credentials' } }));
 
     fixture.componentInstance.loginForm.setValue({
       email: 'membre@example.org',
@@ -120,6 +120,22 @@ describe('LoginComponent', () => {
 
     const alertBox = fixture.nativeElement.querySelector('[role="alert"]');
     expect(alertBox).toBeTruthy();
-    expect(alertBox.textContent).toContain('Invalid credentials');
+    expect(alertBox.textContent).toContain('auth.login.errors.invalidCredentials');
   });
+  for (const scenario of [
+    { status: 0, message: 'auth.login.errors.network' },
+    { status: 429, message: 'auth.login.errors.tooManyAttempts' },
+    { status: 500, message: 'auth.login.errors.default' },
+  ]) {
+    it(`shows a helpful message for status ${scenario.status} without exposing backend details`, () => {
+      const fixture = createComponent();
+      const authService = TestBed.inject(AuthService) as unknown as AuthServiceStub;
+      authService.loginResult = throwError(() => ({ status: scenario.status, error: { error: 'Internal server details' } }));
+      fixture.componentInstance.loginForm.setValue({ email: 'membre@example.org', password: 'password' });
+      fixture.componentInstance.onSubmit();
+      expect(fixture.componentInstance.error).toBe(scenario.message);
+      expect(fixture.componentInstance.loading).toBe(false);
+    });
+  }
+
 });
