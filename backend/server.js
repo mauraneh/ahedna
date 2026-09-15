@@ -31,6 +31,7 @@ const {
   saveBase64Image,
   saveBase64EventMedia,
   resolveUploadPath,
+  resolveBundledUploadPath,
   getMimeType,
 } = require('./lib/uploads');
 
@@ -208,7 +209,12 @@ function buildServer() {
   });
 
   fastify.get('/api/uploads/*', async (request, reply) => {
-    const uploadPath = resolveUploadPath(request.params['*'] || '');
+    // PDF previews fetch the file from the frontend origin, just like API calls.
+    reply.headers(buildCorsHeadersForOrigin(request.headers.origin));
+
+    const requestedPath = request.params['*'] || '';
+    const uploadPath = [resolveUploadPath(requestedPath), resolveBundledUploadPath(requestedPath)]
+      .find((candidate) => candidate && fs.existsSync(candidate) && fs.statSync(candidate).isFile());
 
     if (!uploadPath || !fs.existsSync(uploadPath) || !fs.statSync(uploadPath).isFile()) {
       return reply.code(404).send({ error: 'File not found' });

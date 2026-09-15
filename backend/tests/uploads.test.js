@@ -8,6 +8,7 @@ const {
   saveBase64Image,
   saveBase64EventMedia,
   resolveUploadPath,
+  resolveBundledUploadPath,
   getMimeType,
 } = require('../lib/uploads');
 
@@ -244,4 +245,57 @@ test('the dedicated upload routes answer with CORS headers', async () => {
   }
 
   await server.close();
+});
+
+
+test('PDF previews can fetch uploaded files from an allowed frontend origin', async () => {
+  const previousOrigins = process.env.CORS_ORIGINS;
+  process.env.CORS_ORIGINS = 'https://www.ahedna.fr';
+  const { buildServer } = require('../server');
+  const server = buildServer();
+  const pdf = Buffer.from('%PDF-1.4\n1 0 obj<</Type/Catalog>>endobj\n%%EOF');
+  const url = saveBase64EventMedia({
+    fileName: 'event-preview.pdf', mimeType: 'application/pdf', dataBase64: pdf.toString('base64'),
+  });
+  createdFiles.add(resolveUploadPath(url.replace('/api/uploads/', '')));
+  try {
+    const response = await server.inject({ method: 'GET', url, headers: { origin: 'https://www.ahedna.fr' } });
+    assert.equal(response.statusCode, 200);
+    assert.equal(response.headers['content-type'], 'application/pdf');
+    assert.equal(response.headers['access-control-allow-origin'], 'https://www.ahedna.fr');
+    assert.equal(response.headers.vary, 'Origin');
+    assert.deepEqual(response.rawPayload, pdf);
+
+    const missing = await server.inject({ method: 'GET', url: '/api/uploads/event-media/missing.pdf', headers: { origin: 'https://www.ahedna.fr' } });
+    assert.equal(missing.statusCode, 404);
+    assert.equal(missing.headers['access-control-allow-origin'], 'https://www.ahedna.fr');
+
+    const untrusted = await server.inject({ method: 'GET', url, headers: { origin: 'https://untrusted.example' } });
+    assert.equal(untrusted.headers['access-control-allow-origin'], undefined);
+  } finally {
+    await server.close();
+    if (previousOrigins === undefined) delete process.env.CORS_ORIGINS;
+    else process.env.CORS_ORIGINS = previousOrigins;
+  }
+});
+
+
+test('bundled public media remains readable when the runtime upload is absent', async () => {
+  const { buildServer } = require('../server');
+  const server = buildServer();
+  const relativePath = `event-media/bundled-test-${process.pid}.pdf`;
+  const bundledPath = resolveBundledUploadPath(relativePath);
+  fs.mkdirSync(path.dirname(bundledPath), { recursive: true });
+  fs.writeFileSync(bundledPath, '%PDF-1.4 bundled fixture');
+  createdFiles.add(bundledPath);
+  assert.equal(fs.existsSync(resolveUploadPath(relativePath)), false);
+  assert.equal(resolveBundledUploadPath('../../server.js'), null);
+  try {
+    const response = await server.inject({ method: 'GET', url: `/api/uploads/${relativePath}` });
+    assert.equal(response.statusCode, 200);
+    assert.equal(response.body, '%PDF-1.4 bundled fixture');
+    assert.equal(response.headers['content-type'], 'application/pdf');
+  } finally {
+    await server.close();
+  }
 });

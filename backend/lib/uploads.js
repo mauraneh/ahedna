@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const UPLOAD_ROOT = path.resolve(__dirname, '../uploads');
+const BUNDLED_UPLOAD_ROOT = path.resolve(__dirname, '../bundled-uploads');
 const IMAGE_FOLDER = 'images';
 const EVENT_MEDIA_FOLDER = 'event-media';
 const MAX_IMAGE_SIZE_BYTES = Number(process.env.MAX_IMAGE_SIZE_BYTES || 5 * 1024 * 1024);
@@ -149,15 +150,23 @@ function saveBase64EventMedia({ fileName, mimeType, dataBase64 }) {
 }
 
 function resolveUploadPath(requestedPath) {
+  return resolvePathWithinRoot(requestedPath, UPLOAD_ROOT);
+}
+
+function resolveBundledUploadPath(requestedPath) {
+  return resolvePathWithinRoot(requestedPath, BUNDLED_UPLOAD_ROOT);
+}
+
+function resolvePathWithinRoot(requestedPath, root) {
   const cleanPath = requestedPath
     .split('/')
     .filter(Boolean)
     .join(path.sep);
 
-  const absolutePath = path.resolve(UPLOAD_ROOT, cleanPath);
-  const uploadRootWithSep = `${UPLOAD_ROOT}${path.sep}`;
+  const absolutePath = path.resolve(root, cleanPath);
+  const uploadRootWithSep = `${root}${path.sep}`;
 
-  if (absolutePath !== UPLOAD_ROOT && !absolutePath.startsWith(uploadRootWithSep)) {
+  if (absolutePath !== root && !absolutePath.startsWith(uploadRootWithSep)) {
     return null;
   }
 
@@ -189,5 +198,6 @@ module.exports = {
   saveBase64Image,
   saveBase64EventMedia,
   resolveUploadPath,
+  resolveBundledUploadPath,
   getMimeType,
 };
