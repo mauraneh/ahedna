@@ -46,7 +46,9 @@ cp .env.test.example .env.test   # puis ajuster DATABASE_URL si besoin
 ```
 
 `backend/tests/setup-env.js` charge `.env.test` avec `override: true` : un `DATABASE_URL`
-herite du shell ou du conteneur Docker ne peut pas prendre le dessus.
+herite du shell ou du conteneur Docker ne peut pas prendre le dessus. Sans `.env.test`
+(CI), le `DATABASE_URL` fourni est accepte seulement si le nom de la base contient
+`test` — sinon les tests refusent de demarrer.
 
 ```bash
 cd backend && yarn lint:backend && yarn test:backend

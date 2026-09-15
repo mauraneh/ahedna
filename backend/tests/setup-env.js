@@ -15,15 +15,30 @@ for (const envPath of loaded) {
   dotenv.config({ path: envPath, override: true });
 }
 
-if (loaded.length === 0) {
-  throw new Error(
-    'Aucun fichier .env.test trouve. Cree backend/.env.test ou .env.test a la racine ' +
-      'avec un DATABASE_URL pointant vers une base de test dediee.'
-  );
+function getDatabaseName(databaseUrl) {
+  try {
+    return new URL(databaseUrl).pathname.replace(/^\//, '');
+  } catch {
+    return '';
+  }
 }
 
 if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL absent de .env.test.');
+  throw new Error(
+    loaded.length === 0
+      ? 'Aucun fichier .env.test trouve et aucun DATABASE_URL defini. Cree .env.test a partir ' +
+        'de .env.test.example, ou fournis un DATABASE_URL pointant vers une base de test dediee.'
+      : 'DATABASE_URL absent de .env.test.'
+  );
+}
+
+// Sans .env.test (CI, conteneur), le DATABASE_URL herite pourrait etre celui de la
+// production : on n'accepte que les bases dont le nom les designe comme base de test.
+if (loaded.length === 0 && !/test/i.test(getDatabaseName(process.env.DATABASE_URL))) {
+  throw new Error(
+    `Les tests ecrivent en base et refusent de tourner sur "${getDatabaseName(process.env.DATABASE_URL)}". ` +
+      'Utilise une base dediee dont le nom contient "test", ou cree un fichier .env.test.'
+  );
 }
 
 process.env.NODE_ENV = 'test';
