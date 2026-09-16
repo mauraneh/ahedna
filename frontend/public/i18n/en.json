@@ -678,6 +678,10 @@
     "empty": {
       "title": "No open gallery yet",
       "body": "The admin team has not opened an event gallery yet. Check back soon for the next albums."
+    },
+    "restricted": {
+      "title": "Gallery reserved for members",
+      "body": "Photo albums are open to members whose membership is up to date. If yours is still being reviewed, access opens as soon as the association confirms it."
     }
   },
   "membership": {
@@ -756,6 +760,7 @@
         "email": "Email",
         "name": "Name",
         "membershipNumber": "Membership number",
+        "membershipNumberPlaceholder": "Not assigned",
         "role": "Role",
         "createdAt": "Created",
         "actions": "Actions"
@@ -888,6 +893,7 @@
     "messages": {
       "roleUpdated": "User role updated.",
       "roleUpdateError": "Unable to update the role.",
+      "membershipNumberUpdateError": "Unable to update the membership number.",
       "validationError": "Unable to validate this item.",
       "loadNewsError": "Unable to load news.",
       "loadEventsError": "Unable to load events.",

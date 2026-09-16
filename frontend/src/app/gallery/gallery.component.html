@@ -32,6 +32,12 @@
           <div class="site-loading-ring"></div>
           <p class="site-loading-copy">{{ t('gallery.loading') }}</p>
         </div>
+      } @else if (membershipRequired) {
+        <section class="gallery-empty-state">
+          <h2 class="gallery-page-section-title gallery-empty-title">{{ t('gallery.restricted.title') }}</h2>
+          <p class="gallery-page-copy gallery-empty-copy">{{ t('gallery.restricted.body') }}</p>
+          <a routerLink="/adhesion" class="site-button-primary">{{ t('gallery.upload.actions.membership') }}</a>
+        </section>
       } @else if (!hasOpenEvents) {
         <section class="gallery-empty-state">
           <h2 class="gallery-page-section-title gallery-empty-title">{{ t('gallery.empty.title') }}</h2>

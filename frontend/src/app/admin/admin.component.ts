@@ -126,6 +126,7 @@ export class AdminComponent implements OnInit {
   users: AdminUser[] = [];
   loadingUsers = true;
   deletingUserId: string | null = null;
+  savingMembershipNumberId: string | null = null;
 
   recentUsers: AdminUser[] = [];
   recentNews: NewsItem[] = [];
@@ -344,6 +345,31 @@ export class AdminComponent implements OnInit {
         },
         error: () => {
           alert(this.transloco.translate('admin.messages.roleUpdateError'));
+        }
+      });
+  }
+
+  updateMembershipNumber(user: AdminUser, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const membershipNumber = input.value.trim();
+
+    if (membershipNumber === (user.membership_number || '')) {
+      return;
+    }
+
+    this.savingMembershipNumberId = user.id;
+    this.http.put(`${environment.apiUrl}/users/${user.id}/membership-number`, {
+      membership_number: membershipNumber,
+    })
+      .subscribe({
+        next: () => {
+          this.savingMembershipNumberId = null;
+          this.loadUsers();
+        },
+        error: (error) => {
+          this.savingMembershipNumberId = null;
+          input.value = user.membership_number || '';
+          alert(error?.error?.error || this.transloco.translate('admin.messages.membershipNumberUpdateError'));
         }
       });
   }

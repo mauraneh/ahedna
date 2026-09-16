@@ -678,6 +678,10 @@
     "empty": {
       "title": "Aucune galerie ouverte pour le moment",
       "body": "L'administration n'a pas encore ouvert d'événement galerie. Revenez bientôt pour découvrir les prochains albums."
+    },
+    "restricted": {
+      "title": "Galerie réservée aux adhérents",
+      "body": "Les albums photos sont accessibles aux adhérents à jour de leur adhésion. Si la vôtre est en cours de validation, elle s'ouvrira dès que l'association l'aura confirmée."
     }
   },
   "membership": {
@@ -756,6 +760,7 @@
         "email": "Email",
         "name": "Nom",
         "membershipNumber": "Numéro d'adhérent",
+        "membershipNumberPlaceholder": "Non attribué",
         "role": "Rôle",
         "createdAt": "Inscription",
         "actions": "Actions"
@@ -888,6 +893,7 @@
     "messages": {
       "roleUpdated": "Rôle utilisateur mis à jour.",
       "roleUpdateError": "Impossible de mettre à jour le rôle.",
+      "membershipNumberUpdateError": "Impossible de mettre à jour le numéro d'adhérent.",
       "validationError": "Impossible de valider cet élément.",
       "loadNewsError": "Impossible de charger les actualités.",
       "loadEventsError": "Impossible de charger les événements.",

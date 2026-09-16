@@ -293,9 +293,9 @@ test('gallery photo uploads require an active membership or admin role', async (
   assert.equal(validated.status, 200);
   assert.equal(validated.body.photo.validated, true);
 
-  const publicGallery = await call('GET', `gallery/events`);
-  assert.equal(publicGallery.status, 200);
-  const galleryEvent = publicGallery.body.events.find((item) => item.id === eventId);
+  const gallery = await call('GET', `gallery/events`, { token: membre.token });
+  assert.equal(gallery.status, 200);
+  const galleryEvent = gallery.body.events.find((item) => item.id === eventId);
   assert.ok(galleryEvent);
   assert.equal(galleryEvent.photo_count, 1);
 
@@ -618,6 +618,11 @@ test('GET gallery only reveals unvalidated photos to admins', async () => {
   const membre = await registerAndLogin('gallery-visibility-membre', 'membre');
   const admin = await registerAndLogin('gallery-visibility-admin', 'admin');
 
+  // Reading the gallery is reserved for members whose membership is active.
+  await pool.query(`INSERT INTO memberships (user_id, status) VALUES ($1, 'active')`, [
+    membre.user.id,
+  ]);
+
   const created = await call('POST', 'gallery', {
     token: membre.token,
     body: { photo_url: '/api/uploads/images/pending.png' },
@@ -849,3 +854,109 @@ test('DELETE users/:id lets an admin remove another account but not their own vi
 function event_id_of(response) {
   return response.body.event.id;
 }
+
+test('reading the gallery requires an active membership', async () => {
+  const admin = await registerAndLogin('gallery-read-admin', 'admin');
+  const event = await call('POST', 'events', {
+    token: admin.token,
+    body: {
+      title: 'Galerie reservee',
+      event_date: '2027-09-01T10:00:00.000Z',
+      gallery_enabled: true,
+    },
+  });
+  const eventId = event.body.event.id;
+
+  const photo = await call('POST', `gallery/events/${eventId}/photos`, {
+    token: admin.token,
+    body: { photo_url: '/api/uploads/images/reservee.png' },
+  });
+  assert.equal(photo.status, 200);
+
+  const anonymous = await call('GET', 'gallery/events');
+  assert.equal(anonymous.status, 401);
+
+  const withoutMembership = await registerAndLogin('gallery-read-sans-adhesion', 'membre');
+  const refused = await call('GET', 'gallery/events', { token: withoutMembership.token });
+  assert.equal(refused.status, 403);
+  assert.equal(refused.body.error, 'Active membership required to view the gallery');
+
+  const pending = await registerAndLogin('gallery-read-adhesion-attente', 'membre');
+  await pool.query(`INSERT INTO memberships (user_id, status) VALUES ($1, 'pending')`, [
+    pending.user.id,
+  ]);
+  const stillRefused = await call('GET', 'gallery/events', { token: pending.token });
+  assert.equal(stillRefused.status, 403);
+
+  const member = await registerAndLogin('gallery-read-adherent', 'membre');
+  await pool.query(`INSERT INTO memberships (user_id, status) VALUES ($1, 'active')`, [
+    member.user.id,
+  ]);
+  const allowed = await call('GET', 'gallery/events', { token: member.token });
+  assert.equal(allowed.status, 200);
+  assert.ok(allowed.body.events.some((item) => item.id === eventId));
+
+  // The same photos must not leak through the public event endpoint.
+  const anonymousEvent = await call('GET', `events/${eventId}`);
+  assert.equal(anonymousEvent.status, 200);
+  assert.equal(anonymousEvent.body.event.id, eventId);
+  assert.deepEqual(anonymousEvent.body.photos, []);
+
+  const memberEvent = await call('GET', `events/${eventId}`, { token: member.token });
+  assert.equal(memberEvent.body.photos.length, 1);
+});
+
+test('an admin can set, change and clear a membership number', async () => {
+  const admin = await registerAndLogin('numero-admin', 'admin');
+  const membre = await registerAndLogin('numero-membre', 'membre');
+  // Numbers are unique across users, so each run needs its own.
+  const number = `ADH-${Date.now()}`;
+
+  const forbidden = await call('PUT', `users/${membre.user.id}/membership-number`, {
+    token: membre.token,
+    body: { membership_number: number },
+  });
+  assert.equal(forbidden.status, 403);
+
+  const assigned = await call('PUT', `users/${membre.user.id}/membership-number`, {
+    token: admin.token,
+    body: { membership_number: number },
+  });
+  assert.equal(assigned.status, 200);
+  assert.equal(assigned.body.user.membership_number, number);
+
+  const other = await registerAndLogin('numero-autre', 'membre');
+  const duplicate = await call('PUT', `users/${other.user.id}/membership-number`, {
+    token: admin.token,
+    body: { membership_number: number },
+  });
+  assert.equal(duplicate.status, 400);
+  assert.equal(duplicate.body.error, 'Membership number already assigned');
+
+  // Reassigning the same number to its current holder must stay allowed.
+  const unchanged = await call('PUT', `users/${membre.user.id}/membership-number`, {
+    token: admin.token,
+    body: { membership_number: number },
+  });
+  assert.equal(unchanged.status, 200);
+
+  const cleared = await call('PUT', `users/${membre.user.id}/membership-number`, {
+    token: admin.token,
+    body: { membership_number: '' },
+  });
+  assert.equal(cleared.status, 200);
+  assert.equal(cleared.body.user.membership_number, null);
+
+  // Once freed, the number can be given to someone else.
+  const reused = await call('PUT', `users/${other.user.id}/membership-number`, {
+    token: admin.token,
+    body: { membership_number: number },
+  });
+  assert.equal(reused.status, 200);
+
+  const missingUser = await call('PUT', 'users/00000000-0000-0000-0000-000000000000/membership-number', {
+    token: admin.token,
+    body: { membership_number: 'ADH-2026-999' },
+  });
+  assert.equal(missingUser.status, 404);
+});

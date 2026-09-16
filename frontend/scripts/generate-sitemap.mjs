@@ -10,7 +10,6 @@ const routes = [
   { path: '/histoire', priority: '0.9', changefreq: 'monthly' },
   { path: '/actualites', priority: '0.9', changefreq: 'weekly' },
   { path: '/evenements', priority: '0.9', changefreq: 'weekly' },
-  { path: '/galerie', priority: '0.7', changefreq: 'weekly' },
   { path: '/adhesion', priority: '0.9', changefreq: 'monthly' },
   { path: '/contact', priority: '0.7', changefreq: 'monthly' },
   { path: '/mentions-legales', priority: '0.3', changefreq: 'yearly' },

@@ -226,6 +226,36 @@ async function hasActiveMembership(userId) {
   return membership?.status === 'active';
 }
 
+// Same rule as uploading a gallery photo: the gallery is reserved for members whose
+// membership is up to date.
+async function canViewGallery(user) {
+  if (!user) {
+    return false;
+  }
+
+  return user.role === 'admin' || (await hasActiveMembership(user.id));
+}
+
+async function getGalleryAccessError(request, corsHeaders) {
+  const authResult = await requireAuth(request);
+
+  if (authResult.error) {
+    return jsonResponse(
+      { error: authResult.error },
+      { status: authResult.status, headers: corsHeaders }
+    );
+  }
+
+  if (!(await canViewGallery(authResult.user))) {
+    return jsonResponse(
+      { error: 'Active membership required to view the gallery' },
+      { status: 403, headers: corsHeaders }
+    );
+  }
+
+  return null;
+}
+
 async function getProfileByUserId(userId) {
   const result = await pool.query(`SELECT ${profileFields} FROM users WHERE id = $1`, [userId]);
   return result.rows[0] || null;
@@ -1182,14 +1212,18 @@ async function handleGet(request) {
         return jsonResponse({ error: 'Event not found' }, { status: 404, headers: corsHeaders });
       }
 
-      const photosResult = await pool.query(
-        `SELECT ep.*, u.first_name, u.last_name
-         FROM event_photos ep
-         LEFT JOIN users u ON ep.uploaded_by = u.id
-         WHERE ep.event_id = $1 AND ep.validated = true
-         ORDER BY ep.created_at DESC`,
-        [id]
-      );
+      // The event itself stays public, but its photos follow the gallery rule so they
+      // cannot be read through this endpoint by someone the gallery would refuse.
+      const photosResult = (await canViewGallery(authUser))
+        ? await pool.query(
+            `SELECT ep.*, u.first_name, u.last_name
+             FROM event_photos ep
+             LEFT JOIN users u ON ep.uploaded_by = u.id
+             WHERE ep.event_id = $1 AND ep.validated = true
+             ORDER BY ep.created_at DESC`,
+            [id]
+          )
+        : { rows: [] };
 
       return jsonResponse(
         {
@@ -1201,6 +1235,11 @@ async function handleGet(request) {
     }
 
     if (path === 'gallery/events') {
+      const galleryError = await getGalleryAccessError(request, corsHeaders);
+      if (galleryError) {
+        return galleryError;
+      }
+
       const eventsResult = await pool.query(
         `SELECT id, title, description, event_date, location, type, image_url, gallery_enabled, price_amount, payment_details
          FROM events
@@ -1307,6 +1346,11 @@ async function handleGet(request) {
     }
 
     if (path === 'gallery') {
+      const galleryError = await getGalleryAccessError(request, corsHeaders);
+      if (galleryError) {
+        return galleryError;
+      }
+
       const { searchParams } = new URL(request.url);
       const validated = searchParams.get('validated');
       const authUser = getOptionalUser(request);
@@ -2353,6 +2397,53 @@ async function handlePut(request) {
         {
           message: 'Photo validation updated',
           photo: result.rows[0],
+        },
+        { headers: corsHeaders }
+      );
+    }
+
+    if (path.startsWith('users/') && path.endsWith('/membership-number')) {
+      const id = path.split('/')[1];
+      const roleCheck = requireRole(authResult.user, ['admin']);
+      if (roleCheck) {
+        return jsonResponse(
+          { error: roleCheck.error },
+          { status: roleCheck.status, headers: corsHeaders }
+        );
+      }
+
+      // Paper memberships are numbered by hand, so an empty value clears the number.
+      const membership_number = normalizeString(body.membership_number, 50);
+
+      if (membership_number) {
+        const existing = await pool.query(
+          'SELECT id FROM users WHERE membership_number = $1 AND id <> $2',
+          [membership_number, id]
+        );
+
+        if (existing.rows.length > 0) {
+          return jsonResponse(
+            { error: 'Membership number already assigned' },
+            { status: 400, headers: corsHeaders }
+          );
+        }
+      }
+
+      const result = await pool.query(
+        `UPDATE users SET membership_number = $1, updated_at = CURRENT_TIMESTAMP
+         WHERE id = $2
+         RETURNING id, email, first_name, last_name, role, membership_number, updated_at`,
+        [membership_number || null, id]
+      );
+
+      if (result.rows.length === 0) {
+        return jsonResponse({ error: 'User not found' }, { status: 404, headers: corsHeaders });
+      }
+
+      return jsonResponse(
+        {
+          message: 'Membership number updated',
+          user: result.rows[0],
         },
         { headers: corsHeaders }
       );

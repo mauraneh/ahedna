@@ -57,6 +57,7 @@ export class GalleryComponent implements OnInit {
 
   events: GalleryEvent[] = [];
   loading = true;
+  membershipRequired = false;
   uploading = false;
   uploadError = '';
   uploadMessage = '';
@@ -98,6 +99,7 @@ export class GalleryComponent implements OnInit {
 
   loadEvents(): void {
     this.loading = true;
+    this.membershipRequired = false;
     this.http.get<{ events: GalleryEvent[] }>(`${environment.apiUrl}/gallery/events`)
       .subscribe({
         next: (response) => {
@@ -109,7 +111,9 @@ export class GalleryComponent implements OnInit {
 
           this.loading = false;
         },
-        error: () => {
+        error: (error) => {
+          this.events = [];
+          this.membershipRequired = error?.status === 403;
           this.loading = false;
         }
       });

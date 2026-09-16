@@ -101,11 +101,13 @@ export const routes: Routes = [
   {
     path: 'galerie',
     loadComponent: () => import('./gallery/gallery.component').then((m) => m.GalleryComponent),
+    canActivate: [authGuard],
     data: {
       seo: {
         title: 'Galerie - AHEDNA',
         description:
           "Photos des événements AHEDNA et albums validés par l'association.",
+        robots: 'noindex, nofollow',
       },
     },
   },
