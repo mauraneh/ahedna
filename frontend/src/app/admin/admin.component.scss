@@ -856,3 +856,93 @@
   .admin-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .admin-tab { padding-inline: 0.5rem; }
 }
+
+.admin-membership-badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-family: var(--site-sans-font);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.admin-membership-active {
+  background: rgba(var(--brand-green-rgb), 0.16);
+  color: #1d5b32;
+}
+
+.admin-membership-pending {
+  background: rgba(var(--brand-yellow-rgb), 0.2);
+  color: #6b5407;
+}
+
+.admin-membership-expired {
+  background: rgba(var(--brand-red-rgb), 0.14);
+  color: #8c2b26;
+}
+
+.admin-membership-none {
+  background: rgba(37, 29, 20, 0.08);
+  color: #5d5245;
+}
+
+.admin-membership-period {
+  display: block;
+  margin-top: 0.3rem;
+  font-family: var(--site-serif-font);
+  font-size: 0.78rem;
+  color: #6b5a45;
+}
+
+.admin-membership-edit {
+  margin-top: 0.4rem;
+  font-family: var(--site-sans-font);
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--brand-turquoise);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.admin-membership-form {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.admin-membership-form-title {
+  font-family: var(--site-sans-font);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #292119;
+}
+
+.admin-membership-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.9rem;
+}
+
+.admin-membership-help {
+  font-family: var(--site-serif-font);
+  font-size: 0.84rem;
+  color: #6b5a45;
+}
+
+.admin-membership-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.admin-membership-links {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.4rem;
+}
+
+.admin-membership-edit:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

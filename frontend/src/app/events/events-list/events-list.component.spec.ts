@@ -103,7 +103,7 @@ describe('EventsListComponent', () => {
     httpMock.expectNone(() => true);
   });
 
-  it('increments the participant count when moving from no participation to attending', () => {
+  it('takes the recounted event returned by the server', () => {
     const { fixture, httpMock, queryParamMap$ } = createComponent();
     fixture.detectChanges();
     httpMock.expectOne(`${environment.apiUrl}/events?type=upcoming`).flush({
@@ -115,17 +115,21 @@ describe('EventsListComponent', () => {
 
     component.setParticipation('attending');
 
-    httpMock
-      .expectOne(`${environment.apiUrl}/events/evt-1/participation`)
-      .flush({ message: 'ok', participation: { status: 'attending' } });
+    // Another member registered meanwhile: the server total wins over any local guess.
+    httpMock.expectOne(`${environment.apiUrl}/events/evt-1/participation`).flush({
+      message: 'ok',
+      participation: { status: 'attending' },
+      event: { id: 'evt-1', participant_count: 9, current_user_participation: 'attending' },
+    });
 
-    expect(component.selectedEvent?.participant_count).toBe(5);
+    expect(component.selectedEvent?.participant_count).toBe(9);
     expect(component.selectedEvent?.current_user_participation).toBe('attending');
+    expect(component.events[0].participant_count).toBe(9);
     expect(component.participationSaving).toBe(false);
     expect(component.participationMessage).toBe('events.modal.participationSaved');
   });
 
-  it('decrements the participant count when moving from attending to declined', () => {
+  it('keeps the current status when the server omits the event', () => {
     const { fixture, httpMock, queryParamMap$ } = createComponent();
     fixture.detectChanges();
     httpMock.expectOne(`${environment.apiUrl}/events?type=upcoming`).flush({
@@ -141,7 +145,7 @@ describe('EventsListComponent', () => {
       .expectOne(`${environment.apiUrl}/events/evt-1/participation`)
       .flush({ message: 'ok', participation: { status: 'declined' } });
 
-    expect(component.selectedEvent?.participant_count).toBe(3);
+    expect(component.selectedEvent?.current_user_participation).toBe('declined');
   });
 
   it('never lets the participant count go below zero', () => {

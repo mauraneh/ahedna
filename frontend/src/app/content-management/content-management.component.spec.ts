@@ -257,7 +257,7 @@ describe('ContentManagementComponent', () => {
       .flush({ error: 'Title and content required' }, { status: 400, statusText: 'Bad Request' });
 
     expect(component.savingNews).toBe(false);
-    expect(component.newsFeedbackError).toBe('Title and content required');
+    expect(component.newsFeedbackError).toBe('api.errors.titleContentRequired');
   });
 
   it('imports public news and refreshes the list', () => {
@@ -471,7 +471,7 @@ describe('ContentManagementComponent', () => {
       .expectOne(`${environment.apiUrl}/news/n1`)
       .flush({ error: 'Cannot delete' }, { status: 400, statusText: 'Bad Request' });
 
-    expect(fixture.componentInstance.newsFeedbackError).toBe('Cannot delete');
+    expect(fixture.componentInstance.newsFeedbackError).toBe('content.messages.deleteError');
     expect(fixture.componentInstance.deletingNewsId).toBeNull();
   });
 
@@ -484,7 +484,7 @@ describe('ContentManagementComponent', () => {
       .expectOne(`${environment.apiUrl}/news/import-public`)
       .flush({ error: 'Import failed' }, { status: 502, statusText: 'Bad Gateway' });
 
-    expect(fixture.componentInstance.newsFeedbackError).toBe('Import failed');
+    expect(fixture.componentInstance.newsFeedbackError).toBe('content.messages.importNewsError');
     expect(fixture.componentInstance.importingPublicNews).toBe(false);
   });
 
@@ -537,7 +537,7 @@ describe('ContentManagementComponent', () => {
       .expectOne(`${environment.apiUrl}/events`)
       .flush({ error: 'Invalid' }, { status: 400, statusText: 'Bad Request' });
 
-    expect(component.eventFeedbackError).toBe('Invalid');
+    expect(component.eventFeedbackError).toBe('content.messages.saveEventError');
   });
 
   it('does not delete an event when the confirmation dialog is dismissed', () => {
@@ -580,7 +580,7 @@ describe('ContentManagementComponent', () => {
       .expectOne(`${environment.apiUrl}/events/evt-1`)
       .flush({ error: 'Cannot delete' }, { status: 400, statusText: 'Bad Request' });
 
-    expect(fixture.componentInstance.eventFeedbackError).toBe('Cannot delete');
+    expect(fixture.componentInstance.eventFeedbackError).toBe('content.messages.deleteEventError');
   });
 
   it('updates a gallery album with PUT when editingGalleryAlbumId is set', () => {
@@ -652,7 +652,7 @@ describe('ContentManagementComponent', () => {
       .expectOne(`${environment.apiUrl}/events`)
       .flush({ error: 'Invalid' }, { status: 400, statusText: 'Bad Request' });
 
-    expect(component.galleryFeedbackError).toBe('Invalid');
+    expect(component.galleryFeedbackError).toBe('content.messages.saveGalleryError');
   });
 
   it('surfaces the server error when uploading a gallery photo fails', () => {
@@ -670,7 +670,7 @@ describe('ContentManagementComponent', () => {
       .expectOne(`${environment.apiUrl}/gallery/events/evt-1/photos`)
       .flush({ error: 'Upload failed' }, { status: 400, statusText: 'Bad Request' });
 
-    expect(component.galleryFeedbackError).toBe('Upload failed');
+    expect(component.galleryFeedbackError).toBe('content.messages.saveGalleryPhotoError');
     expect(component.savingGalleryPhoto).toBe(false);
   });
 
@@ -708,7 +708,7 @@ describe('ContentManagementComponent', () => {
       .expectOne(`${environment.apiUrl}/gallery/event-photos/photo-1`)
       .flush({ error: 'Cannot delete' }, { status: 400, statusText: 'Bad Request' });
 
-    expect(fixture.componentInstance.galleryFeedbackError).toBe('Cannot delete');
+    expect(fixture.componentInstance.galleryFeedbackError).toBe('content.messages.deleteGalleryPhotoError');
   });
 
   it('does nothing when no file was selected for the event or gallery album image inputs', () => {

@@ -10,6 +10,7 @@ import { NavbarComponent } from '../core/components/navbar/navbar.component';
 import { ScrollToTopComponent } from '../core/components/scroll-to-top/scroll-to-top.component';
 import { AddressAutocompleteService, AddressSuggestion } from '../core/services/address-autocomplete.service';
 import { AuthService, User } from '../core/services/auth.service';
+import { ApiMessageService } from '../core/services/api-message.service';
 import { I18nService } from '../core/services/i18n.service';
 
 interface Membership {
@@ -41,6 +42,7 @@ export class ProfileComponent implements OnInit {
   private http = inject(HttpClient);
   private fb = inject(FormBuilder);
   private transloco = inject(TranslocoService);
+  private apiMessages = inject(ApiMessageService);
   private addressAutocomplete = inject(AddressAutocompleteService);
   authService = inject(AuthService);
   i18nService = inject(I18nService);
@@ -119,7 +121,7 @@ export class ProfileComponent implements OnInit {
         this.loading = false;
       },
       error: (error) => {
-        this.profileError = error.error?.error || this.transloco.translate('profile.messages.loadError');
+        this.profileError = this.apiMessages.translateError(error, 'profile.messages.loadError');
         this.loading = false;
       }
     });
@@ -147,7 +149,7 @@ export class ProfileComponent implements OnInit {
         this.savingProfile = false;
       },
       error: (error) => {
-        this.profileError = error.error?.error || this.transloco.translate('profile.messages.updateProfileError');
+        this.profileError = this.apiMessages.translateError(error, 'profile.messages.updateProfileError');
         this.savingProfile = false;
       }
     });
@@ -252,7 +254,7 @@ export class ProfileComponent implements OnInit {
           this.savingPassword = false;
         },
         error: (error) => {
-          this.passwordError = error.error?.error || this.transloco.translate('profile.messages.updatePasswordError');
+          this.passwordError = this.apiMessages.translateError(error, 'profile.messages.updatePasswordError');
           this.savingPassword = false;
         }
       });
@@ -275,7 +277,7 @@ export class ProfileComponent implements OnInit {
         this.authService.logout();
       },
       error: (error) => {
-        this.accountError = error.error?.error || this.transloco.translate('profile.messages.deleteAccountError');
+        this.accountError = this.apiMessages.translateError(error, 'profile.messages.deleteAccountError');
         this.deletingAccount = false;
       }
     });

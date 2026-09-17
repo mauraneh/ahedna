@@ -9,6 +9,7 @@ import { NavbarComponent } from '../core/components/navbar/navbar.component';
 import { ScrollToTopComponent } from '../core/components/scroll-to-top/scroll-to-top.component';
 import { AddressAutocompleteService, AddressSuggestion } from '../core/services/address-autocomplete.service';
 import { AuthService } from '../core/services/auth.service';
+import { ApiMessageService } from '../core/services/api-message.service';
 import { I18nService } from '../core/services/i18n.service';
 import { MediaUploadService } from '../core/services/media-upload.service';
 import { PdfThumbnailComponent } from '../core/components/pdf-thumbnail/pdf-thumbnail.component';
@@ -25,6 +26,8 @@ interface AdminStats {
   pending_photos: number;
 }
 
+type MembershipStatus = 'pending' | 'active' | 'expired';
+
 interface AdminUser {
   id: string;
   email: string;
@@ -33,6 +36,11 @@ interface AdminUser {
   role: 'membre' | 'auteur' | 'admin';
   created_at: string;
   membership_number?: string;
+  membership_status?: MembershipStatus | null;
+  membership_start_date?: string | null;
+  membership_end_date?: string | null;
+  membership_payment_method?: string | null;
+  membership_notes?: string | null;
 }
 
 interface NewsItem {
@@ -98,6 +106,7 @@ export class AdminComponent implements OnInit {
   private http = inject(HttpClient);
   private fb = inject(FormBuilder);
   private transloco = inject(TranslocoService);
+  private apiMessages = inject(ApiMessageService);
   private i18nService = inject(I18nService);
   private addressAutocomplete = inject(AddressAutocompleteService);
   private mediaUpload = inject(MediaUploadService);
@@ -127,6 +136,10 @@ export class AdminComponent implements OnInit {
   loadingUsers = true;
   deletingUserId: string | null = null;
   savingMembershipNumberId: string | null = null;
+  editingMembershipUserId: string | null = null;
+  renewingMembershipUserId: string | null = null;
+  savingMembership = false;
+  membershipError = '';
 
   recentUsers: AdminUser[] = [];
   recentNews: NewsItem[] = [];
@@ -214,6 +227,14 @@ export class AdminComponent implements OnInit {
     type: ['upcoming', [Validators.required]],
     price_amount: [0],
     payment_details: [''],
+  });
+
+  membershipForm = this.fb.group({
+    status: ['pending', [Validators.required]],
+    start_date: [''],
+    end_date: [''],
+    payment_method: [''],
+    notes: [''],
   });
 
   galleryPhotoForm = this.fb.group({
@@ -349,6 +370,95 @@ export class AdminComponent implements OnInit {
       });
   }
 
+  renewMembership(user: AdminUser): void {
+    if (!confirm(this.transloco.translate('admin.membership.messages.confirmRenew', { email: user.email }))) {
+      return;
+    }
+
+    this.renewingMembershipUserId = user.id;
+
+    this.http.post(`${environment.apiUrl}/users/${user.id}/membership/renew`, {})
+      .subscribe({
+        next: () => {
+          this.renewingMembershipUserId = null;
+          this.loadUsers();
+        },
+        error: (error) => {
+          this.renewingMembershipUserId = null;
+          alert(this.apiMessages.translateError(error, 'admin.membership.messages.renewError'));
+        }
+      });
+  }
+
+  openMembershipEditor(user: AdminUser): void {
+    this.editingMembershipUserId = user.id;
+    this.membershipError = '';
+    this.membershipForm.setValue({
+      status: user.membership_status ?? 'pending',
+      start_date: this.toDateInputValue(user.membership_start_date),
+      end_date: this.toDateInputValue(user.membership_end_date),
+      payment_method: user.membership_payment_method || '',
+      notes: user.membership_notes || '',
+    });
+  }
+
+  closeMembershipEditor(): void {
+    this.editingMembershipUserId = null;
+    this.membershipError = '';
+  }
+
+  saveMembership(user: AdminUser): void {
+    this.savingMembership = true;
+    this.membershipError = '';
+
+    this.http.put(`${environment.apiUrl}/users/${user.id}/membership`, this.membershipForm.getRawValue())
+      .subscribe({
+        next: () => {
+          this.savingMembership = false;
+          this.editingMembershipUserId = null;
+          this.loadUsers();
+        },
+        error: (error) => {
+          this.savingMembership = false;
+          this.membershipError = this.apiMessages.translateError(error, 'admin.membership.messages.saveError');
+        }
+      });
+  }
+
+  getMembershipStatusKey(user: AdminUser): string {
+    return `admin.membership.status.${user.membership_status ?? 'none'}`;
+  }
+
+  getMembershipPeriod(user: AdminUser): string {
+    const start = this.formatDateOnly(user.membership_start_date);
+    const end = this.formatDateOnly(user.membership_end_date);
+
+    if (!start && !end) {
+      return '';
+    }
+
+    return this.transloco.translate('admin.membership.period', {
+      start: start || '—',
+      end: end || '—',
+    });
+  }
+
+  private toDateInputValue(value?: string | null): string {
+    return value ? String(value).slice(0, 10) : '';
+  }
+
+  private formatDateOnly(value?: string | null): string {
+    if (!value) {
+      return '';
+    }
+
+    return new Date(String(value).slice(0, 10)).toLocaleDateString(this.i18nService.getDateLocale(), {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+  }
+
   updateMembershipNumber(user: AdminUser, event: Event): void {
     const input = event.target as HTMLInputElement;
     const membershipNumber = input.value.trim();
@@ -369,7 +479,7 @@ export class AdminComponent implements OnInit {
         error: (error) => {
           this.savingMembershipNumberId = null;
           input.value = user.membership_number || '';
-          alert(error?.error?.error || this.transloco.translate('admin.messages.membershipNumberUpdateError'));
+          alert(this.apiMessages.translateError(error, 'admin.messages.membershipNumberUpdateError'));
         }
       });
   }
@@ -388,7 +498,7 @@ export class AdminComponent implements OnInit {
           this.deletingUserId = null;
         },
         error: (error) => {
-          alert(error.error?.error || this.transloco.translate('admin.messages.deleteUserError'));
+          alert(this.apiMessages.translateError(error, 'admin.messages.deleteUserError'));
           this.deletingUserId = null;
         }
       });
@@ -422,7 +532,7 @@ export class AdminComponent implements OnInit {
         this.savingNews = false;
       },
       error: (error) => {
-        this.newsError = error.error?.error || this.transloco.translate('admin.messages.saveNewsError');
+        this.newsError = this.apiMessages.translateError(error, 'admin.messages.saveNewsError');
         this.savingNews = false;
       }
     });
@@ -444,7 +554,7 @@ export class AdminComponent implements OnInit {
         this.importingPublicNews = false;
       },
       error: (error) => {
-        this.newsError = error.error?.error || this.transloco.translate('content.messages.importNewsError');
+        this.newsError = this.apiMessages.translateError(error, 'content.messages.importNewsError');
         this.importingPublicNews = false;
       }
     });
@@ -498,7 +608,7 @@ export class AdminComponent implements OnInit {
           this.deletingNewsId = null;
         },
         error: (error) => {
-          this.newsError = error.error?.error || this.transloco.translate('admin.messages.deleteError');
+          this.newsError = this.apiMessages.translateError(error, 'admin.messages.deleteError');
           this.deletingNewsId = null;
         }
       });
@@ -540,7 +650,7 @@ export class AdminComponent implements OnInit {
       gallery_enabled: true,
     }).subscribe({
       next: (response) => {
-        this.galleryEventFeedback = response.message || this.transloco.translate('admin.gallery.messages.eventCreated');
+        this.galleryEventFeedback = this.transloco.translate('admin.gallery.messages.eventCreated');
         this.resetGalleryEventForm();
         this.activeGalleryView = 'albums';
         this.galleryPhotoForm.patchValue({ event_id: response.event.id });
@@ -550,7 +660,7 @@ export class AdminComponent implements OnInit {
         this.savingGalleryEvent = false;
       },
       error: (error) => {
-        this.galleryEventError = error.error?.error || this.transloco.translate('admin.gallery.messages.eventCreateError');
+        this.galleryEventError = this.apiMessages.translateError(error, 'admin.gallery.messages.eventCreateError');
         this.savingGalleryEvent = false;
       }
     });
@@ -610,7 +720,7 @@ export class AdminComponent implements OnInit {
       this.galleryPhotoForm.getRawValue()
     ).subscribe({
       next: (response) => {
-        this.galleryPhotoFeedback = response.message || this.transloco.translate('admin.gallery.messages.photoUploaded');
+        this.galleryPhotoFeedback = this.transloco.translate('admin.gallery.messages.photoUploaded');
         this.galleryPhotoForm.patchValue({
           photo_url: '',
           description: '',
@@ -623,7 +733,7 @@ export class AdminComponent implements OnInit {
         this.uploadingGalleryPhoto = false;
       },
       error: (error) => {
-        this.galleryPhotoError = error.error?.error || this.transloco.translate('admin.gallery.messages.photoUploadError');
+        this.galleryPhotoError = this.apiMessages.translateError(error, 'admin.gallery.messages.photoUploadError');
         this.uploadingGalleryPhoto = false;
       }
     });
@@ -651,7 +761,7 @@ export class AdminComponent implements OnInit {
       },
       error: (error) => {
         this.galleryPhotoFileName = previousFileName;
-        this.galleryPhotoError = error?.message || error?.error?.error || this.transloco.translate('admin.messages.uploadImageError');
+        this.galleryPhotoError = this.apiMessages.translateError(error, 'admin.messages.uploadImageError');
         this.uploadingGalleryPhotoMedia = false;
         input.value = '';
       }
@@ -701,7 +811,7 @@ export class AdminComponent implements OnInit {
       },
       error: (error) => {
         this.galleryEventImageFileName = previousFileName;
-        this.galleryEventError = error?.message || error?.error?.error || this.transloco.translate('admin.messages.uploadImageError');
+        this.galleryEventError = this.apiMessages.translateError(error, 'admin.messages.uploadImageError');
         this.uploadingGalleryEventImage = false;
         input.value = '';
       }
@@ -747,7 +857,7 @@ export class AdminComponent implements OnInit {
         this.savingEvent = false;
       },
       error: (error) => {
-        this.eventError = error.error?.error || this.transloco.translate('admin.messages.saveEventError');
+        this.eventError = this.apiMessages.translateError(error, 'admin.messages.saveEventError');
         this.savingEvent = false;
       }
     });
@@ -820,7 +930,7 @@ export class AdminComponent implements OnInit {
           this.deletingEventId = null;
         },
         error: (error) => {
-          this.eventError = error.error?.error || this.transloco.translate('admin.messages.deleteError');
+          this.eventError = this.apiMessages.translateError(error, 'admin.messages.deleteError');
           this.deletingEventId = null;
         }
       });
@@ -921,7 +1031,7 @@ export class AdminComponent implements OnInit {
       },
       error: (error) => {
         this.newsImageFileName = previousFileName;
-        this.newsError = error?.message || error?.error?.error || this.transloco.translate('admin.messages.uploadImageError');
+        this.newsError = this.apiMessages.translateError(error, 'admin.messages.uploadImageError');
         this.uploadingNewsImage = false;
         input.value = '';
       }
@@ -956,7 +1066,7 @@ export class AdminComponent implements OnInit {
       },
       error: (error) => {
         this.eventMediaFileName = previousFileName;
-        this.eventError = error?.message || error?.error?.error || this.transloco.translate('content.messages.uploadEventMediaError');
+        this.eventError = this.apiMessages.translateError(error, 'content.messages.uploadEventMediaError');
         this.uploadingEventImage = false;
         input.value = '';
       }

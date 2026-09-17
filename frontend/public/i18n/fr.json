@@ -1,4 +1,38 @@
 {
+  "api": {
+    "errors": {
+      "membershipRequiredUpload": "Une adhésion active est nécessaire pour proposer une photo.",
+      "membershipRequiredGallery": "La galerie est réservée aux adhérents à jour de leur adhésion.",
+      "authenticationRequired": "Vous devez être connecté pour effectuer cette action.",
+      "contentRequired": "Le contenu est obligatoire.",
+      "passwordsRequired": "Le mot de passe actuel et le nouveau mot de passe sont obligatoires.",
+      "currentPasswordIncorrect": "Le mot de passe actuel est incorrect.",
+      "emailAlreadyRegistered": "Cette adresse email est déjà utilisée.",
+      "emailPasswordRequired": "L'email et le mot de passe sont obligatoires.",
+      "emailConfirmationMismatch": "L'email saisi ne correspond pas à votre compte.",
+      "emailRequired": "L'adresse email est obligatoire.",
+      "eventNotFound": "Cet événement est introuvable.",
+      "galleryClosed": "La galerie n'est pas ouverte pour cet événement.",
+      "insufficientPermissions": "Vous n'avez pas les droits nécessaires pour cette action.",
+      "internal": "Une erreur est survenue. Réessayez dans un instant.",
+      "invalidCredentials": "Email ou mot de passe incorrect.",
+      "sessionExpired": "Votre session a expiré. Reconnectez-vous.",
+      "invalidParticipation": "Ce choix de participation n'est pas valide.",
+      "invalidRole": "Ce rôle n'est pas valide.",
+      "membershipNumberTaken": "Ce numéro d'adhérent est déjà attribué à une autre personne.",
+      "newsNotFound": "Cette actualité est introuvable.",
+      "newsNotEditable": "Cette actualité est introuvable ou vous ne pouvez pas la modifier.",
+      "newsNotRemovable": "Cette actualité est introuvable ou vous ne pouvez pas la supprimer.",
+      "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères.",
+      "photoUrlRequired": "La photo est obligatoire.",
+      "photoNotFound": "Cette photo est introuvable.",
+      "titleContentRequired": "Le titre et le contenu sont obligatoires.",
+      "titleDateRequired": "Le titre et la date de l'événement sont obligatoires.",
+      "topicNotFound": "Ce sujet est introuvable.",
+      "deleteOwnAccount": "Passez par votre page profil pour supprimer votre propre compte.",
+      "userNotFound": "Cet utilisateur est introuvable."
+    }
+  },
   "navbar": {
     "skipToContent": "Aller au contenu principal",
     "brand": {
@@ -263,7 +297,8 @@
   },
   "common": {
     "scrollToTop": "Retour en haut",
-    "byAuthor": "Par {{firstName}} {{lastName}}"
+    "byAuthor": "Par {{firstName}} {{lastName}}",
+    "byAuthorName": "Par {{name}}"
   },
   "home": {
     "hero": {
@@ -622,6 +657,8 @@
       "loginToParticipate": "Se connecter pour participer",
       "loginRequired": "Connectez-vous pour valider votre participation.",
       "participationSaved": "Votre choix de participation est enregistré.",
+      "alreadyAttending": "Vous êtes inscrit à cet événement.",
+      "alreadyDeclined": "Vous avez indiqué ne pas participer à cet événement.",
       "participationError": "Impossible d'enregistrer votre participation pour le moment.",
       "free": "Gratuit",
       "noPaymentDetails": "Règlement à préciser",
@@ -645,21 +682,25 @@
       "subtitle": "Sélectionnez un événement ouvert et proposez une photo. Elle apparaîtra dans la galerie après validation par l'administration.",
       "fields": {
         "event": "Événement galerie",
-        "photoUrl": "URL de la photo",
-        "photoUrlPlaceholder": "https://...",
+        "photoFile": "Photo à envoyer",
+        "photoFileHelp": "Formats acceptés : JPG, PNG, WebP ou GIF, 5 Mo maximum.",
         "description": "Légende ou souvenir",
         "descriptionPlaceholder": "Décrivez la photo, le moment ou les personnes présentes."
       },
       "actions": {
         "submit": "Envoyer pour validation",
         "submitting": "Envoi en cours...",
+        "chooseFile": "Choisir une photo",
+        "removeFile": "Retirer la photo",
         "login": "Se connecter",
         "membership": "Adhérer"
       },
       "messages": {
         "loginRequired": "Connectez-vous pour proposer une photo dans les albums ouverts.",
         "success": "Votre photo a bien été envoyée. Elle sera visible après validation.",
-        "error": "Impossible d'envoyer cette photo pour le moment."
+        "error": "Impossible d'envoyer cette photo pour le moment.",
+        "uploadingFile": "Transfert de la photo en cours...",
+        "fileError": "Impossible de transférer cette photo."
       },
       "membership": {
         "pending": "Votre adhésion est en attente. La contribution photo sera disponible dès validation de votre adhésion.",
@@ -673,7 +714,8 @@
       "noLocation": "Lieu à préciser",
       "noDescription": "Cet événement est ouvert à la contribution photo. Ajoutez vos souvenirs pour enrichir l'album de cette rencontre.",
       "empty": "Aucune photo validée pour cet événement pour le moment.",
-      "defaultCaption": "Souvenir partagé"
+      "defaultCaption": "Souvenir partagé",
+      "anonymousAuthor": "Partagé par un adhérent"
     },
     "empty": {
       "title": "Aucune galerie ouverte pour le moment",
@@ -732,6 +774,40 @@
     }
   },
   "admin": {
+    "membership": {
+      "column": "Adhésion",
+      "formTitle": "Adhésion de {{email}}",
+      "period": "du {{start}} au {{end}}",
+      "help": "Pour une adhésion papier, saisissez ce qui figure sur le bulletin. L'accès se ferme automatiquement passé la date de fin ; laissez-la vide pour une adhésion sans échéance.",
+      "status": {
+        "none": "Aucune adhésion",
+        "pending": "En attente",
+        "active": "À jour",
+        "expired": "Expirée"
+      },
+      "fields": {
+        "status": "Statut",
+        "startDate": "Début",
+        "endDate": "Fin",
+        "paymentMethod": "Moyen de paiement",
+        "paymentMethodPlaceholder": "Chèque, espèces, virement...",
+        "notes": "Note interne",
+        "notesPlaceholder": "Numéro de chèque, date de réception du bulletin..."
+      },
+      "actions": {
+        "renew": "Renouveler 1 an",
+        "renewing": "Renouvellement...",
+        "edit": "Gérer",
+        "save": "Enregistrer l'adhésion",
+        "saving": "Enregistrement...",
+        "cancel": "Annuler"
+      },
+      "messages": {
+        "saveError": "Impossible d'enregistrer cette adhésion.",
+        "renewError": "Impossible de renouveler cette adhésion.",
+        "confirmRenew": "Renouveler l'adhésion de {{email}} pour un an ?"
+      }
+    },
     "header": {
       "title": "Espace administrateur",
       "backToSite": "Retour au site"

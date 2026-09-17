@@ -1,4 +1,38 @@
 {
+  "api": {
+    "errors": {
+      "membershipRequiredUpload": "An active membership is required to submit a photo.",
+      "membershipRequiredGallery": "The gallery is reserved for members whose membership is up to date.",
+      "authenticationRequired": "You must be logged in to do this.",
+      "contentRequired": "Content is required.",
+      "passwordsRequired": "The current password and the new password are required.",
+      "currentPasswordIncorrect": "The current password is incorrect.",
+      "emailAlreadyRegistered": "This email address is already in use.",
+      "emailPasswordRequired": "Email and password are required.",
+      "emailConfirmationMismatch": "The email you entered does not match your account.",
+      "emailRequired": "The email address is required.",
+      "eventNotFound": "This event could not be found.",
+      "galleryClosed": "The gallery is not open for this event.",
+      "insufficientPermissions": "You do not have the rights for this action.",
+      "internal": "Something went wrong. Please try again shortly.",
+      "invalidCredentials": "Incorrect email or password.",
+      "sessionExpired": "Your session has expired. Please log in again.",
+      "invalidParticipation": "This participation choice is not valid.",
+      "invalidRole": "This role is not valid.",
+      "membershipNumberTaken": "This membership number is already assigned to someone else.",
+      "newsNotFound": "This article could not be found.",
+      "newsNotEditable": "This article could not be found, or you cannot edit it.",
+      "newsNotRemovable": "This article could not be found, or you cannot delete it.",
+      "passwordTooShort": "The password must be at least 8 characters long.",
+      "photoUrlRequired": "The photo is required.",
+      "photoNotFound": "This photo could not be found.",
+      "titleContentRequired": "Title and content are required.",
+      "titleDateRequired": "Title and event date are required.",
+      "topicNotFound": "This topic could not be found.",
+      "deleteOwnAccount": "Use your profile page to delete your own account.",
+      "userNotFound": "This user could not be found."
+    }
+  },
   "navbar": {
     "skipToContent": "Skip to main content",
     "brand": {
@@ -263,7 +297,8 @@
   },
   "common": {
     "scrollToTop": "Back to top",
-    "byAuthor": "By {{firstName}} {{lastName}}"
+    "byAuthor": "By {{firstName}} {{lastName}}",
+    "byAuthorName": "By {{name}}"
   },
   "home": {
     "hero": {
@@ -622,6 +657,8 @@
       "loginToParticipate": "Log in to participate",
       "loginRequired": "Log in to confirm your participation.",
       "participationSaved": "Your participation choice has been saved.",
+      "alreadyAttending": "You are registered for this event.",
+      "alreadyDeclined": "You indicated you will not attend this event.",
       "participationError": "Unable to save your participation right now.",
       "free": "Free",
       "noPaymentDetails": "Payment details to be confirmed",
@@ -645,21 +682,25 @@
       "subtitle": "Choose an open event and submit a photo. It will appear in the gallery after admin validation.",
       "fields": {
         "event": "Gallery event",
-        "photoUrl": "Photo URL",
-        "photoUrlPlaceholder": "https://...",
+        "photoFile": "Photo to upload",
+        "photoFileHelp": "Accepted formats: JPG, PNG, WebP or GIF, 5 MB maximum.",
         "description": "Caption or memory",
         "descriptionPlaceholder": "Describe the photo, the moment, or the people present."
       },
       "actions": {
         "submit": "Send for review",
         "submitting": "Sending...",
+        "chooseFile": "Choose a photo",
+        "removeFile": "Remove the photo",
         "login": "Log in",
         "membership": "Become a member"
       },
       "messages": {
         "loginRequired": "Log in to submit a photo to the open albums.",
         "success": "Your photo has been sent. It will be visible after validation.",
-        "error": "Unable to send this photo right now."
+        "error": "Unable to send this photo right now.",
+        "uploadingFile": "Uploading the photo...",
+        "fileError": "Unable to upload this photo."
       },
       "membership": {
         "pending": "Your membership is pending. Photo submissions will open once your membership is validated.",
@@ -673,7 +714,8 @@
       "noLocation": "Location to be confirmed",
       "noDescription": "This event is open for photo contributions. Add your memories to enrich its album.",
       "empty": "No approved photo for this event yet.",
-      "defaultCaption": "Shared memory"
+      "defaultCaption": "Shared memory",
+      "anonymousAuthor": "Shared by a member"
     },
     "empty": {
       "title": "No open gallery yet",
@@ -732,6 +774,40 @@
     }
   },
   "admin": {
+    "membership": {
+      "column": "Membership",
+      "formTitle": "Membership of {{email}}",
+      "period": "from {{start}} to {{end}}",
+      "help": "For a paper membership, enter what the form says. Access closes on its own once the end date has passed; leave it empty for a membership without an expiry.",
+      "status": {
+        "none": "No membership",
+        "pending": "Pending",
+        "active": "Up to date",
+        "expired": "Expired"
+      },
+      "fields": {
+        "status": "Status",
+        "startDate": "Start",
+        "endDate": "End",
+        "paymentMethod": "Payment method",
+        "paymentMethodPlaceholder": "Cheque, cash, transfer...",
+        "notes": "Internal note",
+        "notesPlaceholder": "Cheque number, date the form was received..."
+      },
+      "actions": {
+        "renew": "Renew 1 year",
+        "renewing": "Renewing...",
+        "edit": "Manage",
+        "save": "Save membership",
+        "saving": "Saving...",
+        "cancel": "Cancel"
+      },
+      "messages": {
+        "saveError": "Unable to save this membership.",
+        "renewError": "Unable to renew this membership.",
+        "confirmRenew": "Renew the membership of {{email}} for one year?"
+      }
+    },
     "header": {
       "title": "Admin area",
       "backToSite": "Back to site"

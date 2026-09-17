@@ -6,6 +6,8 @@ import { RouterLink } from '@angular/router';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { environment } from '../../environments/environment';
 import { AuthService } from '../core/services/auth.service';
+import { ApiMessageService } from '../core/services/api-message.service';
+import { MediaUploadService } from '../core/services/media-upload.service';
 import { NavbarComponent } from '../core/components/navbar/navbar.component';
 import { ScrollToTopComponent } from '../core/components/scroll-to-top/scroll-to-top.component';
 
@@ -53,12 +55,17 @@ export class GalleryComponent implements OnInit {
   private http = inject(HttpClient);
   private fb = inject(FormBuilder);
   private transloco = inject(TranslocoService);
+  private apiMessages = inject(ApiMessageService);
+  private mediaUpload = inject(MediaUploadService);
   authService = inject(AuthService);
 
   events: GalleryEvent[] = [];
   loading = true;
   membershipRequired = false;
   uploading = false;
+  uploadingFile = false;
+  photoFileName = '';
+  photoPreview = '';
   uploadError = '';
   uploadMessage = '';
   membershipStatus: MembershipStatus['status'] | null = null;
@@ -151,18 +158,72 @@ export class GalleryComponent implements OnInit {
       this.uploadForm.getRawValue()
     ).subscribe({
       next: (response) => {
-        this.uploadMessage = response.message || this.transloco.translate('gallery.upload.messages.success');
+        this.uploadMessage = this.transloco.translate('gallery.upload.messages.success');
         this.uploadForm.patchValue({
           photo_url: '',
           description: '',
         });
+        this.photoFileName = '';
+        this.photoPreview = '';
         this.uploading = false;
       },
       error: (error) => {
-        this.uploadError = error.error?.error || this.transloco.translate('gallery.upload.messages.error');
+        this.uploadError = this.apiMessages.translateError(error, 'gallery.upload.messages.error');
         this.uploading = false;
       }
     });
+  }
+
+  onPhotoFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    this.uploadingFile = true;
+    this.uploadError = '';
+    this.uploadMessage = '';
+
+    this.mediaUpload.uploadImage(file).subscribe({
+      next: ({ url }) => {
+        this.uploadForm.patchValue({ photo_url: url });
+        this.photoFileName = file.name;
+        this.photoPreview = this.mediaUpload.resolveMediaUrl(url);
+        this.uploadingFile = false;
+        input.value = '';
+      },
+      error: (error) => {
+        this.uploadError = this.apiMessages.translateError(error, 'gallery.upload.messages.fileError');
+        this.uploadingFile = false;
+        input.value = '';
+      }
+    });
+  }
+
+  resolveMediaUrl(url?: string | null): string {
+    return this.mediaUpload.resolveMediaUrl(url);
+  }
+
+  getPhotoAuthor(photo: GalleryPhoto): string {
+    const name = [photo.first_name, photo.last_name]
+      .map((part) => (part || '').trim())
+      .filter(Boolean)
+      .join(' ');
+
+    // Members can register with an email only, so a photo often has no name attached.
+    if (!name) {
+      return this.transloco.translate('gallery.event.anonymousAuthor');
+    }
+
+    return this.transloco.translate('common.byAuthorName', { name });
+  }
+
+  clearPhotoFile(): void {
+    this.uploadForm.patchValue({ photo_url: '' });
+    this.photoFileName = '';
+    this.photoPreview = '';
   }
 
   trackEvent(_: number, event: GalleryEvent): string {

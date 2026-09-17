@@ -189,7 +189,7 @@ describe('ProfileComponent', () => {
       .expectOne(`${environment.apiUrl}/profile/me`)
       .flush({ error: 'Unavailable' }, { status: 500, statusText: 'Server Error' });
 
-    expect(fixture.componentInstance.profileError).toBe('Unavailable');
+    expect(fixture.componentInstance.profileError).toBe('profile.messages.loadError');
     expect(fixture.componentInstance.loading).toBe(false);
   });
 
@@ -206,7 +206,7 @@ describe('ProfileComponent', () => {
       .expectOne(`${environment.apiUrl}/profile/me`)
       .flush({ error: 'Email already registered' }, { status: 400, statusText: 'Bad Request' });
 
-    expect(component.profileError).toBe('Email already registered');
+    expect(component.profileError).toBe('api.errors.emailAlreadyRegistered');
     expect(component.savingProfile).toBe(false);
   });
 
@@ -241,7 +241,7 @@ describe('ProfileComponent', () => {
       .expectOne(`${environment.apiUrl}/profile/password`)
       .flush({ error: 'Current password is incorrect' }, { status: 400, statusText: 'Bad Request' });
 
-    expect(component.passwordError).toBe('Current password is incorrect');
+    expect(component.passwordError).toBe('api.errors.currentPasswordIncorrect');
     expect(component.savingPassword).toBe(false);
   });
 
@@ -259,7 +259,7 @@ describe('ProfileComponent', () => {
       .expectOne(`${environment.apiUrl}/profile/me`)
       .flush({ error: 'Cannot delete' }, { status: 400, statusText: 'Bad Request' });
 
-    expect(component.accountError).toBe('Cannot delete');
+    expect(component.accountError).toBe('profile.messages.deleteAccountError');
     expect(component.deletingAccount).toBe(false);
     expect(authService.logout).not.toHaveBeenCalled();
   });
