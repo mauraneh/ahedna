@@ -960,3 +960,155 @@ test('an admin can set, change and clear a membership number', async () => {
   });
   assert.equal(missingUser.status, 404);
 });
+
+test('the participation response carries the recounted event', async () => {
+  const admin = await registerAndLogin('recount-admin', 'admin');
+  const created = await call('POST', 'events', {
+    token: admin.token,
+    body: { title: 'Recomptage', event_date: '2027-10-01T10:00:00.000Z' },
+  });
+  const eventId = created.body.event.id;
+
+  const first = await registerAndLogin('recount-membre-1', 'membre');
+  const attending = await call('POST', `events/${eventId}/participation`, {
+    token: first.token,
+    body: { status: 'attending' },
+  });
+  assert.equal(attending.status, 200);
+  assert.equal(attending.body.event.participant_count, 1);
+  assert.equal(attending.body.event.current_user_participation, 'attending');
+
+  // A second member registers: the first one's next answer must reflect both.
+  const second = await registerAndLogin('recount-membre-2', 'membre');
+  await call('POST', `events/${eventId}/participation`, {
+    token: second.token,
+    body: { status: 'attending' },
+  });
+
+  const declined = await call('POST', `events/${eventId}/participation`, {
+    token: first.token,
+    body: { status: 'declined' },
+  });
+  assert.equal(declined.body.event.participant_count, 1);
+  assert.equal(declined.body.event.current_user_participation, 'declined');
+});
+
+test('an admin records a paper membership with its dates and payment method', async () => {
+  const admin = await registerAndLogin('adhesion-admin', 'admin');
+  const membre = await registerAndLogin('adhesion-papier', 'membre');
+
+  const forbidden = await call('PUT', `users/${membre.user.id}/membership`, {
+    token: membre.token,
+    body: { status: 'active' },
+  });
+  assert.equal(forbidden.status, 403);
+
+  const invalidStatus = await call('PUT', `users/${membre.user.id}/membership`, {
+    token: admin.token,
+    body: { status: 'paye' },
+  });
+  assert.equal(invalidStatus.status, 400);
+  assert.equal(invalidStatus.body.error, 'Invalid membership status');
+
+  const backwards = await call('PUT', `users/${membre.user.id}/membership`, {
+    token: admin.token,
+    body: { status: 'active', start_date: '2026-09-01', end_date: '2026-08-01' },
+  });
+  assert.equal(backwards.status, 400);
+
+  // The member never used the online form, so the row has to be created.
+  const recorded = await call('PUT', `users/${membre.user.id}/membership`, {
+    token: admin.token,
+    body: {
+      status: 'active',
+      start_date: '2026-09-01',
+      end_date: '2027-08-31',
+      payment_method: 'Cheque',
+      notes: 'Bulletin papier recu le 1er septembre',
+    },
+  });
+  assert.equal(recorded.status, 200);
+  assert.equal(recorded.body.membership.status, 'active');
+  assert.equal(recorded.body.membership.payment_method, 'Cheque');
+
+  const mine = await call('GET', 'memberships/my-status', { token: membre.token });
+  assert.equal(mine.body.membership.status, 'active');
+
+  // Being active is what opens the gallery, the membership number plays no part.
+  const gallery = await call('GET', 'gallery/events', { token: membre.token });
+  assert.equal(gallery.status, 200);
+});
+
+test('a membership whose end date has passed stops granting access', async () => {
+  const admin = await registerAndLogin('adhesion-expiree-admin', 'admin');
+  const membre = await registerAndLogin('adhesion-expiree', 'membre');
+
+  await call('PUT', `users/${membre.user.id}/membership`, {
+    token: admin.token,
+    body: { status: 'active', start_date: '2024-09-01', end_date: '2025-08-31' },
+  });
+
+  // Still stored as active, but read back as expired without any scheduled job.
+  const mine = await call('GET', 'memberships/my-status', { token: membre.token });
+  assert.equal(mine.body.membership.status, 'expired');
+
+  const gallery = await call('GET', 'gallery/events', { token: membre.token });
+  assert.equal(gallery.status, 403);
+
+  const renewed = await call('PUT', `users/${membre.user.id}/membership`, {
+    token: admin.token,
+    body: { status: 'active', start_date: '2026-09-01', end_date: '2099-08-31' },
+  });
+  assert.equal(renewed.body.membership.status, 'active');
+
+  const afterRenewal = await call('GET', 'gallery/events', { token: membre.token });
+  assert.equal(afterRenewal.status, 200);
+});
+
+test('renewing extends the membership by one year without losing paid days', async () => {
+  const admin = await registerAndLogin('renouvellement-admin', 'admin');
+  const membre = await registerAndLogin('renouvellement-membre', 'membre');
+
+  // First renewal on someone who has nothing yet: the year starts today.
+  const first = await call('POST', `users/${membre.user.id}/membership/renew`, {
+    token: admin.token,
+    body: {},
+  });
+  assert.equal(first.status, 200);
+  assert.equal(first.body.membership.status, 'active');
+
+  const today = new Date().toISOString().slice(0, 10);
+  const firstStart = first.body.membership.start_date.slice(0, 10);
+  const firstEnd = first.body.membership.end_date.slice(0, 10);
+  assert.equal(firstStart, today);
+  assert.equal(firstEnd.slice(0, 4), String(Number(today.slice(0, 4)) + 1));
+
+  // Renewing early must append a second year instead of restarting from today.
+  const second = await call('POST', `users/${membre.user.id}/membership/renew`, {
+    token: admin.token,
+    body: { payment_method: 'Virement' },
+  });
+  const secondStart = second.body.membership.start_date.slice(0, 10);
+  assert.ok(secondStart > firstEnd === false || secondStart > today);
+  assert.equal(new Date(secondStart).getTime() - new Date(firstEnd).getTime(), 24 * 60 * 60 * 1000);
+  assert.equal(second.body.membership.payment_method, 'Virement');
+
+  const membre2 = await registerAndLogin('renouvellement-expire', 'membre');
+  await call('PUT', `users/${membre2.user.id}/membership`, {
+    token: admin.token,
+    body: { status: 'active', start_date: '2020-01-01', end_date: '2021-01-01' },
+  });
+
+  // An expired membership restarts from today rather than from its old end date.
+  const revived = await call('POST', `users/${membre2.user.id}/membership/renew`, {
+    token: admin.token,
+    body: {},
+  });
+  assert.equal(revived.body.membership.start_date.slice(0, 10), today);
+
+  const forbidden = await call('POST', `users/${membre.user.id}/membership/renew`, {
+    token: membre.token,
+    body: {},
+  });
+  assert.equal(forbidden.status, 403);
+});

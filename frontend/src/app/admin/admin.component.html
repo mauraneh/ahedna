@@ -171,6 +171,7 @@
                         <th class="px-6 py-3 text-left text-xs font-vintage font-bold text-paper-700 uppercase">{{ t('admin.users.table.email') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-vintage font-bold text-paper-700 uppercase">{{ t('admin.users.table.name') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-vintage font-bold text-paper-700 uppercase">{{ t('admin.users.table.membershipNumber') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-vintage font-bold text-paper-700 uppercase">{{ t('admin.membership.column') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-vintage font-bold text-paper-700 uppercase">{{ t('admin.users.table.role') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-vintage font-bold text-paper-700 uppercase">{{ t('admin.users.table.createdAt') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-vintage font-bold text-paper-700 uppercase">{{ t('admin.users.table.actions') }}</th>
@@ -191,6 +192,26 @@
                               [attr.aria-label]="t('admin.users.table.membershipNumber')"
                               (change)="updateMembershipNumber(user, $event)"
                               class="w-32 text-sm border-paper-300 bg-paper-100 rounded-lg px-3 py-2 focus:ring-green-500 focus:border-green-500 font-serif disabled:opacity-50">
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="admin-membership-badge" [class]="'admin-membership-badge admin-membership-' + (user.membership_status || 'none')">
+                              {{ t(getMembershipStatusKey(user)) }}
+                            </span>
+                            @if (getMembershipPeriod(user); as period) {
+                              <span class="admin-membership-period">{{ period }}</span>
+                            }
+                            <span class="admin-membership-links">
+                              <button
+                                type="button"
+                                class="admin-membership-edit"
+                                [disabled]="renewingMembershipUserId === user.id"
+                                (click)="renewMembership(user)">
+                                {{ renewingMembershipUserId === user.id ? t('admin.membership.actions.renewing') : t('admin.membership.actions.renew') }}
+                              </button>
+                              <button type="button" class="admin-membership-edit" (click)="openMembershipEditor(user)">
+                                {{ t('admin.membership.actions.edit') }}
+                              </button>
+                            </span>
                           </td>
                           <td class="px-6 py-4 whitespace-nowrap">
                             <select
@@ -216,6 +237,58 @@
                             }
                           </td>
                         </tr>
+                        @if (editingMembershipUserId === user.id) {
+                          <tr>
+                            <td colspan="6" class="px-6 py-5 bg-paper-100/60">
+                              <form [formGroup]="membershipForm" (ngSubmit)="saveMembership(user)" class="admin-membership-form">
+                                <p class="admin-membership-form-title">{{ t('admin.membership.formTitle', { email: user.email }) }}</p>
+
+                                @if (membershipError) {
+                                  <div class="site-state-box site-state-box-error" role="alert">{{ membershipError }}</div>
+                                }
+
+                                <div class="admin-membership-grid">
+                                  <div>
+                                    <label class="site-form-label" [attr.for]="'membership-status-' + user.id">{{ t('admin.membership.fields.status') }}</label>
+                                    <select [id]="'membership-status-' + user.id" formControlName="status" class="site-select">
+                                      <option value="pending">{{ t('admin.membership.status.pending') }}</option>
+                                      <option value="active">{{ t('admin.membership.status.active') }}</option>
+                                      <option value="expired">{{ t('admin.membership.status.expired') }}</option>
+                                    </select>
+                                  </div>
+                                  <div>
+                                    <label class="site-form-label" [attr.for]="'membership-start-' + user.id">{{ t('admin.membership.fields.startDate') }}</label>
+                                    <input [id]="'membership-start-' + user.id" formControlName="start_date" type="date" class="site-input">
+                                  </div>
+                                  <div>
+                                    <label class="site-form-label" [attr.for]="'membership-end-' + user.id">{{ t('admin.membership.fields.endDate') }}</label>
+                                    <input [id]="'membership-end-' + user.id" formControlName="end_date" type="date" class="site-input">
+                                  </div>
+                                  <div>
+                                    <label class="site-form-label" [attr.for]="'membership-payment-' + user.id">{{ t('admin.membership.fields.paymentMethod') }}</label>
+                                    <input [id]="'membership-payment-' + user.id" formControlName="payment_method" type="text" maxlength="50" class="site-input" [placeholder]="t('admin.membership.fields.paymentMethodPlaceholder')">
+                                  </div>
+                                </div>
+
+                                <div>
+                                  <label class="site-form-label" [attr.for]="'membership-notes-' + user.id">{{ t('admin.membership.fields.notes') }}</label>
+                                  <textarea [id]="'membership-notes-' + user.id" formControlName="notes" rows="2" maxlength="1000" class="site-textarea" [placeholder]="t('admin.membership.fields.notesPlaceholder')"></textarea>
+                                </div>
+
+                                <p class="admin-membership-help">{{ t('admin.membership.help') }}</p>
+
+                                <div class="admin-membership-actions">
+                                  <button type="submit" [disabled]="savingMembership || membershipForm.invalid" class="site-button-primary disabled:opacity-50">
+                                    {{ savingMembership ? t('admin.membership.actions.saving') : t('admin.membership.actions.save') }}
+                                  </button>
+                                  <button type="button" class="site-button-secondary" (click)="closeMembershipEditor()">
+                                    {{ t('admin.membership.actions.cancel') }}
+                                  </button>
+                                </div>
+                              </form>
+                            </td>
+                          </tr>
+                        }
                       }
                     </tbody>
                   </table>

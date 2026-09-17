@@ -630,7 +630,7 @@ describe('AdminComponent', () => {
       .expectOne(`${environment.apiUrl}/news`)
       .flush({ error: 'Invalid' }, { status: 400, statusText: 'Bad Request' });
 
-    expect(component.newsError).toBe('Invalid');
+    expect(component.newsError).toBe('admin.messages.saveNewsError');
     expect(component.savingNews).toBe(false);
   });
 
@@ -670,7 +670,7 @@ describe('AdminComponent', () => {
       .expectOne(`${environment.apiUrl}/news/import-public`)
       .flush({ error: 'Import failed' }, { status: 502, statusText: 'Bad Gateway' });
 
-    expect(fixture.componentInstance.newsError).toBe('Import failed');
+    expect(fixture.componentInstance.newsError).toBe('content.messages.importNewsError');
     expect(fixture.componentInstance.importingPublicNews).toBe(false);
   });
 
@@ -718,7 +718,7 @@ describe('AdminComponent', () => {
       .expectOne(`${environment.apiUrl}/news/news-1`)
       .flush({ error: 'Cannot delete' }, { status: 400, statusText: 'Bad Request' });
 
-    expect(fixture.componentInstance.newsError).toBe('Cannot delete');
+    expect(fixture.componentInstance.newsError).toBe('admin.messages.deleteError');
   });
 
   it('does not submit the gallery event form when it is invalid', () => {
@@ -760,7 +760,7 @@ describe('AdminComponent', () => {
       .expectOne(`${environment.apiUrl}/events`)
       .flush({ error: 'Invalid' }, { status: 400, statusText: 'Bad Request' });
 
-    expect(component.galleryEventError).toBe('Invalid');
+    expect(component.galleryEventError).toBe('admin.gallery.messages.eventCreateError');
     expect(component.savingGalleryEvent).toBe(false);
   });
 
@@ -781,7 +781,7 @@ describe('AdminComponent', () => {
       .expectOne(`${environment.apiUrl}/gallery/events/evt-1/photos`)
       .flush({ error: 'Upload failed' }, { status: 400, statusText: 'Bad Request' });
 
-    expect(component.galleryPhotoError).toBe('Upload failed');
+    expect(component.galleryPhotoError).toBe('admin.gallery.messages.photoUploadError');
     expect(component.uploadingGalleryPhoto).toBe(false);
   });
 
@@ -881,7 +881,7 @@ describe('AdminComponent', () => {
       .expectOne(`${environment.apiUrl}/events`)
       .flush({ error: 'Invalid' }, { status: 400, statusText: 'Bad Request' });
 
-    expect(component.eventError).toBe('Invalid');
+    expect(component.eventError).toBe('admin.messages.saveEventError');
   });
 
   it('does not delete an event when the confirmation dialog is dismissed', () => {
@@ -933,7 +933,7 @@ describe('AdminComponent', () => {
       .expectOne(`${environment.apiUrl}/events/evt-1`)
       .flush({ error: 'Cannot delete' }, { status: 400, statusText: 'Bad Request' });
 
-    expect(fixture.componentInstance.eventError).toBe('Cannot delete');
+    expect(fixture.componentInstance.eventError).toBe('admin.messages.deleteError');
   });
 
 

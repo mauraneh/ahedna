@@ -33,6 +33,7 @@ interface ParticipationResponse {
   participation: {
     status: 'attending' | 'declined';
   };
+  event?: Event;
 }
 
 @Component({
@@ -190,7 +191,6 @@ export class EventsListComponent implements OnInit {
     }
 
     const event = this.selectedEvent;
-    const previousStatus = event.current_user_participation ?? null;
 
     this.participationSaving = true;
     this.participationMessage = '';
@@ -199,12 +199,11 @@ export class EventsListComponent implements OnInit {
     this.http.post<ParticipationResponse>(`${environment.apiUrl}/events/${event.id}/participation`, { status })
       .subscribe({
         next: (response) => {
-          const nextStatus = response.participation.status;
-          const participantCount = this.getNextParticipantCount(event, previousStatus, nextStatus);
-          const updatedEvent = {
+          // The server recounts and returns the event, so the total stays correct even
+          // when other members registered in the meantime.
+          const updatedEvent = response.event ?? {
             ...event,
-            current_user_participation: nextStatus,
-            participant_count: participantCount,
+            current_user_participation: response.participation.status,
           };
 
           this.selectedEvent = updatedEvent;
@@ -262,21 +261,4 @@ export class EventsListComponent implements OnInit {
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
   }
 
-  private getNextParticipantCount(
-    event: Event,
-    previousStatus: 'attending' | 'declined' | null,
-    nextStatus: 'attending' | 'declined'
-  ): number {
-    const current = this.getParticipantCount(event);
-
-    if (previousStatus !== 'attending' && nextStatus === 'attending') {
-      return current + 1;
-    }
-
-    if (previousStatus === 'attending' && nextStatus === 'declined') {
-      return Math.max(0, current - 1);
-    }
-
-    return current;
-  }
 }

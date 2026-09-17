@@ -151,6 +151,16 @@
                 <p class="event-modal-description">{{ event.description }}</p>
               }
 
+              @if (event.current_user_participation === 'attending') {
+                <div class="site-state-box event-participation-status event-participation-attending" role="status">
+                  {{ t('events.modal.alreadyAttending') }}
+                </div>
+              } @else if (event.current_user_participation === 'declined') {
+                <div class="site-state-box event-participation-status" role="status">
+                  {{ t('events.modal.alreadyDeclined') }}
+                </div>
+              }
+
               @if (participationError) {
                 <div class="site-state-box site-state-box-error" role="alert">{{ t(participationError) }}</div>
               }

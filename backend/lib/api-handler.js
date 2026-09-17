@@ -181,6 +181,58 @@ function normalizeEmail(value) {
   return email ? email.toLowerCase() : null;
 }
 
+// A `date` column comes back from pg as a Date at local midnight, so the calendar day
+// has to be read from the local parts. toISOString() would shift it to the day before.
+function toDateOnly(value) {
+  if (!value) {
+    return null;
+  }
+
+  if (typeof value === 'string') {
+    return value.slice(0, 10);
+  }
+
+  const date = new Date(value);
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${date.getFullYear()}-${month}-${day}`;
+}
+
+// A renewal never eats into days already paid for: it picks up the day after the
+// current period when that period is still running, and starts today otherwise.
+function getRenewalPeriod(membership, today = new Date()) {
+  const todayOnly = toDateOnly(today);
+  const currentEnd = toDateOnly(membership?.end_date);
+  const extending = Boolean(currentEnd && currentEnd >= todayOnly);
+
+  const start = new Date(`${extending ? currentEnd : todayOnly}T00:00:00`);
+
+  if (extending) {
+    start.setDate(start.getDate() + 1);
+  }
+
+  const end = new Date(start);
+  end.setFullYear(end.getFullYear() + 1);
+  end.setDate(end.getDate() - 1);
+
+  return {
+    start_date: toDateOnly(start),
+    end_date: toDateOnly(end),
+  };
+}
+
+// Accepts a plain YYYY-MM-DD, the format the date inputs and the paper forms use.
+function normalizeDate(value) {
+  const raw = normalizeString(value, 10);
+
+  if (!raw || !/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+    return null;
+  }
+
+  const parsed = new Date(`${raw}T00:00:00Z`);
+  return Number.isNaN(parsed.getTime()) ? null : raw;
+}
+
 function sanitizeBoolean(value, fallback = false) {
   return typeof value === 'boolean' ? value : fallback;
 }
@@ -221,9 +273,49 @@ async function getLatestMembership(userId) {
   return result.rows[0] || null;
 }
 
+// An expired end date revokes access on its own, so nobody has to run a yearly chore.
+function isMembershipCurrent(membership) {
+  if (membership?.status !== 'active') {
+    return false;
+  }
+
+  if (!membership.end_date) {
+    return true;
+  }
+
+  const endOfDay = new Date(membership.end_date);
+  endOfDay.setHours(23, 59, 59, 999);
+  return endOfDay.getTime() >= Date.now();
+}
+
+// Dates leave the API as plain YYYY-MM-DD so no consumer has to undo a timezone shift.
+function serializeMembership(membership) {
+  if (!membership) {
+    return null;
+  }
+
+  return {
+    ...membership,
+    status: getEffectiveMembershipStatus(membership),
+    start_date: toDateOnly(membership.start_date),
+    end_date: toDateOnly(membership.end_date),
+  };
+}
+
+function getEffectiveMembershipStatus(membership) {
+  if (!membership) {
+    return null;
+  }
+
+  if (membership.status === 'active' && !isMembershipCurrent(membership)) {
+    return 'expired';
+  }
+
+  return membership.status;
+}
+
 async function hasActiveMembership(userId) {
-  const membership = await getLatestMembership(userId);
-  return membership?.status === 'active';
+  return isMembershipCurrent(await getLatestMembership(userId));
 }
 
 // Same rule as uploading a gallery photo: the gallery is reserved for members whose
@@ -1428,8 +1520,37 @@ async function handleGet(request) {
         );
       }
 
-      const result = await pool.query(`SELECT ${profileFields} FROM users ORDER BY created_at DESC`);
-      return jsonResponse({ users: result.rows }, { headers: corsHeaders });
+      // memberships shares column names with users (id, status, created_at), so the
+      // profile fields have to be qualified before joining.
+      const qualifiedProfileFields = profileFields
+        .split(',')
+        .map((field) => `u.${field.trim()}`)
+        .join(', ');
+
+      const result = await pool.query(`
+        SELECT ${qualifiedProfileFields},
+               m.status AS membership_status,
+               m.start_date AS membership_start_date,
+               m.end_date AS membership_end_date,
+               m.payment_method AS membership_payment_method,
+               m.notes AS membership_notes
+        FROM users u
+        LEFT JOIN LATERAL (
+          SELECT * FROM memberships WHERE user_id = u.id ORDER BY created_at DESC LIMIT 1
+        ) m ON true
+        ORDER BY u.created_at DESC
+      `);
+
+      const users = result.rows.map((row) => ({
+        ...row,
+        membership_status: getEffectiveMembershipStatus(
+          row.membership_status ? { status: row.membership_status, end_date: row.membership_end_date } : null
+        ),
+        membership_start_date: toDateOnly(row.membership_start_date),
+        membership_end_date: toDateOnly(row.membership_end_date),
+      }));
+
+      return jsonResponse({ users }, { headers: corsHeaders });
     }
 
     if (path === 'admin/overview') {
@@ -1501,13 +1622,10 @@ async function handleGet(request) {
         );
       }
 
-      const result = await pool.query(
-        'SELECT * FROM memberships WHERE user_id = $1 ORDER BY created_at DESC LIMIT 1',
-        [authResult.user.id]
-      );
+      const membership = await getLatestMembership(authResult.user.id);
 
       return jsonResponse(
-        { membership: result.rows.length > 0 ? result.rows[0] : null },
+        { membership: serializeMembership(membership) },
         { headers: corsHeaders }
       );
     }
@@ -1621,6 +1739,54 @@ async function handlePost(request) {
           user,
           token,
         },
+        { headers: corsHeaders }
+      );
+    }
+
+    if (path.startsWith('users/') && path.endsWith('/membership/renew')) {
+      const id = path.split('/')[1];
+      const authResult = await requireAuth(request);
+      if (authResult.error) {
+        return jsonResponse(
+          { error: authResult.error },
+          { status: authResult.status, headers: corsHeaders }
+        );
+      }
+
+      const roleCheck = requireRole(authResult.user, ['admin']);
+      if (roleCheck) {
+        return jsonResponse(
+          { error: roleCheck.error },
+          { status: roleCheck.status, headers: corsHeaders }
+        );
+      }
+
+      const userResult = await pool.query('SELECT id FROM users WHERE id = $1', [id]);
+      if (userResult.rows.length === 0) {
+        return jsonResponse({ error: 'User not found' }, { status: 404, headers: corsHeaders });
+      }
+
+      const existing = await getLatestMembership(id);
+      const { start_date, end_date } = getRenewalPeriod(existing);
+      const payment_method = normalizeString(body.payment_method, 50) ?? existing?.payment_method ?? null;
+
+      const result = existing
+        ? await pool.query(
+            `UPDATE memberships
+             SET status = 'active', start_date = $1, end_date = $2, payment_method = $3
+             WHERE id = $4
+             RETURNING *`,
+            [start_date, end_date, payment_method, existing.id]
+          )
+        : await pool.query(
+            `INSERT INTO memberships (user_id, status, start_date, end_date, payment_method)
+             VALUES ($1, 'active', $2, $3, $4)
+             RETURNING *`,
+            [id, start_date, end_date, payment_method]
+          );
+
+      return jsonResponse(
+        { message: 'Membership renewed', membership: serializeMembership(result.rows[0]) },
         { headers: corsHeaders }
       );
     }
@@ -1840,10 +2006,17 @@ async function handlePost(request) {
         [eventId, authResult.user.id, status]
       );
 
+      // Return the recounted event so the client never has to guess the new total.
+      const updatedEvent = await pool.query(
+        `SELECT ${getEventSelectFields(authResult.user.id, 1)} FROM events e WHERE e.id = $2`,
+        [authResult.user.id, eventId]
+      );
+
       return jsonResponse(
         {
           message: 'Participation updated successfully',
           participation: result.rows[0],
+          event: updatedEvent.rows[0],
         },
         { headers: corsHeaders }
       );
@@ -2397,6 +2570,76 @@ async function handlePut(request) {
         {
           message: 'Photo validation updated',
           photo: result.rows[0],
+        },
+        { headers: corsHeaders }
+      );
+    }
+
+    if (path.startsWith('users/') && path.endsWith('/membership')) {
+      const id = path.split('/')[1];
+      const roleCheck = requireRole(authResult.user, ['admin']);
+      if (roleCheck) {
+        return jsonResponse(
+          { error: roleCheck.error },
+          { status: roleCheck.status, headers: corsHeaders }
+        );
+      }
+
+      const status = normalizeString(body.status, 20);
+      if (!['pending', 'active', 'expired'].includes(status)) {
+        return jsonResponse({ error: 'Invalid membership status' }, { status: 400, headers: corsHeaders });
+      }
+
+      const start_date = normalizeDate(body.start_date);
+      const end_date = normalizeDate(body.end_date);
+
+      if (body.start_date && !start_date) {
+        return jsonResponse({ error: 'Invalid membership start date' }, { status: 400, headers: corsHeaders });
+      }
+
+      if (body.end_date && !end_date) {
+        return jsonResponse({ error: 'Invalid membership end date' }, { status: 400, headers: corsHeaders });
+      }
+
+      if (start_date && end_date && end_date < start_date) {
+        return jsonResponse(
+          { error: 'Membership end date is before its start date' },
+          { status: 400, headers: corsHeaders }
+        );
+      }
+
+      const payment_method = normalizeString(body.payment_method, 50);
+      const notes = normalizeString(body.notes, 1000);
+
+      const userResult = await pool.query('SELECT id FROM users WHERE id = $1', [id]);
+      if (userResult.rows.length === 0) {
+        return jsonResponse({ error: 'User not found' }, { status: 404, headers: corsHeaders });
+      }
+
+      // Paper memberships belong to people who never used the online form, so the row
+      // has to be created when it does not exist yet.
+      const existing = await getLatestMembership(id);
+      const result = existing
+        ? await pool.query(
+            `UPDATE memberships
+             SET status = $1, start_date = $2, end_date = $3, payment_method = $4, notes = $5
+             WHERE id = $6
+             RETURNING *`,
+            [status, start_date, end_date, payment_method, notes, existing.id]
+          )
+        : await pool.query(
+            `INSERT INTO memberships (user_id, status, start_date, end_date, payment_method, notes)
+             VALUES ($1, $2, $3, $4, $5, $6)
+             RETURNING *`,
+            [id, status, start_date, end_date, payment_method, notes]
+          );
+
+      const membership = result.rows[0];
+
+      return jsonResponse(
+        {
+          message: 'Membership updated',
+          membership: serializeMembership(membership),
         },
         { headers: corsHeaders }
       );

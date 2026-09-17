@@ -8,6 +8,7 @@ import { environment } from '../../environments/environment';
 import { NavbarComponent } from '../core/components/navbar/navbar.component';
 import { ScrollToTopComponent } from '../core/components/scroll-to-top/scroll-to-top.component';
 import { AuthService } from '../core/services/auth.service';
+import { ApiMessageService } from '../core/services/api-message.service';
 import { AddressAutocompleteService, AddressSuggestion } from '../core/services/address-autocomplete.service';
 import { I18nService } from '../core/services/i18n.service';
 import { MediaUploadService } from '../core/services/media-upload.service';
@@ -72,6 +73,7 @@ export class ContentManagementComponent implements OnInit {
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private transloco = inject(TranslocoService);
+  private apiMessages = inject(ApiMessageService);
   private addressAutocomplete = inject(AddressAutocompleteService);
   private mediaUpload = inject(MediaUploadService);
   authService = inject(AuthService);
@@ -268,7 +270,7 @@ export class ContentManagementComponent implements OnInit {
         this.savingNews = false;
       },
       error: (error) => {
-        this.newsFeedbackError = error.error?.error || this.transloco.translate('content.messages.saveError');
+        this.newsFeedbackError = this.apiMessages.translateError(error, 'content.messages.saveError');
         this.savingNews = false;
       }
     });
@@ -289,7 +291,7 @@ export class ContentManagementComponent implements OnInit {
         this.importingPublicNews = false;
       },
       error: (error) => {
-        this.newsFeedbackError = error.error?.error || this.transloco.translate('content.messages.importNewsError');
+        this.newsFeedbackError = this.apiMessages.translateError(error, 'content.messages.importNewsError');
         this.importingPublicNews = false;
       }
     });
@@ -346,7 +348,7 @@ export class ContentManagementComponent implements OnInit {
         this.deletingNewsId = null;
       },
       error: (error) => {
-        this.newsFeedbackError = error.error?.error || this.transloco.translate('content.messages.deleteError');
+        this.newsFeedbackError = this.apiMessages.translateError(error, 'content.messages.deleteError');
         this.deletingNewsId = null;
       }
     });
@@ -396,7 +398,7 @@ export class ContentManagementComponent implements OnInit {
         this.savingEvent = false;
       },
       error: (error) => {
-        this.eventFeedbackError = error.error?.error || this.transloco.translate('content.messages.saveEventError');
+        this.eventFeedbackError = this.apiMessages.translateError(error, 'content.messages.saveEventError');
         this.savingEvent = false;
       }
     });
@@ -441,7 +443,7 @@ export class ContentManagementComponent implements OnInit {
         this.deletingEventId = null;
       },
       error: (error) => {
-        this.eventFeedbackError = error.error?.error || this.transloco.translate('content.messages.deleteEventError');
+        this.eventFeedbackError = this.apiMessages.translateError(error, 'content.messages.deleteEventError');
         this.deletingEventId = null;
       }
     });
@@ -504,7 +506,7 @@ export class ContentManagementComponent implements OnInit {
         this.savingGalleryAlbum = false;
       },
       error: (error) => {
-        this.galleryFeedbackError = error.error?.error || this.transloco.translate('content.messages.saveGalleryError');
+        this.galleryFeedbackError = this.apiMessages.translateError(error, 'content.messages.saveGalleryError');
         this.savingGalleryAlbum = false;
       }
     });
@@ -603,7 +605,7 @@ export class ContentManagementComponent implements OnInit {
         this.savingGalleryPhoto = false;
       },
       error: (error) => {
-        this.galleryFeedbackError = error.error?.error || this.transloco.translate('content.messages.saveGalleryPhotoError');
+        this.galleryFeedbackError = this.apiMessages.translateError(error, 'content.messages.saveGalleryPhotoError');
         this.savingGalleryPhoto = false;
       }
     });
@@ -631,7 +633,7 @@ export class ContentManagementComponent implements OnInit {
       },
       error: (error) => {
         this.galleryPhotoFileName = previousFileName;
-        this.galleryFeedbackError = error?.message || error?.error?.error || this.transloco.translate('content.messages.uploadImageError');
+        this.galleryFeedbackError = this.apiMessages.translateError(error, 'content.messages.uploadImageError');
         this.uploadingGalleryPhotoImage = false;
         input.value = '';
       }
@@ -657,7 +659,7 @@ export class ContentManagementComponent implements OnInit {
         this.deletingPhotoId = null;
       },
       error: (error) => {
-        this.galleryFeedbackError = error.error?.error || this.transloco.translate('content.messages.deleteGalleryPhotoError');
+        this.galleryFeedbackError = this.apiMessages.translateError(error, 'content.messages.deleteGalleryPhotoError');
         this.deletingPhotoId = null;
       }
     });
@@ -705,7 +707,7 @@ export class ContentManagementComponent implements OnInit {
       },
       error: (error) => {
         this.newsImageFileName = previousFileName;
-        this.newsFeedbackError = error?.message || error?.error?.error || this.transloco.translate('content.messages.uploadImageError');
+        this.newsFeedbackError = this.apiMessages.translateError(error, 'content.messages.uploadImageError');
         this.uploadingNewsImage = false;
         input.value = '';
       }
@@ -740,7 +742,7 @@ export class ContentManagementComponent implements OnInit {
       },
       error: (error) => {
         this.eventMediaFileName = previousFileName;
-        this.eventFeedbackError = error?.message || error?.error?.error || this.transloco.translate('content.messages.uploadEventMediaError');
+        this.eventFeedbackError = this.apiMessages.translateError(error, 'content.messages.uploadEventMediaError');
         this.uploadingEventImage = false;
         input.value = '';
       }
@@ -779,7 +781,7 @@ export class ContentManagementComponent implements OnInit {
       },
       error: (error) => {
         this.galleryAlbumImageFileName = previousFileName;
-        this.galleryFeedbackError = error?.message || error?.error?.error || this.transloco.translate('content.messages.uploadImageError');
+        this.galleryFeedbackError = this.apiMessages.translateError(error, 'content.messages.uploadImageError');
         this.uploadingGalleryAlbumImage = false;
         input.value = '';
       }

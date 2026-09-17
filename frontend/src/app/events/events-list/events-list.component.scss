@@ -347,6 +347,19 @@
   line-height: 1.65;
 }
 
+.event-participation-status {
+  margin-top: 1rem;
+  border-color: rgba(37, 29, 20, 0.16);
+  background: rgba(37, 29, 20, 0.05);
+  color: #4a3d2e;
+}
+
+.event-participation-status.event-participation-attending {
+  border-color: rgba(var(--brand-turquoise-rgb), 0.3);
+  background: rgba(var(--brand-turquoise-rgb), 0.12);
+  color: #14555b;
+}
+
 .event-modal-actions {
   display: flex;
   flex-wrap: wrap;
